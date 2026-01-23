@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Blogs\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -25,6 +26,11 @@ class BlogForm
                             ->offIcon(Heroicon::XMark)
                             ->default(true)
                             ->inline(false),
+                        FileUpload::make('image')
+                            ->label('Image')
+                            ->image()
+                            ->required()
+                            ->maxSize(1024),
                         RichEditor::make('content')
                             ->required()
                             ->columnSpanFull(),

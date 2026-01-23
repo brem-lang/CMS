@@ -17,4 +17,12 @@ class Blog extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getImageUrlAttribute(): string
+    {
+        if ($this->image) {
+            return url('/storage/private/' . $this->image);
+        }
+        return asset('bootstrap/img/blog/blog-1.jpg'); // fallback image
+    }
 }
