@@ -13,10 +13,10 @@
                                     commitment to exceptional quality.</p>
                                 <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
                                 <div class="hero__social">
+                                    <a href="#"><i class="fa fa-youtube"></i></a>
                                     <a href="#"><i class="fa fa-facebook"></i></a>
-                                    <a href="#"><i class="fa fa-twitter"></i></a>
-                                    <a href="#"><i class="fa fa-pinterest"></i></a>
                                     <a href="#"><i class="fa fa-instagram"></i></a>
+                                    <a href="#"><i class="fa fa-twitter"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -34,10 +34,10 @@
                                     commitment to exceptional quality.</p>
                                 <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
                                 <div class="hero__social">
+                                    <a href="#"><i class="fa fa-youtube"></i></a>
                                     <a href="#"><i class="fa fa-facebook"></i></a>
-                                    <a href="#"><i class="fa fa-twitter"></i></a>
-                                    <a href="#"><i class="fa fa-pinterest"></i></a>
                                     <a href="#"><i class="fa fa-instagram"></i></a>
+                                    <a href="#"><i class="fa fa-twitter"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -105,13 +105,17 @@
             <div class="row product__filter">
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals">
                     <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/product/product-1.jpg') }}">
+                        <div class="product__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/product/product-1.jpg') }}">
                             <span class="label">New</span>
                             <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}" alt="">
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}"
+                                            alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}"
+                                            alt="">
                                         <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}" alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
+                                            alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -141,12 +145,16 @@
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix hot-sales">
                     <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/product/product-2.jpg') }}">
+                        <div class="product__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/product/product-2.jpg') }}">
                             <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}" alt="">
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}"
+                                            alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}"
+                                            alt="">
                                         <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}" alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
+                                            alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -176,13 +184,17 @@
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals">
                     <div class="product__item sale">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/product/product-3.jpg') }}">
+                        <div class="product__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/product/product-3.jpg') }}">
                             <span class="label">Sale</span>
                             <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}" alt="">
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}"
+                                            alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}"
+                                            alt="">
                                         <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}" alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
+                                            alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -212,12 +224,16 @@
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix hot-sales">
                     <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/product/product-4.jpg') }}">
+                        <div class="product__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/product/product-4.jpg') }}">
                             <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}" alt="">
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}"
+                                            alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}"
+                                            alt="">
                                         <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}" alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
+                                            alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -247,12 +263,16 @@
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals">
                     <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/product/product-5.jpg') }}">
+                        <div class="product__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/product/product-5.jpg') }}">
                             <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}" alt="">
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}"
+                                            alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}"
+                                            alt="">
                                         <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}" alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
+                                            alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -282,13 +302,17 @@
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix hot-sales">
                     <div class="product__item sale">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/product/product-6.jpg') }}">
+                        <div class="product__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/product/product-6.jpg') }}">
                             <span class="label">Sale</span>
                             <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}" alt="">
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}"
+                                            alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}"
+                                            alt="">
                                         <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}" alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
+                                            alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -318,12 +342,16 @@
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals">
                     <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/product/product-7.jpg') }}">
+                        <div class="product__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/product/product-7.jpg') }}">
                             <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}" alt="">
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}"
+                                            alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}"
+                                            alt="">
                                         <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}" alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
+                                            alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -353,12 +381,16 @@
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix hot-sales">
                     <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/product/product-8.jpg') }}">
+                        <div class="product__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/product/product-8.jpg') }}">
                             <ul class="product__hover">
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}" alt=""></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}" alt="">
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}"
+                                            alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}"
+                                            alt="">
                                         <span>Compare</span></a></li>
-                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}" alt=""></a></li>
+                                <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
+                                            alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -445,12 +477,18 @@
             <div class="row">
                 <div class="col-lg-8">
                     <div class="instagram__pic">
-                        <div class="instagram__pic__item set-bg" data-setbg="{{ asset('bootstrap/img/instagram/instagram-1.jpg') }}"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="{{ asset('bootstrap/img/instagram/instagram-2.jpg') }}"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="{{ asset('bootstrap/img/instagram/instagram-3.jpg') }}"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="{{ asset('bootstrap/img/instagram/instagram-4.jpg') }}"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="{{ asset('bootstrap/img/instagram/instagram-5.jpg') }}"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="{{ asset('bootstrap/img/instagram/instagram-6.jpg') }}"></div>
+                        <div class="instagram__pic__item set-bg"
+                            data-setbg="{{ asset('bootstrap/img/instagram/instagram-1.jpg') }}"></div>
+                        <div class="instagram__pic__item set-bg"
+                            data-setbg="{{ asset('bootstrap/img/instagram/instagram-2.jpg') }}"></div>
+                        <div class="instagram__pic__item set-bg"
+                            data-setbg="{{ asset('bootstrap/img/instagram/instagram-3.jpg') }}"></div>
+                        <div class="instagram__pic__item set-bg"
+                            data-setbg="{{ asset('bootstrap/img/instagram/instagram-4.jpg') }}"></div>
+                        <div class="instagram__pic__item set-bg"
+                            data-setbg="{{ asset('bootstrap/img/instagram/instagram-5.jpg') }}"></div>
+                        <div class="instagram__pic__item set-bg"
+                            data-setbg="{{ asset('bootstrap/img/instagram/instagram-6.jpg') }}"></div>
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -480,9 +518,11 @@
             <div class="row">
                 <div class="col-lg-4 col-md-6 col-sm-6">
                     <div class="blog__item">
-                        <div class="blog__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/blog/blog-1.jpg') }}"></div>
+                        <div class="blog__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/blog/blog-1.jpg') }}"></div>
                         <div class="blog__item__text">
-                            <span><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt=""> 16 February 2020</span>
+                            <span><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt=""> 16
+                                February 2020</span>
                             <h5>What Curling Irons Are The Best Ones</h5>
                             <a href="#">Read More</a>
                         </div>
@@ -490,9 +530,11 @@
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-6">
                     <div class="blog__item">
-                        <div class="blog__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/blog/blog-2.jpg') }}"></div>
+                        <div class="blog__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/blog/blog-2.jpg') }}"></div>
                         <div class="blog__item__text">
-                            <span><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt=""> 21 February 2020</span>
+                            <span><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt=""> 21
+                                February 2020</span>
                             <h5>Eternity Bands Do Last Forever</h5>
                             <a href="#">Read More</a>
                         </div>
@@ -500,9 +542,11 @@
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-6">
                     <div class="blog__item">
-                        <div class="blog__item__pic set-bg" data-setbg="{{ asset('bootstrap/img/blog/blog-3.jpg') }}"></div>
+                        <div class="blog__item__pic set-bg"
+                            data-setbg="{{ asset('bootstrap/img/blog/blog-3.jpg') }}"></div>
                         <div class="blog__item__text">
-                            <span><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt=""> 28 February 2020</span>
+                            <span><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt=""> 28
+                                February 2020</span>
                             <h5>The Health Benefits Of Sunglasses</h5>
                             <a href="#">Read More</a>
                         </div>
