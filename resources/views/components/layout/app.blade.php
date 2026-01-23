@@ -61,11 +61,14 @@
                         </div>
                         <p>BLESS AND LOVE</p>
                         <div class="hero__social" style="margin-top: -10px;">
-                            <a href="#"><i class="fa fa-youtube"></i></a>
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-instagram"></i></a>
-                            <a href="#"><i class="fa fa-tiktok"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="https://www.youtube.com/@cristbriand3086" target="_blank"><i
+                                    class="fa fa-youtube"></i></a>
+                            <a href="https://www.facebook.com/cristbriand.brader" target="_blank"><i
+                                    class="fa fa-facebook"></i></a>
+                            <a href="http://instagram.com/crist.briand" target="_blank"><i
+                                    class="fa fa-instagram"></i></a>
+                            <a href="https://www.tiktok.com/@crist.briand" target="_blank"><i
+                                    class="fa fa-tiktok"></i></a>
                         </div>
                     </div>
                 </div>
