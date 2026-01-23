@@ -12,6 +12,7 @@ use Livewire\Component;
 class HomePage extends Component
 {
     public $products;
+
     public $blogs;
 
     public function mount()
@@ -26,6 +27,18 @@ class HomePage extends Component
             ->limit(3)
             ->get();
     }
+
+    public function selectProduct($id)
+    {
+        return redirect()->route('product.view', $id);
+    }
+
+    public function openBlog($id)
+    {
+        dd($id);
+    }
+
+    public function addToCart($id) {}
 
     public function render()
     {

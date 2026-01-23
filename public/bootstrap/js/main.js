@@ -100,7 +100,7 @@
     /*--------------------------
         Select
     ----------------------------*/
-    $("select").niceSelect();
+    $("select").not('[data-livewire-select]').niceSelect();
 
     /*-------------------
 		Radio Btn

@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <title>{{ $title ?? config('app.name') }}</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('bootstrap/css/font-awesome.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('bootstrap/css/elegant-icons.css') }}" type="text/css">
@@ -70,10 +73,10 @@
                     <div class="footer__widget">
                         <h6>Quick Links</h6>
                         <ul>
-                            <li><a href="#">Home</a></li>
-                            <li><a href="#">Our Merchandise</a></li>
+                            <li><a href="{{ route('home') }}">Home</a></li>
+                            <li><a href="{{ route('shop') }}">Our Merchandise</a></li>
                             <li><a href="#">Blog</a></li>
-                            <li><a href="#">About</a></li>
+                            <li><a href="{{ route('about') }}">About</a></li>
                             <li><a href="#">Contact</a></li>
                         </ul>
                     </div>

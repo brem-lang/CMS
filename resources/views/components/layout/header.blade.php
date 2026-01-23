@@ -13,14 +13,14 @@
                                 <a href="#">Sign in</a>
                                 <a href="#">FAQs</a>
                             </div>
-                            <div class="header__top__hover">
+                            {{-- <div class="header__top__hover">
                                 <span>Usd <i class="arrow_carrot-down"></i></span>
                                 <ul>
                                     <li>USD</li>
                                     <li>EUR</li>
                                     <li>USD</li>
                                 </ul>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -30,28 +30,21 @@
             <div class="row">
                 <div class="col-lg-3 col-md-3">
                     <div class="header__logo">
-                        <a href="./index.html">
-                            {{-- <img src="{{ asset('img/logo.webp') }}" alt=""> --}}
-                            brader logo
+                        <a href="{{ route('home') }}">
+                            <img src="{{ asset('img/logo.webp') }}" alt=""
+                                style="margin-top:-30px;margin-bottom:-50px;">
                         </a>
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-6">
                     <nav class="header__menu mobile-menu">
                         <ul>
-                            <li class="active"><a href="./index.html">Home</a></li>
-                            <li><a href="./shop.html">Shop</a></li>
-                            <li><a href="#">Pages</a>
-                                <ul class="dropdown">
-                                    <li><a href="./about.html">About Us</a></li>
-                                    <li><a href="./shop-details.html">Shop Details</a></li>
-                                    <li><a href="./shopping-cart.html">Shopping Cart</a></li>
-                                    <li><a href="./checkout.html">Check Out</a></li>
-                                    <li><a href="./blog-details.html">Blog Details</a></li>
-                                </ul>
-                            </li>
+                            <li class="{{ request()->is('/') ? 'active' : '' }}"><a href="/">Home</a></li>
+                            <li class="{{ request()->is('shop') ? 'active' : '' }}"><a href="/shop">Our
+                                    Merchandise</a></li>
+                            <li class="{{ request()->is('about') ? 'active' : '' }}"><a href="/about">About</a></li>
                             <li><a href="./blog.html">Blog</a></li>
-                            <li><a href="./contact.html">Contacts</a></li>
+                            <li><a href="./contact.html">Contact</a></li>
                         </ul>
                     </nav>
                 </div>

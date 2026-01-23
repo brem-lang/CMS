@@ -70,16 +70,16 @@
                 @foreach ($products as $product)
                     <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals">
                         <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{{ $product->image_url }}">
-                                <ul class="product__hover">
-                                    <li><a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}"
-                                                alt=""></a></li>
-                                    <li><a href="#"><img src="{{ asset('bootstrap/img/icon/compare.png') }}"
-                                                alt="">
-                                            <span>Compare</span></a></li>
-                                    <li><a href="#"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
-                                                alt=""></a></li>
-                                </ul>
+                            <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
+                                data-setbg="{{ $product->image_url }}" wire:click="selectProduct({{ $product->id }})"
+                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
+                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
+
+                                <div class="opacity-0 hover-show d-none d-md-block">
+                                    <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
+                                        Quick View
+                                    </button>
+                                </div>
                             </div>
                             <div class="product__item__text">
                                 <h6>{{ $product->name }}</h6>
@@ -99,7 +99,8 @@
             </div>
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <a href="#" class="primary-btn">View All Products <span class="arrow_right"></span></a>
+                    <a href="{{ route('shop') }}" class="primary-btn">View All Products <span
+                            class="arrow_right"></span></a>
                 </div>
             </div>
         </div>
@@ -168,10 +169,15 @@
                             <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}">
                             </div>
                             <div class="blog__item__text">
-                                <span style="color: #666666;"><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
+                                <span style="color: #666666;"><img
+                                        src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
                                     {{ $blog->created_at->format('d F Y') }}</span>
                                 <h5 style="color: #333333;">{{ $blog->title }}</h5>
-                                <a href="#" style="color: #007bff;">Read More</a>
+                                <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $blog->id }})"
+                                    class="text-primary fw-bold text-decoration-none shadow-hover"
+                                    style="color: #007bff;">
+                                    Read More
+                                </a>
                             </div>
                         </div>
                     </div>
