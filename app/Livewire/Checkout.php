@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Cart;
+use App\Services\CartService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -42,28 +42,24 @@ class Checkout extends Component
 
     public function mount()
     {
-        if (! Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        $auth = Auth::user();
-
         $this->loadCartItems();
-        $this->email = $auth->email ?? '';
-        $this->fullName = $auth->name ?? '';
+        
+        if (Auth::check()) {
+            $auth = Auth::user();
+            $this->email = $auth->email ?? '';
+            $this->fullName = $auth->name ?? '';
+        }
     }
 
     public function loadCartItems()
     {
-        $this->cartItems = Cart::with('product')
-            ->where('user_id', Auth::id())
-            ->where('status', 'pending')
-            ->get();
-
+        $cartService = app(CartService::class);
+        $this->cartItems = $cartService->getCartItems();
+        
         $this->subtotal = $this->cartItems->sum(function ($item) {
             return $item->quantity * $item->product->price;
         });
-
+        
         $this->total = $this->subtotal;
     }
 

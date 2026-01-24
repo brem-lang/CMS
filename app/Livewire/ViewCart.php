@@ -2,9 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\Cart;
+use App\Services\CartService;
 use App\View\Components\Layout\App;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -16,51 +15,30 @@ class ViewCart extends Component
         'removeItem' => 'removeItem',
     ];
 
-    public function removeItem($cartId)
+    public function removeItem($productId)
     {
-        if (Auth::check()) {
-            Cart::where('id', $cartId)
-                ->where('user_id', Auth::id())
-                ->delete();
-
-            $this->dispatch('cartUpdated', message: 'Item removed from cart!');
-        }
+        app(CartService::class)->removeFromCart($productId);
+        $this->dispatch('cartUpdated', message: 'Item removed from cart!');
     }
 
-    public function updateQuantity($cartId, $quantity)
+    public function updateQuantity($productId, $quantity)
     {
-        if (Auth::check() && $quantity > 0) {
-            Cart::where('id', $cartId)
-                ->where('user_id', Auth::id())
-                ->update(['quantity' => $quantity]);
-
-            $this->dispatch('cartUpdated', message: 'Cart updated successfully!');
-        }
+        app(CartService::class)->updateQuantity($productId, $quantity);
+        $this->dispatch('cartUpdated', message: 'Cart updated successfully!');
     }
 
     public function render()
     {
-        $cartItems = collect();
-        $subtotal = 0;
-        $total = 0;
-
-        if (Auth::check()) {
-            $cartItems = Cart::with('product')
-                ->where('user_id', Auth::id())
-                ->where('status', 'pending')
-                ->get();
-
-            $subtotal = $cartItems->sum(function ($item) {
-                return $item->quantity * $item->product->price;
-            });
-
-            $total = $subtotal;
-        }
-
+        $cartService = app(CartService::class);
+        $cartItems = $cartService->getCartItems();
+        $subtotal = $cartItems->sum(function ($item) {
+            return $item->quantity * $item->product->price;
+        });
+        
         return view('livewire.view-cart', [
             'cartItems' => $cartItems,
             'subtotal' => $subtotal,
-            'total' => $total,
+            'total' => $subtotal,
         ]);
     }
 }

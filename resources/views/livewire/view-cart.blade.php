@@ -30,129 +30,114 @@
                 </div>
             @endif
 
-            @auth
-                @if ($cartItems->count() > 0)
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div class="shopping__cart__table">
-                                <table>
-                                    <thead>
+            @if ($cartItems->count() > 0)
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="shopping__cart__table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($cartItems as $item)
                                         <tr>
-                                            <th>Product</th>
-                                            <th>Quantity</th>
-                                            <th>Total</th>
-                                            <th></th>
+                                            <td class="product__cart__item">
+                                                <div class="product__cart__item__pic">
+                                                    <img src="{{ $item->product->image_url }}"
+                                                        alt="{{ $item->product->name }}">
+                                                </div>
+                                                <div class="product__cart__item__text">
+                                                    <h6>{{ $item->product->name }}</h6>
+                                                    <h5>₱{{ number_format($item->product->price, 2) }}</h5>
+                                                </div>
+                                            </td>
+                                            <td class="quantity__item">
+                                                <div class="quantity">
+                                                    <div
+                                                        style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
+                                                        <button
+                                                            wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity - 1 }})"
+                                                            style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
+                                                            onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
+                                                            onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">−</button>
+                                                        <input type="text" value="{{ $item->quantity }}" readonly
+                                                            style="border: none; background: none; text-align: center; width: 50px; font-weight: 600; color: #111111;">
+                                                        <button
+                                                            wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity + 1 }})"
+                                                            style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
+                                                            onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
+                                                            onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">+</button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="cart__price">
+                                                ₱{{ number_format($item->quantity * $item->product->price, 2) }}</td>
+                                            <td class="cart__close">
+                                                <button type="button"
+                                                    onclick="openRemoveModal(event, {{ $item->product_id }}, '{{ addslashes($item->product->name) }}')"
+                                                    style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; transition: all 0.3s ease; padding: 5px 10px;"
+                                                    onmouseover="this.style.color='#e53637'; this.style.transform='scale(1.3)'"
+                                                    onmouseout="this.style.color='#999'; this.style.transform='scale(1)'">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($cartItems as $item)
-                                            <tr>
-                                                <td class="product__cart__item">
-                                                    <div class="product__cart__item__pic">
-                                                        <img src="{{ $item->product->image_url }}"
-                                                            alt="{{ $item->product->name }}">
-                                                    </div>
-                                                    <div class="product__cart__item__text">
-                                                        <h6>{{ $item->product->name }}</h6>
-                                                        <h5>₱{{ number_format($item->product->price, 2) }}</h5>
-                                                    </div>
-                                                </td>
-                                                <td class="quantity__item">
-                                                    <div class="quantity">
-                                                        <div
-                                                            style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
-                                                            <button
-                                                                wire:click="updateQuantity({{ $item->id }}, {{ $item->quantity - 1 }})"
-                                                                style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
-                                                                onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
-                                                                onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">−</button>
-                                                            <input type="text" value="{{ $item->quantity }}" readonly
-                                                                style="border: none; background: none; text-align: center; width: 50px; font-weight: 600; color: #111111;">
-                                                            <button
-                                                                wire:click="updateQuantity({{ $item->id }}, {{ $item->quantity + 1 }})"
-                                                                style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
-                                                                onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
-                                                                onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">+</button>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="cart__price">
-                                                    ₱{{ number_format($item->quantity * $item->product->price, 2) }}</td>
-                                                <td class="cart__close">
-                                                    <button type="button"
-                                                        onclick="openRemoveModal(event, {{ $item->id }}, '{{ addslashes($item->product->name) }}')"
-                                                        style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; transition: all 0.3s ease; padding: 5px 10px;"
-                                                        onmouseover="this.style.color='#e53637'; this.style.transform='scale(1.3)'"
-                                                        onmouseout="this.style.color='#999'; this.style.transform='scale(1)'">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-6">
-                                    <div class="continue__btn">
-                                        <a href="{{ route('shop') }}"
-                                            class="site-btn d-inline-block text-decoration-none shadow-sm transition-all"
-                                            onmouseover="this.style.opacity='0.75'; this.classList.replace('shadow-sm', 'shadow-lg'); this.style.transform='translateY(-2px)'"
-                                            onmouseout="this.style.opacity='1'; this.classList.replace('shadow-lg', 'shadow-sm'); this.style.transform='translateY(0)'"
-                                            style="background: #111111; color: #ffffff; padding: 14px 30px; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; transition: all 0.3s ease; display: inline-block;">
-                                            Continue Shopping
-                                        </a>
-                                    </div>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="continue__btn">
+                                    <a href="{{ route('shop') }}"
+                                        class="site-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                                        onmouseover="this.style.opacity='0.75'; this.classList.replace('shadow-sm', 'shadow-lg'); this.style.transform='translateY(-2px)'"
+                                        onmouseout="this.style.opacity='1'; this.classList.replace('shadow-lg', 'shadow-sm'); this.style.transform='translateY(0)'"
+                                        style="background: #111111; color: #ffffff; padding: 14px 30px; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; transition: all 0.3s ease; display: inline-block;">
+                                        Continue Shopping
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
-                            <div class="cart__discount">
-                                <h6>Discount codes</h6>
-                                <form action="#">
-                                    <input type="text" placeholder="Coupon code">
-                                    <button type="submit">Apply</button>
-                                </form>
-                            </div>
-                            <div class="cart__total">
-                                <h6>Cart total</h6>
-                                <ul>
-                                    <li>Subtotal <span>₱{{ number_format($subtotal, 2) }}</span></li>
-                                    <li>Total <span>₱{{ number_format($total, 2) }}</span></li>
-                                </ul>
-                                <a href="{{ route('checkout') }}" class="site-btn"
-                                    style="display: block; text-align: center; text-decoration: none; padding: 15px; background: #e53637;">Checkout</a>
-                            </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="cart__discount">
+                            <h6>Discount codes</h6>
+                            <form action="#">
+                                <input type="text" placeholder="Coupon code">
+                                <button type="submit">Apply</button>
+                            </form>
+                        </div>
+                        <div class="cart__total">
+                            <h6>Cart total</h6>
+                            <ul>
+                                <li>Subtotal <span>₱{{ number_format($subtotal, 2) }}</span></li>
+                                <li>Total <span>₱{{ number_format($total, 2) }}</span></li>
+                            </ul>
+                            <a href="{{ route('checkout') }}" class="site-btn"
+                                style="display: block; text-align: center; text-decoration: none; padding: 15px; background: #e53637;">Checkout</a>
                         </div>
                     </div>
-                @else
-                    <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <div style="padding: 50px 20px;">
-                                <i class="fa fa-shopping-cart"
-                                    style="font-size: 64px; color: #e5e5e5; margin-bottom: 20px; display: block;"></i>
-                                <p style="color: #666; font-size: 16px; margin-bottom: 20px;">Your cart is empty</p>
-                                <a href="{{ route('shop') }}" class="site-btn"
-                                    style="display: inline-block; text-decoration: none; padding: 12px 30px;">Start
-                                    Shopping</a>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+                </div>
             @else
                 <div class="row">
                     <div class="col-lg-12 text-center">
                         <div style="padding: 50px 20px;">
                             <i class="fa fa-shopping-cart"
                                 style="font-size: 64px; color: #e5e5e5; margin-bottom: 20px; display: block;"></i>
-                            <p style="color: #666; font-size: 16px; margin-bottom: 20px;">Please log in to view your cart
-                            </p>
-                            <a href="{{ route('login') }}" class="site-btn"
-                                style="display: inline-block; text-decoration: none; padding: 12px 30px;">Login</a>
+                            <p style="color: #666; font-size: 16px; margin-bottom: 20px;">Your cart is empty</p>
+                            <a href="{{ route('shop') }}" class="site-btn"
+                                style="display: inline-block; text-decoration: none; padding: 12px 30px;">Start
+                                Shopping</a>
                         </div>
                     </div>
                 </div>
-            @endauth
+            @endif
         </div>
     </section>
     <!-- Shopping Cart Section End -->
@@ -222,7 +207,7 @@
 
         function confirmRemoveItem() {
             if (removeItemData && window.Livewire) {
-                Livewire.dispatch('removeItem', [removeItemData.itemId]);
+                @this.removeItem(removeItemData.itemId);
                 closeRemoveModal();
             }
         }

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Livewire\Forms\LoginForm;
+use App\Services\CartService;
 use App\View\Components\Layout\App;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -26,6 +27,11 @@ class Login extends Component
         $this->form->authenticate();
 
         session()->regenerate();
+
+        // Migrate guest cart to database if user had items in session
+        if (Auth::check()) {
+            app(CartService::class)->migrateGuestCartToDatabase(Auth::id());
+        }
 
         // Redirect to intended page or home
         return redirect()->intended(route('home'));

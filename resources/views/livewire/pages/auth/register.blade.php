@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Services\CartService;
 use App\View\Components\Layout\App;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
@@ -34,7 +35,10 @@ new #[Layout(App::class)] class extends Component
 
         Auth::login($user);
 
-        $this->redirect(route('home', absolute: false), navigate: true);
+        // Migrate guest cart to database if user had items in session
+        app(CartService::class)->migrateGuestCartToDatabase($user->id);
+
+        $this->redirect(route('home', absolute: false), navigate: false);
     }
 }; ?>
 

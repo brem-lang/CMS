@@ -2,8 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Cart;
-use Illuminate\Support\Facades\Auth;
+use App\Services\CartService;
 use Livewire\Component;
 
 class CartCount extends Component
@@ -12,12 +11,7 @@ class CartCount extends Component
 
     public function render()
     {
-        $count = 0;
-        if (Auth::check()) {
-            $count = Cart::where('user_id', Auth::id())
-                ->where('status', 'pending')
-                ->sum('quantity');
-        }
+        $count = app(CartService::class)->getCartCount();
 
         return view('livewire.cart-count', [
             'count' => $count,

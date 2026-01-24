@@ -2,10 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Models\Cart;
 use App\Models\Product;
+use App\Services\CartService;
 use App\View\Components\Layout\App;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -100,35 +99,8 @@ class Shop extends Component
 
     public function addToCart($id)
     {
-        if (Auth::guest()) {
-            session()->put('url.intended', url()->current());
-
-            return redirect()->route('login')->with('message', 'Please log in to add items to your cart.');
-        }
-
         $product = Product::findOrFail($id);
-
-        // Check if product already exists in cart with pending status
-        $existingCart = \App\Models\Cart::where('user_id', Auth::id())
-            ->where('product_id', $id)
-            ->where('status', 'pending')
-            ->first();
-
-        if ($existingCart) {
-            // Increment quantity if item already exists
-            $existingCart->increment('quantity');
-            $this->dispatch('cartUpdated', message: 'Cart updated! Quantity increased.');
-            return;
-        }
-
-        // Add to cart with quantity 1
-        \App\Models\Cart::create([
-            'user_id' => Auth::id(),
-            'product_id' => $id,
-            'quantity' => 1,
-            'status' => 'pending',
-        ]);
-
+        app(CartService::class)->addToCart($id, 1);
         $this->dispatch('cartUpdated', message: 'Product added to cart successfully!');
     }
 

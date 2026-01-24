@@ -38,9 +38,7 @@ Route::get('/checkout', Checkout::class)->name('checkout');
 
 // Cashier checkout for payment
 Route::post('/checkout/create', function (Request $request) {
-    // dd($request->all());
     $user = $request->user();
-    $quantity = $request->input('quantity', 1);
     $totalAmount = $request->input('total_amount', 3000);
 
     return $user->checkout([
@@ -49,10 +47,9 @@ Route::post('/checkout/create', function (Request $request) {
                 'currency' => 'php',
                 'unit_amount' => $totalAmount,
                 'product_data' => [
-                    'name' => 'Chat Pass',
+                    'name' => 'Total Order Payment',
                 ],
             ],
-            'quantity' => $quantity,
         ],
     ], [
         'mode' => 'payment',

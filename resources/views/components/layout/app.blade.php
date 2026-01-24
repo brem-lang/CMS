@@ -24,7 +24,7 @@
     <div id="preloder">
         <div class="loader"></div>
     </div>
-    
+
     @if (!request()->routeIs('login') && !request()->routeIs('register'))
         <header class="mb-4">
             @include('components.layout.header')
@@ -97,6 +97,20 @@
             });
         });
 
+        // Hide preloader on Livewire navigation
+        document.addEventListener('livewire:navigated', () => {
+            if (typeof $ !== 'undefined') {
+                $(".loader").fadeOut();
+                $("#preloder").delay(200).fadeOut("slow");
+            } else {
+                // Fallback if jQuery isn't loaded yet
+                const loader = document.querySelector(".loader");
+                const preloder = document.getElementById("preloder");
+                if (loader) loader.style.display = 'none';
+                if (preloder) preloder.style.display = 'none';
+            }
+        });
+
         // Handle session flash messages
         @if (session('message'))
             setTimeout(() => {
@@ -145,8 +159,7 @@
                         <div class="footer__widget">
                             <h6>Customer Service</h6>
                             <ul>
-                                <li><a href="#">Shipping Info</a></li>
-                                <li><a href="#">FAQ</a></li>
+                                <li><a href="#">Track Order</a></li>
                                 <li><a href="{{ route('return-and-refund') }}">Refund and Returns Policy</a></li>
                             </ul>
                         </div>
