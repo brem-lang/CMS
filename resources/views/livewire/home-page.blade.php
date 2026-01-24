@@ -75,10 +75,12 @@
             </div>
             <div class="row product__filter">
                 @foreach ($products as $product)
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals" wire:key="product-{{ $product->id }}">
                         <div class="product__item">
                             <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
-                                data-setbg="{{ $product->image_url }}" wire:click="selectProduct({{ $product->id }})"
+                                data-setbg="{{ $product->image_url }}"
+                                style="background-image: url('{{ $product->image_url }}');"
+                                wire:click="selectProduct({{ $product->id }})"
                                 onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
                                 onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
 
@@ -90,7 +92,7 @@
                             </div>
                             <div class="product__item__text">
                                 <h6>{{ $product->name }}</h6>
-                                <a href="#" class="add-cart">+ Add To Cart</a>
+                                <a href="#" class="add-cart" wire:click.prevent="addToCart({{ $product->id }})">+ Add To Cart</a>
                                 <div class="rating">
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
@@ -181,9 +183,10 @@
             </div>
             <div class="row">
                 @foreach ($blogs as $blog)
-                    <div class="col-lg-4 col-md-6 col-sm-6">
+                    <div class="col-lg-4 col-md-6 col-sm-6" wire:key="blog-{{ $blog->id }}">
                         <div class="blog__item">
-                            <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}">
+                            <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}"
+                                style="background-image: url('{{ $blog->image_url }}');">
                             </div>
                             <div class="blog__item__text">
                                 <span style="color: #666666;"><img
@@ -204,3 +207,32 @@
     </section>
     <!-- Latest Blog Section End -->
 </div>
+
+<script>
+    // Function to set background images
+    function setBackgroundImages() {
+        $('.set-bg').each(function() {
+            var bg = $(this).data('setbg');
+            var $el = $(this);
+            if (bg) {
+                // Get existing inline styles (excluding background-image)
+                var existingStyle = $el.attr('style') || '';
+                // Remove any existing background-image from style
+                existingStyle = existingStyle.replace(/background-image\s*:\s*[^;]+;?/gi, '').trim();
+                // Add background-image to the style
+                var newStyle = existingStyle + (existingStyle ? ' ' : '') + 'background-image: url(' + bg + ');';
+                $el.attr('style', newStyle);
+            }
+        });
+    }
+
+    // Set background images on Livewire init
+    document.addEventListener('livewire:init', () => {
+        setBackgroundImages();
+    });
+
+    // Re-set background images after Livewire updates
+    document.addEventListener('livewire:update', () => {
+        setBackgroundImages();
+    });
+</script>

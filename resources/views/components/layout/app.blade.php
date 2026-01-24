@@ -28,9 +28,29 @@
         </header>
     @endif
 
+    <!-- Notification Toast -->
+    <div id="cart-notification" class="alert alert-success alert-dismissible fade" role="alert"
+        style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; display: none;">
+        <i class="fa fa-check-circle"></i> <span id="notification-message"></span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
     <main>
+        @if (session('message'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert"
+                style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                <i class="fa fa-check-circle"></i> {{ session('message') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
         {{ $slot }}
     </main>
+
+    @livewire('cart-sidebar')
 
     <!-- Bootstrap Template JavaScript Files -->
     <!-- jQuery (must load first) -->
@@ -50,6 +70,37 @@
 
     <!-- Main Template JS (must load last) -->
     <script src="{{ asset('bootstrap/js/main.js') }}"></script>
+
+    <!-- Cart Notification Script -->
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('cartUpdated', (data) => {
+                const notification = document.getElementById('cart-notification');
+                const message = document.getElementById('notification-message');
+
+                if (notification && message) {
+                    message.textContent = data.message || 'Product added to cart!';
+                    notification.style.display = 'block';
+                    notification.classList.add('show');
+
+                    // Auto-hide after 3 seconds
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => {
+                            notification.style.display = 'none';
+                        }, 150);
+                    }, 3000);
+                }
+            });
+        });
+
+        // Handle session flash messages
+        @if (session('message'))
+            setTimeout(() => {
+                $('.alert').fadeOut('slow');
+            }, 3000);
+        @endif
+    </script>
 
     @if (!request()->routeIs('login') && !request()->routeIs('register'))
         {{-- footer --}}

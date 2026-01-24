@@ -11,15 +11,17 @@
                         <div class="header__top__right">
                             <div class="header__top__links">
                                 @auth
-                                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign out</a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    <a href="#"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign
+                                        out</a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        style="display: none;">
                                         @csrf
                                     </form>
                                 @else
                                     <a href="{{ route('login') }}">Sign in</a>
-                                    <a href="{{ route('register') }}">Register</a>
                                 @endauth
-                                <a href="#">FAQs</a>
+                                {{-- <a href="#">FAQs</a> --}}
                             </div>
                             {{-- <div class="header__top__hover">
                                 <span>Usd <i class="arrow_carrot-down"></i></span>
@@ -35,12 +37,11 @@
             </div>
         </div>
         <div class="container">
-            <div class="row">
+            <div class="row d-flex align-items-center">
                 <div class="col-lg-3 col-md-3">
                     <div class="header__logo">
                         <a href="{{ route('home') }}">
-                            <img src="{{ asset('img/logo.webp') }}" alt=""
-                                style="margin-top:-30px;margin-bottom:-50px;">
+                            <img src="{{ asset('img/logo.webp') }}" alt="" class="mt-n4 mb-n5">
                         </a>
                     </div>
                 </div>
@@ -57,17 +58,52 @@
                         </ul>
                     </nav>
                 </div>
-                {{-- <div class="col-lg-3 col-md-3">
-                    <div class="header__nav__option">
-                        <a href="#" class="search-switch"><img src="{{ asset('bootstrap/img/icon/search.png') }}"
-                                alt=""></a>
-                        <a href="#"><img src="{{ asset('bootstrap/img/icon/heart.png') }}" alt=""></a>
-                        <a href="#"><img src="{{ asset('bootstrap/img/icon/cart.png') }}" alt="">
-                            <span>0</span></a>
-                        <div class="price">$0.00</div>
-                    </div>
-                </div> --}}
+                <div class="col-lg-3 col-md-3">
+                    <nav class="header__menu mobile-menu">
+                        <ul class="d-flex align-items-center justify-content-end mb-0" style="list-style: none;">
+                            @auth
+                                <li class="me-3">
+                                    <a href="#" class="text-dark text-decoration-none fw-bold"
+                                        style="text-decoration: none;">
+                                        {{ auth()->user()->name }}
+                                    </a>
+                                </li>
+                            @endauth
+                            <li class="position-relative">
+                                <a href="#" class="text-decoration-none cart-icon-click"
+                                    style="text-decoration: none; cursor: pointer;">
+                                    <img src="{{ asset('bootstrap/img/icon/cart.png') }}" alt="Cart">
+                                    @livewire('cart-count')
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
             <div class="canvas__open"><i class="fa fa-bars"></i></div>
         </div>
     </header>
+
+    <script>
+        function setupCartClick() {
+            document.querySelectorAll('.cart-icon-click').forEach(function(element) {
+                element.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (window.Livewire) {
+                        // Dispatch to all Livewire components
+                        Livewire.dispatch('openCartSidebar');
+                    }
+                });
+            });
+        }
+
+        // Setup on initial page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupCartClick);
+        } else {
+            setupCartClick();
+        }
+
+        // Reinitialize after Livewire updates
+        document.addEventListener('livewire:navigated', setupCartClick);
+    </script>
