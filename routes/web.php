@@ -2,6 +2,7 @@
 
 use App\Filament\Resources\Products\Pages\ViewProduct;
 use App\Livewire\About;
+use App\Livewire\Contact;
 use App\Livewire\HomePage;
 use App\Livewire\Shop;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,8 @@ Route::get('/shop', Shop::class)->name('shop');
 Route::get('/product/{id}', ViewProduct::class)->name('product.view');
 
 Route::get('/about', About::class)->name('about');
+
+Route::get('/contact', Contact::class)->name('contact');
 
 // Route to serve private storage files
 Route::get('/storage/private/{path}', function ($path) {

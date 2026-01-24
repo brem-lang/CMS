@@ -10,7 +10,14 @@
                                 <h2>
                                     I make people laugh, think, and chase freedom — through content that entertains,
                                     empowers, and sells.</h2>
-                                <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
+                                <a href="/shop"
+                                    class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                                    onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                                    onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+
+                                    Shop now
+                                    <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                                </a>
                                 <div class="hero__social">
                                     <a href="#"><i class="fa fa-youtube"></i></a>
                                     <a href="#"><i class="fa fa-facebook"></i></a>
@@ -99,8 +106,12 @@
             </div>
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <a href="{{ route('shop') }}" class="primary-btn">View All Products <span
-                            class="arrow_right"></span></a>
+                    <a href="/shop" class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                        onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                        onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                        View All Products
+                        <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -138,7 +149,13 @@
                         </h5>
                     </div>
                     <div class="text-center mt-3">
-                        <a href="#" class="primary-btn">Let Us Know <span class="arrow_right"></span></a>
+                        <a href="/contact"
+                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                            Let Us Know
+                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                        </a>
                     </div>
                 </div>
             </div>

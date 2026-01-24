@@ -68,7 +68,7 @@
                             <a href="http://instagram.com/crist.briand" target="_blank"><i
                                     class="fa fa-instagram"></i></a>
                             <a href="https://www.tiktok.com/@crist.briand" target="_blank"><i
-                                    class="fa fa-tiktok"></i></a>
+                                    class="fa fa-video-camera"></i></a>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
                             <li><a href="{{ route('shop') }}">Our Merchandise</a></li>
                             <li><a href="#">Blog</a></li>
                             <li><a href="{{ route('about') }}">About</a></li>
-                            <li><a href="#">Contact</a></li>
+                            <li><a href="{{ route('contact') }}">Contact</a></li>
                         </ul>
                     </div>
                 </div>
