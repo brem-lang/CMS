@@ -130,7 +130,7 @@ class Shop extends Component
                 break;
         }
 
-        $products = $query->paginate(10);
+        $products = $query->paginate(9);
 
         return view('livewire.shop', [
             'products' => $products,

@@ -78,7 +78,7 @@
                         <ul>
                             <li><a href="{{ route('home') }}">Home</a></li>
                             <li><a href="{{ route('shop') }}">Our Merchandise</a></li>
-                            <li><a href="#">Blog</a></li>
+                            <li><a href="{{ route('blog') }}">Blog</a></li>
                             <li><a href="{{ route('about') }}">About</a></li>
                             <li><a href="{{ route('contact') }}">Contact</a></li>
                         </ul>
@@ -90,7 +90,7 @@
                         <ul>
                             <li><a href="#">Shipping Info</a></li>
                             <li><a href="#">FAQ</a></li>
-                            <li><a href="#">Refund and Returns Policy</a></li>
+                            <li><a href="{{ route('return-and-refund') }}">Refund and Returns Policy</a></li>
                         </ul>
                     </div>
                 </div>

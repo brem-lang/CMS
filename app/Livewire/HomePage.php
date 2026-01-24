@@ -35,7 +35,7 @@ class HomePage extends Component
 
     public function openBlog($id)
     {
-        dd($id);
+        return redirect()->route('blog.view', $id);
     }
 
     public function addToCart($id) {}
