@@ -20,12 +20,12 @@ class HomePage extends Component
     public function mount()
     {
         $this->products = Product::where('status', true)
-            ->inRandomOrder()
+            ->latest()
             ->limit(4)
             ->get();
 
         $this->blogs = Blog::where('status', true)
-            ->inRandomOrder()
+            ->latest()
             ->limit(3)
             ->get();
     }
@@ -60,6 +60,7 @@ class HomePage extends Component
             // Increment quantity if item already exists
             $existingCart->increment('quantity');
             $this->dispatch('cartUpdated', message: 'Cart updated! Quantity increased.');
+
             return;
         }
 

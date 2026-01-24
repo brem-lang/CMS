@@ -1,6 +1,7 @@
 <div>
     <!-- Breadcrumb Section Begin -->
-    <section class="breadcrumb-blog set-bg" data-setbg="{{ asset('img/services.webp') }}">
+    <section class="breadcrumb-blog set-bg" data-setbg="{{ asset('img/services.webp') }}"
+        style="background-image: url('{{ asset('img/services.webp') }}');">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -50,7 +51,7 @@
 <script>
     // Function to set background images
     function setBackgroundImages() {
-        $('.blog__item__pic.set-bg').each(function() {
+        $('.set-bg').each(function() {
             var bg = $(this).data('setbg');
             var $el = $(this);
             if (bg) {
@@ -65,6 +66,11 @@
             }
         });
     }
+
+    // Set background images on DOM ready
+    document.addEventListener('DOMContentLoaded', function() {
+        setBackgroundImages();
+    });
 
     // Set background images on Livewire init
     document.addEventListener('livewire:init', () => {

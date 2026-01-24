@@ -29,6 +29,8 @@ class BlogForm
                         FileUpload::make('image')
                             ->label('Image')
                             ->image()
+                            ->disk('public')
+                            ->directory('blogs')
                             ->required()
                             ->maxSize(1024),
                         RichEditor::make('content')

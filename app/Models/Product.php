@@ -22,8 +22,9 @@ class Product extends Model
     public function getImageUrlAttribute(): string
     {
         if ($this->image) {
-            return url('/storage/private/' . $this->image);
+            return Storage::disk('public')->url($this->image);
         }
+
         return asset('bootstrap/img/product/product-1.jpg'); // fallback image
     }
 }

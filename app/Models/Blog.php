@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Blog extends Model
 {
@@ -21,8 +22,9 @@ class Blog extends Model
     public function getImageUrlAttribute(): string
     {
         if ($this->image) {
-            return url('/storage/private/' . $this->image);
+            return Storage::disk('public')->url($this->image);
         }
+
         return asset('bootstrap/img/blog/blog-1.jpg'); // fallback image
     }
 }

@@ -36,6 +36,8 @@ class ProductForm
                     ->schema([
                         FileUpload::make('image')
                             ->required()
+                            ->disk('public')
+                            ->directory('products')
                             ->image()
                             ->maxSize(1024),
                         Toggle::make('status')
