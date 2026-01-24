@@ -21,9 +21,24 @@
     <!-- Checkout Section Begin -->
     <section class="checkout spad">
         <div class="container">
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-bottom: 30px;">
+                    <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
+            
+            @if ($cartItems->isEmpty())
+                <div style="text-align: center; padding: 50px 20px;">
+                    <i class="fa fa-shopping-cart" style="font-size: 64px; color: #e5e5e5; margin-bottom: 20px;"></i>
+                    <p style="color: #666; font-size: 16px; margin-bottom: 20px;">Your cart is empty</p>
+                    <a href="{{ route('shop') }}" class="site-btn" style="display: inline-block; text-decoration: none; padding: 12px 30px;">Start Shopping</a>
+                </div>
+            @else
             <div class="checkout__form">
-                <form>
-                    {{-- <form method="POST" action="{{ route('checkout.create') }}"> --}}
+                <form wire:submit.prevent="placeOrder">
                     @csrf
                     <div class="row">
                         <div class="col-lg-8 col-md-6">
@@ -140,6 +155,90 @@
                                         <span style="color: #e53637;">₱{{ number_format($total, 2) }}</span>
                                     </li>
                                 </ul>
+                                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e5e5;">
+                                    <p style="font-size: 16px; font-weight: 600; color: #111111; margin-bottom: 15px;">Payment Method<span style="color: #e53637;">*</span></p>
+                                    <div style="display: flex !important; flex-direction: column !important; gap: 12px !important;">
+                                        <label wire:key="payment-gcash" style="display: flex !important; align-items: center !important; cursor: pointer; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; transition: all 0.3s ease; background: #ffffff; width: 100%;" 
+                                            onmouseover="this.style.borderColor='#e53637'; this.style.backgroundColor='#fff5f5';" 
+                                            onmouseout="if(!this.querySelector('input[type=radio]:checked')) { this.style.borderColor='#e5e5e5'; this.style.backgroundColor='#ffffff'; }">
+                                            <input type="radio" wire:model.live="paymentMethod" value="gcash" name="paymentMethod" 
+                                                style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;"
+                                                onchange="this.closest('label').style.borderColor='#e53637'; this.closest('label').style.backgroundColor='#fff5f5';">
+                                            <div style="display: flex; align-items: center; flex: 1;">
+                                                <i class="fa fa-wallet" style="font-size: 20px; color: #0070ba; margin-right: 10px;"></i>
+                                                <span style="font-weight: 600; font-size: 14px; color: #111111;">GCash</span>
+                                            </div>
+                                        </label>
+                                        <label wire:key="payment-grabpay" style="display: flex !important; align-items: center !important; cursor: pointer; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; transition: all 0.3s ease; background: #ffffff; width: 100%;" 
+                                            onmouseover="this.style.borderColor='#e53637'; this.style.backgroundColor='#fff5f5';" 
+                                            onmouseout="if(!this.querySelector('input[type=radio]:checked')) { this.style.borderColor='#e5e5e5'; this.style.backgroundColor='#ffffff'; }">
+                                            <input type="radio" wire:model.live="paymentMethod" value="grabpay" name="paymentMethod" 
+                                                style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;"
+                                                onchange="this.closest('label').style.borderColor='#e53637'; this.closest('label').style.backgroundColor='#fff5f5';">
+                                            <div style="display: flex; align-items: center; flex: 1;">
+                                                <i class="fa fa-car" style="font-size: 20px; color: #00B14F; margin-right: 10px;"></i>
+                                                <span style="font-weight: 600; font-size: 14px; color: #111111;">GrabPay</span>
+                                            </div>
+                                        </label>
+                                        <label wire:key="payment-maya" style="display: flex !important; align-items: center !important; cursor: pointer; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; transition: all 0.3s ease; background: #ffffff; width: 100%;" 
+                                            onmouseover="this.style.borderColor='#e53637'; this.style.backgroundColor='#fff5f5';" 
+                                            onmouseout="if(!this.querySelector('input[type=radio]:checked')) { this.style.borderColor='#e5e5e5'; this.style.backgroundColor='#ffffff'; }">
+                                            <input type="radio" wire:model.live="paymentMethod" value="maya" name="paymentMethod" 
+                                                style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;"
+                                                onchange="this.closest('label').style.borderColor='#e53637'; this.closest('label').style.backgroundColor='#fff5f5';">
+                                            <div style="display: flex; align-items: center; flex: 1;">
+                                                <i class="fa fa-credit-card" style="font-size: 20px; color: #00a8e6; margin-right: 10px;"></i>
+                                                <span style="font-weight: 600; font-size: 14px; color: #111111;">Maya</span>
+                                            </div>
+                                        </label>
+                                        <label wire:key="payment-shopeepay" style="display: flex !important; align-items: center !important; cursor: pointer; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; transition: all 0.3s ease; background: #ffffff; width: 100%;" 
+                                            onmouseover="this.style.borderColor='#e53637'; this.style.backgroundColor='#fff5f5';" 
+                                            onmouseout="if(!this.querySelector('input[type=radio]:checked')) { this.style.borderColor='#e5e5e5'; this.style.backgroundColor='#ffffff'; }">
+                                            <input type="radio" wire:model.live="paymentMethod" value="shopeepay" name="paymentMethod" 
+                                                style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;"
+                                                onchange="this.closest('label').style.borderColor='#e53637'; this.closest('label').style.backgroundColor='#fff5f5';">
+                                            <div style="display: flex; align-items: center; flex: 1;">
+                                                <i class="fa fa-shopping-bag" style="font-size: 20px; color: #EE4D2D; margin-right: 10px;"></i>
+                                                <span style="font-weight: 600; font-size: 14px; color: #111111;">ShopeePay</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    @error('paymentMethod')
+                                        <span class="text-danger" style="display: block; margin-top: 10px; font-size: 13px;">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <script>
+                                    // Update visual state when payment method changes
+                                    function updatePaymentMethodStyles() {
+                                        document.querySelectorAll('input[name="paymentMethod"]').forEach(function(radio) {
+                                            var label = radio.closest('label');
+                                            if (radio.checked) {
+                                                label.style.borderColor = '#e53637';
+                                                label.style.backgroundColor = '#fff5f5';
+                                            } else {
+                                                label.style.borderColor = '#e5e5e5';
+                                                label.style.backgroundColor = '#ffffff';
+                                            }
+                                        });
+                                    }
+                                    
+                                    // Initialize visual state on page load
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        updatePaymentMethodStyles();
+                                        
+                                        // Listen for Livewire updates
+                                        document.querySelectorAll('input[name="paymentMethod"]').forEach(function(radio) {
+                                            radio.addEventListener('change', updatePaymentMethodStyles);
+                                        });
+                                    });
+                                    
+                                    // Handle Livewire updates
+                                    document.addEventListener('livewire:init', function() {
+                                        Livewire.hook('morph.updated', function() {
+                                            setTimeout(updatePaymentMethodStyles, 100);
+                                        });
+                                    });
+                                </script>
                                 <input type="hidden" name="quantity" value="{{ $cartItems->sum('quantity') }}">
                                 <input type="hidden" name="total_amount" value="{{ (int) ($total * 100) }}">
                                 <input type="hidden" name="items" value="{{ $cartItems->toJson() }}">
@@ -150,6 +249,7 @@
                     </div>
                 </form>
             </div>
+            @endif
         </div>
     </section>
     <!-- Checkout Section End -->

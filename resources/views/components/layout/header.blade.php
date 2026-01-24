@@ -61,18 +61,26 @@
                 <div class="col-lg-3 col-md-3">
                     <nav class="header__menu mobile-menu">
                         <ul class="d-flex align-items-center justify-content-end mb-0" style="list-style: none;">
-                            @auth
+                            {{-- @auth
                                 <li class="me-3">
                                     <a href="#" class="text-dark text-decoration-none fw-bold"
                                         style="text-decoration: none;">
                                         {{ auth()->user()->name }}
                                     </a>
                                 </li>
+                            @endauth --}}
+                            @auth
+                                <li class="position-relative me-3">
+                                    <a href="{{ route('orders') }}" class="text-decoration-none"
+                                        style="text-decoration: none; cursor: pointer;">
+                                        <i class="fa fa-book" style="font-size: 30px; color: #111111;"></i>
+                                    </a>
+                                </li>
                             @endauth
                             <li class="position-relative">
                                 <a href="#" class="text-decoration-none cart-icon-click"
                                     style="text-decoration: none; cursor: pointer;">
-                                    <img src="{{ asset('bootstrap/img/icon/cart.png') }}" alt="Cart">
+                                    <i class="fa fa-cart-arrow-down" style="font-size: 30px; color: #111111;"></i>
                                     @livewire('cart-count')
                                 </a>
                             </li>

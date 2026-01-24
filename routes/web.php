@@ -34,29 +34,74 @@ Route::get('/return-and-refund', ReturnAndRefund::class)->name('return-and-refun
 
 Route::get('/view-cart', ViewCart::class)->name('view-cart');
 
+Route::get('/orders', \App\Livewire\Orders::class)->name('orders')->middleware('auth');
+Route::get('/orders/{id}', \App\Livewire\OrderDetail::class)->name('order.detail')->middleware('auth');
+
 Route::get('/checkout', Checkout::class)->name('checkout');
 
-// Cashier checkout for payment
-// Route::post('/checkout/create', function (Request $request) {
-//     $user = $request->user();
-//     $totalAmount = $request->input('total_amount', 3000);
+Route::get('/checkout/success/{order}', \App\Livewire\CheckoutSuccess::class)->name('checkout.success');
+Route::get('/checkout/failed/{order}', \App\Livewire\CheckoutFailed::class)->name('checkout.failed');
+Route::get('/checkout/bank-transfer/{order}', \App\Livewire\BankTransferInstructions::class)->name('checkout.bank-transfer');
+Route::post('/webhooks/paymongo', [\App\Http\Controllers\PayMongoWebhookController::class, 'handle'])->name('webhooks.paymongo');
 
-//     return $user->checkout([
-//         [
-//             'price_data' => [
-//                 'currency' => 'php',
-//                 'unit_amount' => $totalAmount,
-//                 'product_data' => [
-//                     'name' => 'Total Order Payment',
-//                 ],
-//             ],
-//         ],
-//     ], [
-//         'mode' => 'payment',
-//         'success_url' => route('home').'?paid=true',
-//         'cancel_url' => route('checkout').'?paid=false',
-//     ]);
-// })->middleware('auth')->name('checkout.create');
+// Manual webhook testing route (local development only)
+if (app()->environment('local')) {
+    Route::get('/test-webhook/{order}', function ($order, Request $request) {
+        $event = $request->query('event', 'paid');
+        $sourceId = $request->query('source_id');
+        $intentId = $request->query('intent_id');
+        
+        $orderModel = \App\Models\Order::find($order);
+        if (!$orderModel) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+        
+        // Use existing payment IDs from order if not provided
+        $paymentIntentId = $intentId ?: $orderModel->payment_intent_id;
+        $paymentSourceId = $sourceId ?: $orderModel->payment_source_id;
+        
+        // Build webhook payload
+        $webhookPayload = [
+            'data' => [
+                'type' => "payment.{$event}",
+                'attributes' => [
+                    'data' => [
+                        'attributes' => [
+                            'payment_intent_id' => $paymentIntentId,
+                            'source' => [
+                                'id' => $paymentSourceId,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        
+        // Create a mock request
+        $mockRequest = Request::create('/webhooks/paymongo', 'POST', [], [], [], [], json_encode($webhookPayload));
+        $mockRequest->headers->set('Content-Type', 'application/json');
+        $mockRequest->headers->set('Paymongo-Signature', 'test-signature-local-development');
+        
+        // Process the webhook
+        $controller = new \App\Http\Controllers\PayMongoWebhookController();
+        $response = $controller->handle($mockRequest);
+        
+        // Refresh order to get updated status
+        $orderModel->refresh();
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Webhook processed',
+            'order' => [
+                'id' => $orderModel->id,
+                'order_number' => $orderModel->order_number,
+                'status' => $orderModel->status,
+                'payment_status' => $orderModel->payment_status,
+            ],
+            'webhook_response' => json_decode($response->getContent(), true),
+        ]);
+    })->name('test.webhook');
+}
 
 // Authentication routes (using Breeze's secure authentication)
 require __DIR__.'/auth.php';

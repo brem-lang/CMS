@@ -151,4 +151,20 @@ class CartService
         
         Session::forget('guest_cart');
     }
+    
+    /**
+     * Clear cart after successful order
+     */
+    public function clearCart($userId = null)
+    {
+        if ($userId) {
+            // Delete cart items instead of updating status to avoid unique constraint violation
+            // Order items are already stored in order_items table, so we can safely delete cart items
+            Cart::where('user_id', $userId)
+                ->where('status', 'pending')
+                ->delete();
+        } else {
+            Session::forget('guest_cart');
+        }
+    }
 }
