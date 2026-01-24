@@ -37,26 +37,26 @@ Route::get('/view-cart', ViewCart::class)->name('view-cart');
 Route::get('/checkout', Checkout::class)->name('checkout');
 
 // Cashier checkout for payment
-Route::post('/checkout/create', function (Request $request) {
-    $user = $request->user();
-    $totalAmount = $request->input('total_amount', 3000);
+// Route::post('/checkout/create', function (Request $request) {
+//     $user = $request->user();
+//     $totalAmount = $request->input('total_amount', 3000);
 
-    return $user->checkout([
-        [
-            'price_data' => [
-                'currency' => 'php',
-                'unit_amount' => $totalAmount,
-                'product_data' => [
-                    'name' => 'Total Order Payment',
-                ],
-            ],
-        ],
-    ], [
-        'mode' => 'payment',
-        'success_url' => route('home').'?paid=true',
-        'cancel_url' => route('checkout').'?paid=false',
-    ]);
-})->middleware('auth')->name('checkout.create');
+//     return $user->checkout([
+//         [
+//             'price_data' => [
+//                 'currency' => 'php',
+//                 'unit_amount' => $totalAmount,
+//                 'product_data' => [
+//                     'name' => 'Total Order Payment',
+//                 ],
+//             ],
+//         ],
+//     ], [
+//         'mode' => 'payment',
+//         'success_url' => route('home').'?paid=true',
+//         'cancel_url' => route('checkout').'?paid=false',
+//     ]);
+// })->middleware('auth')->name('checkout.create');
 
 // Authentication routes (using Breeze's secure authentication)
 require __DIR__.'/auth.php';
