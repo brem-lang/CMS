@@ -67,33 +67,33 @@ class Checkout extends Component
         $this->total = $this->subtotal;
     }
 
-    public function placeOrder()
-    {
-        // Validate form
-        $this->validate([
-            'fullName' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'town' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'postcode' => 'required|string|max:20',
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email',
-            'paymentMethod' => 'required|in:check,paypal',
-        ]);
+    // public function placeOrder()
+    // {
+    //     // Validate form
+    //     $this->validate([
+    //         'fullName' => 'required|string|max:255',
+    //         'country' => 'required|string|max:255',
+    //         'address' => 'required|string|max:255',
+    //         'town' => 'required|string|max:255',
+    //         'state' => 'required|string|max:255',
+    //         'postcode' => 'required|string|max:20',
+    //         'phone' => 'required|string|max:20',
+    //         'email' => 'required|email',
+    //         'paymentMethod' => 'required|in:check,paypal',
+    //     ]);
 
-        // Here you would create the order in the database
-        // For now, just show success message
-        session()->flash('message', 'Order placed successfully! Thank you for your purchase.');
+    //     // Here you would create the order in the database
+    //     // For now, just show success message
+    //     session()->flash('message', 'Order placed successfully! Thank you for your purchase.');
 
-        // Clear cart items after placing order
-        Cart::where('user_id', Auth::id())
-            ->where('status', 'pending')
-            ->update(['status' => 'completed']);
+    //     // Clear cart items after placing order
+    //     Cart::where('user_id', Auth::id())
+    //         ->where('status', 'pending')
+    //         ->update(['status' => 'completed']);
 
-        // Redirect to order confirmation page
-        return redirect()->route('home');
-    }
+    //     // Redirect to order confirmation page
+    //     return redirect()->route('home');
+    // }
 
     public function render()
     {

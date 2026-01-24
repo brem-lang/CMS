@@ -10,6 +10,7 @@ use App\Livewire\Shop;
 use App\Livewire\ViewBlog;
 use App\Livewire\ViewCart;
 use App\Livewire\ViewProduct;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,6 +35,31 @@ Route::get('/return-and-refund', ReturnAndRefund::class)->name('return-and-refun
 Route::get('/view-cart', ViewCart::class)->name('view-cart');
 
 Route::get('/checkout', Checkout::class)->name('checkout');
+
+// Cashier checkout for payment
+Route::post('/checkout/create', function (Request $request) {
+    // dd($request->all());
+    $user = $request->user();
+    $quantity = $request->input('quantity', 1);
+    $totalAmount = $request->input('total_amount', 3000);
+
+    return $user->checkout([
+        [
+            'price_data' => [
+                'currency' => 'php',
+                'unit_amount' => $totalAmount,
+                'product_data' => [
+                    'name' => 'Chat Pass',
+                ],
+            ],
+            'quantity' => $quantity,
+        ],
+    ], [
+        'mode' => 'payment',
+        'success_url' => route('home').'?paid=true',
+        'cancel_url' => route('checkout').'?paid=false',
+    ]);
+})->middleware('auth')->name('checkout.create');
 
 // Authentication routes (using Breeze's secure authentication)
 require __DIR__.'/auth.php';
