@@ -20,13 +20,15 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-gray-100">
+<body>
 
-    <header>
-        @include('components.layout.header')
-    </header>
+    @if (!request()->routeIs('login') && !request()->routeIs('register'))
+        <header class="mb-4">
+            @include('components.layout.header')
+        </header>
+    @endif
 
-    <main class="p-6">
+    <main>
         {{ $slot }}
     </main>
 
@@ -49,65 +51,66 @@
     <!-- Main Template JS (must load last) -->
     <script src="{{ asset('bootstrap/js/main.js') }}"></script>
 
-    {{-- footer --}}
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="footer__about">
-                        <div class="footer__logo">
-                            <a href="#"><img src="{{ asset('img/footer.png') }}" alt=""
-                                    style="height: 70px;"></a>
-                        </div>
-                        <p>BLESS AND LOVE</p>
-                        <div class="hero__social" style="margin-top: -10px;">
-                            <a href="https://www.youtube.com/@cristbriand3086" target="_blank"><i
-                                    class="fa fa-youtube"></i></a>
-                            <a href="https://www.facebook.com/cristbriand.brader" target="_blank"><i
-                                    class="fa fa-facebook"></i></a>
-                            <a href="http://instagram.com/crist.briand" target="_blank"><i
-                                    class="fa fa-instagram"></i></a>
-                            <a href="https://www.tiktok.com/@crist.briand" target="_blank"><i
-                                    class="fa fa-video-camera"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 offset-lg-1 col-md-3 col-sm-6">
-                    <div class="footer__widget">
-                        <h6>Quick Links</h6>
-                        <ul>
-                            <li><a href="{{ route('home') }}">Home</a></li>
-                            <li><a href="{{ route('shop') }}">Our Merchandise</a></li>
-                            <li><a href="{{ route('blog') }}">Blog</a></li>
-                            <li><a href="{{ route('about') }}">About</a></li>
-                            <li><a href="{{ route('contact') }}">Contact</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-3 col-sm-6">
-                    <div class="footer__widget">
-                        <h6>Customer Service</h6>
-                        <ul>
-                            <li><a href="#">Shipping Info</a></li>
-                            <li><a href="#">FAQ</a></li>
-                            <li><a href="{{ route('return-and-refund') }}">Refund and Returns Policy</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
-                    <div class="footer__widget">
-                        <h6>Stay Updated</h6>
-                        <div class="footer__newslatter">
-                            <p>Subscribe to get updates on new arrivals and exclusive offers.</p>
-                            <form action="#">
-                                <input type="text" placeholder="Your email">
-                                <button type="submit"><span class="icon_mail_alt"></span></button>
-                            </form>
+    @if (!request()->routeIs('login') && !request()->routeIs('register'))
+        {{-- footer --}}
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="footer__about">
+                            <div class="footer__logo">
+                                <a href="#"><img src="{{ asset('img/footer.png') }}" alt=""
+                                        style="height: 70px;"></a>
+                            </div>
+                            <p>BLESS AND LOVE</p>
+                            <div class="hero__social" style="margin-top: -10px;">
+                                <a href="https://www.youtube.com/@cristbriand3086" target="_blank"><i
+                                        class="fa fa-youtube"></i></a>
+                                <a href="https://www.facebook.com/cristbriand.brader" target="_blank"><i
+                                        class="fa fa-facebook"></i></a>
+                                <a href="http://instagram.com/crist.briand" target="_blank"><i
+                                        class="fa fa-instagram"></i></a>
+                                <a href="https://www.tiktok.com/@crist.briand" target="_blank"><i
+                                        class="fa fa-video-camera"></i></a>
+                            </div>
                         </div>
                     </div>
+                    <div class="col-lg-2 offset-lg-1 col-md-3 col-sm-6">
+                        <div class="footer__widget">
+                            <h6>Quick Links</h6>
+                            <ul>
+                                <li><a href="{{ route('home') }}">Home</a></li>
+                                <li><a href="{{ route('shop') }}">Our Merchandise</a></li>
+                                <li><a href="{{ route('blog') }}">Blog</a></li>
+                                <li><a href="{{ route('about') }}">About</a></li>
+                                <li><a href="{{ route('contact') }}">Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <div class="footer__widget">
+                            <h6>Customer Service</h6>
+                            <ul>
+                                <li><a href="#">Shipping Info</a></li>
+                                <li><a href="#">FAQ</a></li>
+                                <li><a href="{{ route('return-and-refund') }}">Refund and Returns Policy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
+                        <div class="footer__widget">
+                            <h6>Stay Updated</h6>
+                            <div class="footer__newslatter">
+                                <p>Subscribe to get updates on new arrivals and exclusive offers.</p>
+                                <form action="#">
+                                    <input type="text" placeholder="Your email">
+                                    <button type="submit"><span class="icon_mail_alt"></span></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            {{-- <div class="row">
+                {{-- <div class="row">
                 <div class="col-lg-12 text-center">
                     <div class="footer__copyright__text">
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
@@ -122,8 +125,9 @@
                     </div>
                 </div>
             </div> --}}
-        </div>
-    </footer>
+            </div>
+        </footer>
+    @endif
 </body>
 
 </html>

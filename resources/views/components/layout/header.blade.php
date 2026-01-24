@@ -10,7 +10,15 @@
                     <div class="col-lg-6 col-md-5">
                         <div class="header__top__right">
                             <div class="header__top__links">
-                                <a href="#">Sign in</a>
+                                @auth
+                                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign out</a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}">Sign in</a>
+                                    <a href="{{ route('register') }}">Register</a>
+                                @endauth
                                 <a href="#">FAQs</a>
                             </div>
                             {{-- <div class="header__top__hover">

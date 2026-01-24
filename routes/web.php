@@ -4,6 +4,7 @@ use App\Livewire\About;
 use App\Livewire\Blog;
 use App\Livewire\Contact;
 use App\Livewire\HomePage;
+use App\Livewire\Login;
 use App\Livewire\ReturnAndRefund;
 use App\Livewire\Shop;
 use App\Livewire\ViewBlog;
@@ -28,6 +29,9 @@ Route::get('/blog', Blog::class)->name('blog');
 Route::get('/blog/{id}', ViewBlog::class)->name('blog.view');
 
 Route::get('/return-and-refund', ReturnAndRefund::class)->name('return-and-refund');
+
+// Authentication routes (using Breeze's secure authentication)
+require __DIR__.'/auth.php';
 
 // Route to serve private storage files
 Route::get('/storage/private/{path}', function ($path) {

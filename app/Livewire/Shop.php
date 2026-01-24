@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use App\View\Components\Layout\App;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -94,6 +95,17 @@ class Shop extends Component
     public function selectProduct($id)
     {
         return redirect()->route('product.view', $id);
+    }
+
+    public function addToCart($id)
+    {
+        if (Auth::guest()) {
+            session()->put('url.intended', url()->current());
+            return redirect()->route('login')->with('message', 'Please log in to add items to your cart.');
+        } else {
+            // TODO: Implement add to cart functionality
+            session()->flash('message', 'Product added to cart!');
+        }
     }
 
     public function render()
