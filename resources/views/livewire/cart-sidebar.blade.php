@@ -1,10 +1,8 @@
 <div wire:key="cart-sidebar">
-    @if ($show)
-        <!-- Cart Sidebar Overlay -->
-        <div class="cart-sidebar-overlay" wire:click="close"
-            style="position: fixed; left: 0; top: 0; height: 100%; width: 100%; background: rgba(0, 0, 0, 0.7); z-index: 9998; transition: all 0.5s; visibility: visible;">
-        </div>
-    @endif
+    <!-- Cart Sidebar Overlay -->
+    <div class="cart-sidebar-overlay" wire:click="close"
+        style="position: fixed; left: 0; top: 0; height: 100%; width: 100%; background: rgba(0, 0, 0, {{ $show ? '0.7' : '0' }}); z-index: 9998; transition: background 0.5s ease-in-out; pointer-events: {{ $show ? 'auto' : 'none' }};">
+    </div>
 
     <!-- Cart Sidebar -->
     <div class="cart-sidebar-wrapper" wire:key="cart-sidebar-content"
@@ -39,7 +37,8 @@
                                             style="background: none; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px;">-</button>
                                         <span
                                             style="padding: 5px 15px; min-width: 40px; text-align: center; display: inline-block;">{{ $item->quantity }}</span>
-                                        <button wire:click="updateQuantity({{ $item->id }}, {{ $item->quantity + 1 }})"
+                                        <button
+                                            wire:click="updateQuantity({{ $item->id }}, {{ $item->quantity + 1 }})"
                                             style="background: none; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px;">+</button>
                                     </div>
                                     <button wire:click="removeItem({{ $item->id }})"
@@ -59,9 +58,12 @@
                         <span
                             style="font-size: 18px; font-weight: 700; color: #e53637;">₱{{ number_format($total, 2) }}</span>
                     </div>
-                    <a href="{{ route('shop') }}" class="site-btn"
-                        style="display: block; text-align: center; text-decoration: none; padding: 15px; margin-bottom: 10px;">Continue
-                        Shopping</a>
+                    <a href="{{ route('view-cart') }}" class="site-btn btn bg-dark text-white shadow-sm border-0 d-block"
+                        onmouseover="this.style.opacity='0.75'; this.classList.replace('shadow-sm', 'shadow-lg'); this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.opacity='1'; this.classList.replace('shadow-lg', 'shadow-sm'); this.style.transform='translateY(0)'"
+                        style="display: block; text-align: center; text-decoration: none; padding: 15px; margin-bottom: 10px; transition: all 0.3s ease; opacity: 1;">
+                        View Cart
+                    </a>
                     <a href="#" class="site-btn"
                         style="display: block; text-align: center; text-decoration: none; padding: 15px; background: #e53637;">Checkout</a>
                 </div>
