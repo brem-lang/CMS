@@ -15,7 +15,8 @@ class EditProduct extends EditRecord
     {
         return [
             ViewAction::make(),
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->hidden(fn () => auth()->user()?->isModerator() ?? false),
         ];
     }
 }

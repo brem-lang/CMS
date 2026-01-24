@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductResource extends Resource
 {
@@ -54,5 +55,29 @@ class ProductResource extends Resource
             'view' => ViewProduct::route('/{record}'),
             'edit' => EditProduct::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        $user = auth()->user();
+        return $user?->isAdmin() || $user?->isModerator() ?? false;
+    }
+
+    public static function canCreate(): bool
+    {
+        $user = auth()->user();
+        return $user?->isAdmin() || $user?->isModerator() ?? false;
+    }
+
+    public static function canUpdate(Model $record): bool
+    {
+        $user = auth()->user();
+        return $user?->isAdmin() || $user?->isModerator() ?? false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        $user = auth()->user();
+        return $user?->isAdmin() ?? false;
     }
 }

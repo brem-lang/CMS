@@ -51,6 +51,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->role === 'admin';
     }
 
+    public function isModerator(): bool
+    {
+        return $this->role === 'moderator';
+    }
+
     public function isUser(): bool
     {
         return $this->role === 'user';
@@ -58,6 +63,6 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return auth()->user()?->isAdmin() ?? true;
+        return $this->isAdmin() || $this->isModerator();
     }
 }

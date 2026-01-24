@@ -43,6 +43,7 @@ class UserResource extends Resource
                 Select::make('role')
                     ->options([
                         'admin' => 'Admin',
+                        'moderator' => 'Moderator',
                         'user' => 'User',
                     ])
                     ->required(),
@@ -64,6 +65,7 @@ class UserResource extends Resource
                     ->formatStateUsing(fn ($state): string => ucfirst($state))
                     ->color(fn ($state) => match ($state) {
                         'admin' => 'success',
+                        'moderator' => 'info',
                         'user' => 'warning',
                         default => 'danger',
                     }),
@@ -85,5 +87,10 @@ class UserResource extends Resource
         return [
             'index' => ManageUsers::route('/'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
     }
 }
