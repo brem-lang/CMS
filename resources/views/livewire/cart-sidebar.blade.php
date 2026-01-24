@@ -64,7 +64,7 @@
                         style="display: block; text-align: center; text-decoration: none; padding: 15px; margin-bottom: 10px; transition: all 0.3s ease; opacity: 1;">
                         View Cart
                     </a>
-                    <a href="#" class="site-btn"
+                    <a href="{{ route('checkout') }}" class="site-btn"
                         style="display: block; text-align: center; text-decoration: none; padding: 15px; background: #e53637;">Checkout</a>
                 </div>
             @else

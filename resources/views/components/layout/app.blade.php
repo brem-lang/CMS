@@ -21,7 +21,10 @@
 </head>
 
 <body>
-
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+    
     @if (!request()->routeIs('login') && !request()->routeIs('register'))
         <header class="mb-4">
             @include('components.layout.header')

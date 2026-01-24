@@ -59,7 +59,7 @@
                                                 </td>
                                                 <td class="quantity__item">
                                                     <div class="quantity">
-                                                        <div class="pro-qty-2"
+                                                        <div
                                                             style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
                                                             <button
                                                                 wire:click="updateQuantity({{ $item->id }}, {{ $item->quantity - 1 }})"
@@ -79,9 +79,12 @@
                                                 <td class="cart__price">
                                                     ₱{{ number_format($item->quantity * $item->product->price, 2) }}</td>
                                                 <td class="cart__close">
-                                                    <button wire:click="removeItem({{ $item->id }})"
-                                                        style="background: none; border: none; cursor: pointer; font-size: 18px; color: #e53637;">
-                                                        <i class="fa fa-close"></i>
+                                                    <button type="button"
+                                                        onclick="openRemoveModal(event, {{ $item->id }}, '{{ addslashes($item->product->name) }}')"
+                                                        style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; transition: all 0.3s ease; padding: 5px 10px;"
+                                                        onmouseover="this.style.color='#e53637'; this.style.transform='scale(1.3)'"
+                                                        onmouseout="this.style.color='#999'; this.style.transform='scale(1)'">
+                                                        <i class="fa fa-trash"></i>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -117,7 +120,7 @@
                                     <li>Subtotal <span>₱{{ number_format($subtotal, 2) }}</span></li>
                                     <li>Total <span>₱{{ number_format($total, 2) }}</span></li>
                                 </ul>
-                                <a href="#" class="site-btn"
+                                <a href="{{ route('checkout') }}" class="site-btn"
                                     style="display: block; text-align: center; text-decoration: none; padding: 15px; background: #e53637;">Checkout</a>
                             </div>
                         </div>
@@ -153,5 +156,91 @@
         </div>
     </section>
     <!-- Shopping Cart Section End -->
+
+    <!-- Remove Item Confirmation Modal -->
+    <div id="removeConfirmationModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 10000; align-items: center; justify-content: center;">
+        <div
+            style="background: white; padding: 40px; border-radius: 8px; max-width: 420px; box-shadow: 0 15px 50px rgba(0,0,0,0.3); animation: modalSlideIn 0.3s ease;">
+            <div style="margin-bottom: 20px;">
+                <i class="fa fa-exclamation-circle"
+                    style="font-size: 48px; color: #e53637; display: block; text-align: center; margin-bottom: 15px;"></i>
+            </div>
+            <h5 style="margin: 0 0 10px 0; font-weight: 700; color: #111111; font-size: 20px; text-align: center;">
+                Remove Item?</h5>
+            <p id="removeProductName" style="margin: 0 0 25px 0; color: #666; font-size: 14px; text-align: center;"></p>
+            <p style="margin: 0 0 30px 0; color: #999; font-size: 13px; text-align: center;">Are you sure you want to
+                remove this product from your cart?</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button type="button" onclick="closeRemoveModal()"
+                    style="padding: 12px 30px; background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 4px; cursor: pointer; font-weight: 600; color: #111111; font-size: 14px; transition: all 0.3s ease; min-width: 120px;"
+                    onmouseover="this.style.background='#e5e5e5'" onmouseout="this.style.background='#f5f5f5'">
+                    Cancel
+                </button>
+                <button type="button" id="confirmRemoveBtn" onclick="confirmRemoveItem()"
+                    style="padding: 12px 30px; background: #e53637; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; color: white; font-size: 14px; transition: all 0.3s ease; min-width: 120px;"
+                    onmouseover="this.style.background='#d32f2f'; this.style.transform='scale(1.02)'"
+                    onmouseout="this.style.background='#e53637'; this.style.transform='scale(1)'">
+                    Remove
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+    </style>
+
+    <script>
+        let removeItemData = null;
+
+        function openRemoveModal(event, itemId, productName) {
+            event.preventDefault();
+            removeItemData = {
+                itemId: itemId,
+                productName: productName
+            };
+
+            document.getElementById('removeProductName').textContent = 'Product: ' + productName;
+            document.getElementById('removeConfirmationModal').style.display = 'flex';
+        }
+
+        function closeRemoveModal() {
+            document.getElementById('removeConfirmationModal').style.display = 'none';
+            removeItemData = null;
+        }
+
+        function confirmRemoveItem() {
+            if (removeItemData && window.Livewire) {
+                Livewire.dispatch('removeItem', [removeItemData.itemId]);
+                closeRemoveModal();
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('removeConfirmationModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeRemoveModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && document.getElementById('removeConfirmationModal').style.display ===
+                'flex') {
+                closeRemoveModal();
+            }
+        });
+    </script>
 
 </div>

@@ -2,6 +2,7 @@
 
 use App\Livewire\About;
 use App\Livewire\Blog;
+use App\Livewire\Checkout;
 use App\Livewire\Contact;
 use App\Livewire\HomePage;
 use App\Livewire\ReturnAndRefund;
@@ -31,6 +32,8 @@ Route::get('/blog/{id}', ViewBlog::class)->name('blog.view');
 Route::get('/return-and-refund', ReturnAndRefund::class)->name('return-and-refund');
 
 Route::get('/view-cart', ViewCart::class)->name('view-cart');
+
+Route::get('/checkout', Checkout::class)->name('checkout');
 
 // Authentication routes (using Breeze's secure authentication)
 require __DIR__.'/auth.php';

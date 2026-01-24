@@ -43,6 +43,7 @@ class ViewProduct extends Component
     {
         if (Auth::guest()) {
             session()->put('url.intended', url()->current());
+
             return redirect()->route('login')->with('message', 'Please log in to add items to your cart.');
         }
 
@@ -56,6 +57,8 @@ class ViewProduct extends Component
             // Increment quantity by the selected quantity
             $existingCart->increment('quantity', $this->quantity);
             $this->dispatch('cartUpdated', message: 'Cart updated! Quantity increased.');
+            $this->quantity = 1;
+
             return;
         }
 
@@ -68,6 +71,7 @@ class ViewProduct extends Component
         ]);
 
         $this->dispatch('cartUpdated', message: 'Product added to cart successfully!');
+        $this->quantity = 1;
     }
 
     public function render()

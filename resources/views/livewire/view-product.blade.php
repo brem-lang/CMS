@@ -23,7 +23,7 @@
         </div>
         <div class="product__details__content">
             <div class="container">
-                <div class="row d-flex justify-content-center">
+                s <div class="row d-flex justify-content-center">
                     <div class="col-lg-8">
                         <div class="product__details__text">
                             <h4>{{ $product->name }}</h4>
@@ -39,19 +39,21 @@
                             <p>{{ $product->description }}</p>
                             <div class="product__details__cart__option">
                                 <div class="quantity">
-                                    <div class="pro-qty">
-                                        <span class="fa fa-angle-up dec qtybtn" wire:click="incrementQuantity"
-                                            style="cursor: pointer;"></span>
-                                        <input type="text" value="{{ $quantity }}" readonly>
-                                        <span class="fa fa-angle-down inc qtybtn" wire:click="decrementQuantity"
-                                            style="cursor: pointer;"></span>
+                                    <div
+                                        style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
+                                        <button type="button" wire:click="decrementQuantity"
+                                            style="background: #f5f5f5; border: none; border-right: 1px solid #e5e5e5; padding: 10px 15px; cursor: pointer; font-size: 14px; font-weight: 700; color: #111111; transition: background 0.2s ease; user-select: none;"
+                                            onmouseover="this.style.background='#ebebeb'"
+                                            onmouseout="this.style.background='#f5f5f5'">−</button>
+                                        <input type="number" value="{{ $quantity }}" readonly
+                                            style="border: none; background: transparent; text-align: center; width: 45px; font-weight: 600; color: #111111; padding: 10px 0; user-select: none; -moz-appearance: textfield;">
+                                        <button type="button" wire:click="incrementQuantity"
+                                            style="background: #f5f5f5; border: none; border-left: 1px solid #e5e5e5; padding: 10px 15px; cursor: pointer; font-size: 14px; font-weight: 700; color: #111111; transition: background 0.2s ease; user-select: none;"
+                                            onmouseover="this.style.background='#ebebeb'"
+                                            onmouseout="this.style.background='#f5f5f5'">+</button>
                                     </div>
                                 </div>
-                                <a href="#" wire:click="addToCart" class="primary-btn">add to cart</a>
-                            </div>
-                            <div class="product__details__btns__option">
-                                <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
-                                <a href="#"><i class="fa fa-exchange"></i> Add To Compare</a>
+                                <a href="#" wire:click.prevent="addToCart" class="primary-btn">add to cart</a>
                             </div>
                             <div class="product__details__last__option">
                                 <ul>

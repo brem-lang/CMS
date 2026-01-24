@@ -11,7 +11,10 @@ use Livewire\Component;
 #[Layout(App::class)]
 class ViewCart extends Component
 {
-    protected $listeners = ['cartUpdated' => '$refresh'];
+    protected $listeners = [
+        'cartUpdated' => '$refresh',
+        'removeItem' => 'removeItem',
+    ];
 
     public function removeItem($cartId)
     {
@@ -20,8 +23,7 @@ class ViewCart extends Component
                 ->where('user_id', Auth::id())
                 ->delete();
 
-            $this->dispatch('cartUpdated');
-            session()->flash('message', 'Item removed from cart!');
+            $this->dispatch('cartUpdated', message: 'Item removed from cart!');
         }
     }
 
@@ -32,7 +34,7 @@ class ViewCart extends Component
                 ->where('user_id', Auth::id())
                 ->update(['quantity' => $quantity]);
 
-            $this->dispatch('cartUpdated');
+            $this->dispatch('cartUpdated', message: 'Cart updated successfully!');
         }
     }
 
