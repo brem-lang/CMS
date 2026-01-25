@@ -159,7 +159,7 @@
                         <div class="footer__widget">
                             <h6>Customer Service</h6>
                             <ul>
-                                <li><a href="#">Track Order</a></li>
+                                <li><a href="{{ route('track-order') }}">Track Order</a></li>
                                 <li><a href="{{ route('return-and-refund') }}">Refund and Returns Policy</a></li>
                             </ul>
                         </div>

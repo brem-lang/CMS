@@ -37,6 +37,9 @@ Route::get('/view-cart', ViewCart::class)->name('view-cart');
 Route::get('/orders', \App\Livewire\Orders::class)->name('orders')->middleware('auth');
 Route::get('/orders/{id}', \App\Livewire\OrderDetail::class)->name('order.detail')->middleware('auth');
 
+Route::get('/track-order', [\App\Http\Controllers\TrackOrderController::class, 'index'])->name('track-order');
+Route::post('/track-order', [\App\Http\Controllers\TrackOrderController::class, 'search'])->name('track-order.search');
+
 Route::get('/checkout', Checkout::class)->name('checkout');
 
 Route::get('/checkout/success/{order}', \App\Livewire\CheckoutSuccess::class)->name('checkout.success');
