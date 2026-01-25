@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\SelectColumn;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -47,16 +48,63 @@ class OrdersTable
                         default => 'gray',
                     })
                     ->sortable(),
-                SelectColumn::make('status')
+                TextColumn::make('status')
                     ->label('Order Status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'shipped' => 'Shipped',
-                        'delivered' => 'Complete',
-                        'cancelled' => 'Cancelled',
-                    ])
-                    ->selectablePlaceholder(false)
-                    ->sortable(),
+                    ->badge()
+                    ->formatStateUsing(function (string $state, $record): string {
+                        $formatted = match ($state) {
+                            'delivered' => 'Complete',
+                            default => ucfirst($state),
+                        };
+                        
+                        // Append courier if status is shipped and courier exists
+                        if ($state === 'shipped' && $record && $record->courier) {
+                            $formatted .= ' (' . $record->courier . ')';
+                        }
+                        
+                        return $formatted;
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'delivered' => 'success',
+                        'shipped' => 'info',
+                        'pending' => 'gray',
+                        'cancelled' => 'danger',
+                        default => 'gray',
+                    })
+                    ->sortable()
+                    ->action(
+                        fn ($record) => Action::make('updateStatus')
+                            ->form([
+                                Select::make('status')
+                                    ->label('Order Status')
+                                    ->options([
+                                        'pending' => 'Pending',
+                                        'shipped' => 'Shipped',
+                                        'delivered' => 'Complete',
+                                        'cancelled' => 'Cancelled',
+                                    ])
+                                    ->required()
+                                    ->default($record->status)
+                                    ->live(),
+                                Select::make('courier')
+                                    ->label('Courier')
+                                    ->options([
+                                        'JNT' => 'JNT',
+                                        'LBC' => 'LBC',
+                                    ])
+                                    ->required(fn ($get) => $get('status') === 'shipped')
+                                    ->visible(fn ($get) => $get('status') === 'shipped')
+                                    ->default($record->courier)
+                                    ->placeholder('Select courier'),
+                            ])
+                            ->action(function (array $data) use ($record) {
+                                $record->update([
+                                    'status' => $data['status'],
+                                    'courier' => $data['status'] === 'shipped' ? ($data['courier'] ?? null) : null,
+                                ]);
+                            })
+                            ->successNotificationTitle('Order status updated successfully')
+                    ),
                 TextColumn::make('courier')
                     ->label('Courier')
                     ->badge()
