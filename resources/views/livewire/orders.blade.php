@@ -76,6 +76,9 @@
                                                 @elseif($order->status === 'shipped')
                                                     <span class="badge badge-info"
                                                         style="background: #17a2b8; color: white; padding: 5px 10px; border-radius: 3px;">Shipped</span>
+                                                @elseif($order->status === 'confirm')
+                                                    <span class="badge badge-success"
+                                                        style="background: #28a745; color: white; padding: 5px 10px; border-radius: 3px;">Order Confirmed</span>
                                                 @elseif($order->status === 'processing')
                                                     <span class="badge badge-primary"
                                                         style="background: #007bff; color: white; padding: 5px 10px; border-radius: 3px;">Processing</span>

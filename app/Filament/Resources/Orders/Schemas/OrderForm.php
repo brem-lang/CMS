@@ -98,6 +98,7 @@ class OrderForm
                             ->label('Order Status')
                             ->options([
                                 'pending' => 'Pending',
+                                'confirm' => 'Order Confirmed',
                                 'shipped' => 'Shipped',
                                 'delivered' => 'Complete',
                                 'cancelled' => 'Cancelled',

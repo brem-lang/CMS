@@ -80,11 +80,13 @@ class OrderInfolist
                             ->badge()
                             ->formatStateUsing(fn (string $state): string => match ($state) {
                                 'delivered' => 'Complete',
+                                'confirm' => 'Order Confirmed',
                                 default => ucfirst($state),
                             })
                             ->color(fn (string $state): string => match ($state) {
                                 'delivered' => 'success',
                                 'shipped' => 'info',
+                                'confirm' => 'success',
                                 'pending' => 'gray',
                                 'cancelled' => 'danger',
                                 default => 'gray',

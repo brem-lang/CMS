@@ -54,6 +54,7 @@ class OrdersTable
                     ->formatStateUsing(function (string $state, $record): string {
                         $formatted = match ($state) {
                             'delivered' => 'Complete',
+                            'confirm' => 'Order Confirmed',
                             default => ucfirst($state),
                         };
                         
@@ -67,6 +68,7 @@ class OrdersTable
                     ->color(fn (string $state): string => match ($state) {
                         'delivered' => 'success',
                         'shipped' => 'info',
+                        'confirm' => 'success',
                         'pending' => 'gray',
                         'cancelled' => 'danger',
                         default => 'gray',
@@ -79,6 +81,7 @@ class OrdersTable
                                     ->label('Order Status')
                                     ->options([
                                         'pending' => 'Pending',
+                                        'confirm' => 'Order Confirmed',
                                         'shipped' => 'Shipped',
                                         'delivered' => 'Complete',
                                         'cancelled' => 'Cancelled',
@@ -133,6 +136,7 @@ class OrdersTable
                     ->label('Order Status')
                     ->options([
                         'pending' => 'Pending',
+                        'confirm' => 'Order Confirmed',
                         'shipped' => 'Shipped',
                         'delivered' => 'Complete',
                         'cancelled' => 'Cancelled',

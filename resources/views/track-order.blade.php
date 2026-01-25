@@ -105,6 +105,11 @@
                                                     ({{ $order->courier }})
                                                 @endif
                                             </span>
+                                        @elseif($order->status === 'confirm')
+                                            <span class="badge badge-success"
+                                                style="background: #28a745; color: white; padding: 8px 15px; border-radius: 5px; font-size: 14px;">
+                                                <i class="fa fa-check-circle"></i> Order Confirmed
+                                            </span>
                                         @elseif($order->status === 'cancelled')
                                             <span class="badge badge-danger"
                                                 style="background: #dc3545; color: white; padding: 8px 15px; border-radius: 5px; font-size: 14px;">
@@ -155,7 +160,7 @@
                             <div class="order-tracking-timeline" style="position: relative; padding-left: 30px; margin-top: 20px;">
                                 @php
                                     $statuses = $order->statusHistory;
-                                    $statusOrder = ['pending' => 1, 'shipped' => 2, 'delivered' => 3, 'cancelled' => 0];
+                                    $statusOrder = ['pending' => 1, 'confirm' => 2, 'shipped' => 3, 'delivered' => 4, 'cancelled' => 0];
                                 @endphp
                                 
                                 @foreach($statuses as $index => $history)
@@ -177,6 +182,8 @@
                                                     @if($history->courier)
                                                         via {{ $history->courier }}
                                                     @endif
+                                                @elseif($history->status === 'confirm')
+                                                    <i class="fa fa-check-circle" style="color: #28a745;"></i> Order Confirmed
                                                 @elseif($history->status === 'cancelled')
                                                     <i class="fa fa-times-circle" style="color: #dc3545;"></i> Cancelled
                                                 @else
