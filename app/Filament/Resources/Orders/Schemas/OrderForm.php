@@ -105,12 +105,11 @@ class OrderForm
                             ])
                             ->required()
                             ->live(),
-                        Select::make('courier')
+                        Select::make('courier_id')
                             ->label('Courier')
-                            ->options([
-                                'JNT' => 'JNT',
-                                'LBC' => 'LBC',
-                            ])
+                            ->relationship('courier', 'name')
+                            ->searchable()
+                            ->preload()
                             ->required(fn ($get) => $get('status') === 'shipped')
                             ->visible(fn ($get) => $get('status') === 'shipped')
                             ->placeholder('Select courier')

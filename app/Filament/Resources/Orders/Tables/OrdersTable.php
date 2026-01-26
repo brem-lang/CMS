@@ -60,7 +60,7 @@ class OrdersTable
                         
                         // Append courier if status is shipped and courier exists
                         if ($state === 'shipped' && $record && $record->courier) {
-                            $formatted .= ' (' . $record->courier . ')';
+                            $formatted .= ' (' . $record->courier->name . ')';
                         }
                         
                         return $formatted;
@@ -89,26 +89,25 @@ class OrdersTable
                                     ->required()
                                     ->default($record->status)
                                     ->live(),
-                                Select::make('courier')
+                                Select::make('courier_id')
                                     ->label('Courier')
-                                    ->options([
-                                        'JNT' => 'JNT',
-                                        'LBC' => 'LBC',
-                                    ])
+                                    ->relationship('courier', 'name')
+                                    ->searchable()
+                                    ->preload()
                                     ->required(fn ($get) => $get('status') === 'shipped')
                                     ->visible(fn ($get) => $get('status') === 'shipped')
-                                    ->default($record->courier)
+                                    ->default($record->courier_id)
                                     ->placeholder('Select courier'),
                             ])
                             ->action(function (array $data) use ($record) {
                                 $record->update([
                                     'status' => $data['status'],
-                                    'courier' => $data['status'] === 'shipped' ? ($data['courier'] ?? null) : null,
+                                    'courier_id' => $data['status'] === 'shipped' ? ($data['courier_id'] ?? null) : null,
                                 ]);
                             })
                             ->successNotificationTitle('Order status updated successfully')
                     ),
-                TextColumn::make('courier')
+                TextColumn::make('courier.name')
                     ->label('Courier')
                     ->badge()
                     ->visible(fn ($record) => $record && $record->status === 'shipped' && $record->courier)
@@ -141,12 +140,9 @@ class OrdersTable
                         'delivered' => 'Complete',
                         'cancelled' => 'Cancelled',
                     ]),
-                SelectFilter::make('courier')
+                SelectFilter::make('courier_id')
                     ->label('Courier')
-                    ->options([
-                        'JNT' => 'JNT',
-                        'LBC' => 'LBC',
-                    ]),
+                    ->relationship('courier', 'name'),
                 SelectFilter::make('payment_method')
                     ->label('Payment Method')
                     ->options([

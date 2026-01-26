@@ -91,7 +91,7 @@ class OrderInfolist
                                 'cancelled' => 'danger',
                                 default => 'gray',
                             }),
-                        TextEntry::make('courier')
+                        TextEntry::make('courier.name')
                             ->label('Courier')
                             ->badge()
                             ->visible(fn ($record) => $record && $record->status === 'shipped' && $record->courier)

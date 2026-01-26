@@ -22,19 +22,20 @@ class Order extends Model
         
         // Track status changes when order is updated
         static::updating(function ($order) {
-            if ($order->isDirty('status') || $order->isDirty('courier')) {
+            if ($order->isDirty('status') || $order->isDirty('courier_id')) {
                 $oldStatus = $order->getOriginal('status');
                 $newStatus = $order->status;
-                $oldCourier = $order->getOriginal('courier');
-                $newCourier = $order->courier;
+                $oldCourierId = $order->getOriginal('courier_id');
+                $newCourierId = $order->courier_id;
                 
                 $notes = [];
                 if ($oldStatus !== $newStatus) {
                     $notes[] = "Status changed from {$oldStatus} to {$newStatus}";
                 }
-                if ($oldCourier !== $newCourier) {
-                    if ($newCourier) {
-                        $notes[] = "Courier set to {$newCourier}";
+                if ($oldCourierId !== $newCourierId) {
+                    if ($newCourierId) {
+                        $courierName = Courier::find($newCourierId)?->name ?? 'Unknown';
+                        $notes[] = "Courier set to {$courierName}";
                     } else {
                         $notes[] = "Courier removed";
                     }
@@ -44,7 +45,7 @@ class Order extends Model
                 OrderStatusHistory::create([
                     'order_id' => $order->id,
                     'status' => $newStatus,
-                    'courier' => $newCourier,
+                    'courier' => $order->courier?->name,
                     'notes' => !empty($notes) ? implode('. ', $notes) : null,
                 ]);
             }
@@ -74,6 +75,11 @@ class Order extends Model
     public function statusHistory(): HasMany
     {
         return $this->hasMany(OrderStatusHistory::class)->orderBy('created_at', 'asc');
+    }
+    
+    public function courier(): BelongsTo
+    {
+        return $this->belongsTo(Courier::class);
     }
     
     public function products()

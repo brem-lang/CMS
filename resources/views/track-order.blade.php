@@ -102,7 +102,7 @@
                                                 style="background: #17a2b8; color: white; padding: 8px 15px; border-radius: 5px; font-size: 14px;">
                                                 <i class="fa fa-truck"></i> Shipped
                                                 @if($order->courier)
-                                                    ({{ $order->courier }})
+                                                    ({{ $order->courier->name }})
                                                 @endif
                                             </span>
                                         @elseif($order->status === 'confirm')
@@ -150,7 +150,7 @@
                                 <div class="checkout__input">
                                     <p><strong>Courier:</strong></p>
                                     <p style="font-size: 16px; font-weight: 600; color: #17a2b8;">
-                                        {{ $order->courier }}
+                                        {{ $order->courier->name }}
                                     </p>
                                 </div>
                             @endif
