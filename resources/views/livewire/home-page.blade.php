@@ -2,12 +2,17 @@
     <!-- Hero Section Begin -->
     <section class="hero">
         <div class="hero__slider owl-carousel">
-            <div class="hero__items set-bg" data-setbg="{{ asset('img/homepage-im-1.png') }}" style="background-image: url('{{ asset('img/homepage-im-1.png') }}');">
-                <div class="container">
+            <div class="hero__items" style="position: relative; overflow: hidden;">
+                <video autoplay muted loop playsinline
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+                    <source src="{{ asset('videos/Brader-Skate.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="container" style="position: relative; z-index: 1;">
                     <div class="row">
                         <div class="col-xl-5 col-lg-7 col-md-8">
                             <div class="hero__text">
-                                <h2>
+                                <h2 style="color: white;">
                                     I make people laugh, think, and chase freedom — through content that entertains,
                                     empowers, and sells.</h2>
                                 <a href="/shop"
@@ -18,25 +23,6 @@
                                     Shop now
                                     <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
                                 </a>
-                                <div class="hero__social">
-                                    <a href="#"><i class="fa fa-youtube"></i></a>
-                                    <a href="#"><i class="fa fa-facebook"></i></a>
-                                    <a href="#"><i class="fa fa-instagram"></i></a>
-                                    <a href="#"><i class="fa fa-twitter"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="hero__items set-bg" data-setbg="{{ asset('img/homepage-im-2.png') }}" style="background-image: url('{{ asset('img/homepage-im-2.png') }}');">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-xl-5 col-lg-7 col-md-8">
-                            <div class="hero__text">
-                                <h2>Transforming daily life into cinematic comedy through a mix of wit, pranks, and a
-                                    little bit of mischief.</h2>
-                                <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
                                 <div class="hero__social">
                                     <a href="#"><i class="fa fa-youtube"></i></a>
                                     <a href="#"><i class="fa fa-facebook"></i></a>
@@ -75,7 +61,8 @@
             </div>
             <div class="row product__filter">
                 @foreach ($products as $product)
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals" wire:key="product-{{ $product->id }}">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals"
+                        wire:key="product-{{ $product->id }}">
                         <div class="product__item">
                             <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
                                 data-setbg="{{ $product->image_url }}"
@@ -221,7 +208,8 @@
                     // Remove any existing background-image from style
                     existingStyle = existingStyle.replace(/background-image\s*:\s*[^;]+;?/gi, '').trim();
                     // Add background-image to the style
-                    var newStyle = existingStyle + (existingStyle ? ' ' : '') + 'background-image: url(' + bg + ');';
+                    var newStyle = existingStyle + (existingStyle ? ' ' : '') + 'background-image: url(' + bg +
+                        ');';
                     $el.attr('style', newStyle);
                 }
             });
@@ -232,7 +220,8 @@
                 if (bg) {
                     var existingStyle = el.getAttribute('style') || '';
                     existingStyle = existingStyle.replace(/background-image\s*:\s*[^;]+;?/gi, '').trim();
-                    var newStyle = existingStyle + (existingStyle ? ' ' : '') + 'background-image: url(' + bg + ');';
+                    var newStyle = existingStyle + (existingStyle ? ' ' : '') + 'background-image: url(' + bg +
+                        ');';
                     el.setAttribute('style', newStyle);
                 }
             });
@@ -249,7 +238,7 @@
                     $slider.trigger('destroy.owl.carousel');
                     $slider.removeData('owl.carousel');
                 }
-                
+
                 // Reinitialize the carousel
                 $slider.owlCarousel({
                     loop: true,
@@ -264,7 +253,7 @@
                     autoHeight: false,
                     autoplay: false
                 });
-                
+
                 // Set background images after carousel is initialized
                 setTimeout(setBackgroundImages, 100);
             }
