@@ -1,10 +1,11 @@
 <div>
     <!-- Hero Section Begin -->
     <section class="hero">
-        <div class="hero__slider owl-carousel">
-            <div class="hero__items" style="position: relative; overflow: hidden;">
+        <div class="hero__slider" style="position: relative;">
+            <div class="hero__items" style="position: relative; overflow: hidden; height: 800px;">
                 <video autoplay muted loop playsinline
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;"
+                    id="hero-video">
                     <source src="{{ asset('videos/Brader-Skate.mp4') }}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -196,6 +197,46 @@
 </div>
 
 <script>
+    // Immediately prevent carousel initialization - must run before main.js
+    (function() {
+        // Check if hero slider has video and prevent carousel
+        function preventCarouselInit() {
+            var heroSlider = document.querySelector('.hero__slider');
+            if (heroSlider && heroSlider.querySelector('video')) {
+                // Remove owl-carousel class if it exists
+                heroSlider.classList.remove('owl-carousel');
+            }
+        }
+        
+        // Run immediately
+        preventCarouselInit();
+        
+        // Also run when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', preventCarouselInit);
+        }
+    })();
+</script>
+
+<script>
+    // Prevent global Owl Carousel initialization on hero slider with video
+    (function() {
+        if (typeof $ !== 'undefined' && typeof $.fn.owlCarousel !== 'undefined') {
+            // Store original owlCarousel function
+            var originalOwlCarousel = $.fn.owlCarousel;
+            
+            // Override owlCarousel to skip hero slider if it has a video
+            $.fn.owlCarousel = function(options) {
+                var $this = $(this);
+                // If this is the hero slider and it contains a video, skip initialization
+                if ($this.hasClass('hero__slider') && $this.find('video').length > 0) {
+                    return $this;
+                }
+                return originalOwlCarousel.apply(this, arguments);
+            };
+        }
+    })();
+
     // Function to set background images
     function setBackgroundImages() {
         if (typeof $ !== 'undefined') {
@@ -228,34 +269,46 @@
         }
     }
 
-    // Function to reinitialize hero slider
-    function reinitializeHeroSlider() {
-        if (typeof $ !== 'undefined' && typeof $.fn.owlCarousel !== 'undefined') {
-            var $slider = $('.hero__slider');
-            if ($slider.length) {
-                // Destroy existing carousel if it exists
-                if ($slider.data('owl.carousel')) {
-                    $slider.trigger('destroy.owl.carousel');
-                    $slider.removeData('owl.carousel');
+    // Function to ensure video is visible and destroy any carousel instances
+    function ensureVideoVisible() {
+        var video = document.getElementById('hero-video') || document.querySelector('.hero__slider video');
+        var $slider = typeof $ !== 'undefined' ? $('.hero__slider') : null;
+        
+        if (video) {
+            // Ensure video is always visible with explicit styles
+            video.style.display = 'block';
+            video.style.visibility = 'visible';
+            video.style.opacity = '1';
+            video.style.position = 'absolute';
+            video.style.top = '0';
+            video.style.left = '0';
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            video.style.zIndex = '0';
+            
+            // Ensure parent container has proper positioning
+            var heroItems = video.closest('.hero__items');
+            if (heroItems) {
+                heroItems.style.position = 'relative';
+                heroItems.style.overflow = 'hidden';
+                if (!heroItems.style.height) {
+                    heroItems.style.height = '800px';
                 }
-
-                // Reinitialize the carousel
-                $slider.owlCarousel({
-                    loop: true,
-                    margin: 0,
-                    items: 1,
-                    dots: false,
-                    nav: true,
-                    navText: ["<span class='arrow_left'><span/>", "<span class='arrow_right'><span/>"],
-                    animateOut: 'fadeOut',
-                    animateIn: 'fadeIn',
-                    smartSpeed: 1200,
-                    autoHeight: false,
-                    autoplay: false
-                });
-
-                // Set background images after carousel is initialized
-                setTimeout(setBackgroundImages, 100);
+            }
+            
+            // Destroy any existing Owl Carousel instance
+            if ($slider && $slider.length && typeof $.fn.owlCarousel !== 'undefined') {
+                if ($slider.data('owl.carousel')) {
+                    try {
+                        $slider.trigger('destroy.owl.carousel');
+                        $slider.removeData('owl.carousel');
+                    } catch(e) {
+                        // Carousel already destroyed or not initialized
+                    }
+                }
+                // Remove owl-carousel class if it exists
+                $slider.removeClass('owl-carousel');
             }
         }
     }
@@ -264,24 +317,24 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             setBackgroundImages();
-            setTimeout(reinitializeHeroSlider, 100);
+            ensureVideoVisible();
         });
     } else {
         setBackgroundImages();
-        setTimeout(reinitializeHeroSlider, 100);
+        ensureVideoVisible();
     }
 
     // Set background images on Livewire init
     document.addEventListener('livewire:init', () => {
         setBackgroundImages();
-        setTimeout(reinitializeHeroSlider, 100);
+        ensureVideoVisible();
     });
 
     // Re-set background images after Livewire updates
     document.addEventListener('livewire:update', () => {
         setTimeout(function() {
             setBackgroundImages();
-            reinitializeHeroSlider();
+            ensureVideoVisible();
         }, 50);
     });
 
@@ -289,7 +342,7 @@
     document.addEventListener('livewire:navigated', () => {
         setTimeout(function() {
             setBackgroundImages();
-            reinitializeHeroSlider();
+            ensureVideoVisible();
         }, 50);
     });
 </script>

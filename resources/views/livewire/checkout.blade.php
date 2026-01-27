@@ -48,7 +48,7 @@
                             <h6 class="checkout__title">Billing Details</h6>
                             <div class="checkout__input">
                                 <p>Full Name<span>*</span></p>
-                                <input type="text" wire:model="fullName" required name="fullName">
+                                <input type="text" wire:model="fullName" required name="fullName" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
                                 @error('fullName')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -104,7 +104,7 @@
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Email<span>*</span></p>
-                                        <input type="email" wire:model="email" required name="email">
+                                        <input type="email" wire:model="email" required name="email" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
                                         @error('email')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -156,89 +156,14 @@
                                     </li>
                                 </ul>
                                 <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e5e5;">
-                                    <p style="font-size: 16px; font-weight: 600; color: #111111; margin-bottom: 15px;">Payment Method<span style="color: #e53637;">*</span></p>
-                                    <div style="display: flex !important; flex-direction: column !important; gap: 12px !important;">
-                                        <label wire:key="payment-gcash" style="display: flex !important; align-items: center !important; cursor: pointer; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; transition: all 0.3s ease; background: #ffffff; width: 100%;" 
-                                            onmouseover="this.style.borderColor='#e53637'; this.style.backgroundColor='#fff5f5';" 
-                                            onmouseout="if(!this.querySelector('input[type=radio]:checked')) { this.style.borderColor='#e5e5e5'; this.style.backgroundColor='#ffffff'; }">
-                                            <input type="radio" wire:model.live="paymentMethod" value="gcash" name="paymentMethod" 
-                                                style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;"
-                                                onchange="this.closest('label').style.borderColor='#e53637'; this.closest('label').style.backgroundColor='#fff5f5';">
-                                            <div style="display: flex; align-items: center; flex: 1;">
-                                                <i class="fa fa-wallet" style="font-size: 20px; color: #0070ba; margin-right: 10px;"></i>
-                                                <span style="font-weight: 600; font-size: 14px; color: #111111;">GCash</span>
-                                            </div>
-                                        </label>
-                                        <label wire:key="payment-grabpay" style="display: flex !important; align-items: center !important; cursor: pointer; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; transition: all 0.3s ease; background: #ffffff; width: 100%;" 
-                                            onmouseover="this.style.borderColor='#e53637'; this.style.backgroundColor='#fff5f5';" 
-                                            onmouseout="if(!this.querySelector('input[type=radio]:checked')) { this.style.borderColor='#e5e5e5'; this.style.backgroundColor='#ffffff'; }">
-                                            <input type="radio" wire:model.live="paymentMethod" value="grabpay" name="paymentMethod" 
-                                                style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;"
-                                                onchange="this.closest('label').style.borderColor='#e53637'; this.closest('label').style.backgroundColor='#fff5f5';">
-                                            <div style="display: flex; align-items: center; flex: 1;">
-                                                <i class="fa fa-car" style="font-size: 20px; color: #00B14F; margin-right: 10px;"></i>
-                                                <span style="font-weight: 600; font-size: 14px; color: #111111;">GrabPay</span>
-                                            </div>
-                                        </label>
-                                        <label wire:key="payment-maya" style="display: flex !important; align-items: center !important; cursor: pointer; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; transition: all 0.3s ease; background: #ffffff; width: 100%;" 
-                                            onmouseover="this.style.borderColor='#e53637'; this.style.backgroundColor='#fff5f5';" 
-                                            onmouseout="if(!this.querySelector('input[type=radio]:checked')) { this.style.borderColor='#e5e5e5'; this.style.backgroundColor='#ffffff'; }">
-                                            <input type="radio" wire:model.live="paymentMethod" value="maya" name="paymentMethod" 
-                                                style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;"
-                                                onchange="this.closest('label').style.borderColor='#e53637'; this.closest('label').style.backgroundColor='#fff5f5';">
-                                            <div style="display: flex; align-items: center; flex: 1;">
-                                                <i class="fa fa-credit-card" style="font-size: 20px; color: #00a8e6; margin-right: 10px;"></i>
-                                                <span style="font-weight: 600; font-size: 14px; color: #111111;">Maya</span>
-                                            </div>
-                                        </label>
-                                        <label wire:key="payment-shopeepay" style="display: flex !important; align-items: center !important; cursor: pointer; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; transition: all 0.3s ease; background: #ffffff; width: 100%;" 
-                                            onmouseover="this.style.borderColor='#e53637'; this.style.backgroundColor='#fff5f5';" 
-                                            onmouseout="if(!this.querySelector('input[type=radio]:checked')) { this.style.borderColor='#e5e5e5'; this.style.backgroundColor='#ffffff'; }">
-                                            <input type="radio" wire:model.live="paymentMethod" value="shopeepay" name="paymentMethod" 
-                                                style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;"
-                                                onchange="this.closest('label').style.borderColor='#e53637'; this.closest('label').style.backgroundColor='#fff5f5';">
-                                            <div style="display: flex; align-items: center; flex: 1;">
-                                                <i class="fa fa-shopping-bag" style="font-size: 20px; color: #EE4D2D; margin-right: 10px;"></i>
-                                                <span style="font-weight: 600; font-size: 14px; color: #111111;">ShopeePay</span>
-                                            </div>
-                                        </label>
+                                    <p style="font-size: 16px; font-weight: 600; color: #111111; margin-bottom: 15px;">Payment Method</p>
+                                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px;">
+                                        <p style="color: #666; font-size: 14px; margin: 0;">
+                                            <i class="fa fa-info-circle" style="margin-right: 8px; color: #0070ba;"></i>
+                                            You will be redirected to PayMongo checkout where you can choose your preferred payment method (GCash, GrabPay, or Maya).
+                                        </p>
                                     </div>
-                                    @error('paymentMethod')
-                                        <span class="text-danger" style="display: block; margin-top: 10px; font-size: 13px;">{{ $message }}</span>
-                                    @enderror
                                 </div>
-                                <script>
-                                    // Update visual state when payment method changes
-                                    function updatePaymentMethodStyles() {
-                                        document.querySelectorAll('input[name="paymentMethod"]').forEach(function(radio) {
-                                            var label = radio.closest('label');
-                                            if (radio.checked) {
-                                                label.style.borderColor = '#e53637';
-                                                label.style.backgroundColor = '#fff5f5';
-                                            } else {
-                                                label.style.borderColor = '#e5e5e5';
-                                                label.style.backgroundColor = '#ffffff';
-                                            }
-                                        });
-                                    }
-                                    
-                                    // Initialize visual state on page load
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        updatePaymentMethodStyles();
-                                        
-                                        // Listen for Livewire updates
-                                        document.querySelectorAll('input[name="paymentMethod"]').forEach(function(radio) {
-                                            radio.addEventListener('change', updatePaymentMethodStyles);
-                                        });
-                                    });
-                                    
-                                    // Handle Livewire updates
-                                    document.addEventListener('livewire:init', function() {
-                                        Livewire.hook('morph.updated', function() {
-                                            setTimeout(updatePaymentMethodStyles, 100);
-                                        });
-                                    });
-                                </script>
                                 <input type="hidden" name="quantity" value="{{ $cartItems->sum('quantity') }}">
                                 <input type="hidden" name="total_amount" value="{{ (int) ($total * 100) }}">
                                 <input type="hidden" name="items" value="{{ $cartItems->toJson() }}">

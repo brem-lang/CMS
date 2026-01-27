@@ -43,10 +43,10 @@ class PayMongoWebhookController extends Controller
                 'event_type' => $eventType,
             ]);
 
-            if ($eventType === 'payment.paid') {
-                return $this->handlePaymentPaid($event);
-            } elseif ($eventType === 'payment.failed') {
-                return $this->handlePaymentFailed($event);
+            if ($eventType === 'payment.paid' || $eventType === 'checkout_session.payment.paid') {
+                return $this->handlePaymentPaid($event, $eventType);
+            } elseif ($eventType === 'payment.failed' || $eventType === 'checkout_session.payment.failed') {
+                return $this->handlePaymentFailed($event, $eventType);
             } else {
                 Log::warning('PayMongo Webhook: Unknown event type', [
                     'event_type' => $eventType,
@@ -63,7 +63,7 @@ class PayMongoWebhookController extends Controller
         }
     }
 
-    private function handlePaymentPaid($event)
+    private function handlePaymentPaid($event, $eventType = 'payment.paid')
     {
         try {
             $payment = $event['attributes']['data'] ?? null;
@@ -75,15 +75,29 @@ class PayMongoWebhookController extends Controller
 
             $paymentIntentId = $payment['attributes']['payment_intent_id'] ?? null;
             $sourceId = $payment['attributes']['source']['id'] ?? null;
+            $checkoutSessionId = null;
+            
+            // For checkout session events, extract checkout session ID
+            if ($eventType === 'checkout_session.payment.paid') {
+                // Checkout session ID might be in different locations
+                $checkoutSessionId = $payment['attributes']['checkout_session_id'] ?? 
+                                    $event['attributes']['checkout_session_id'] ?? 
+                                    $payment['checkout_session_id'] ?? null;
+            }
             
             Log::info('PayMongo Webhook: Searching for order', [
+                'event_type' => $eventType,
                 'payment_intent_id' => $paymentIntentId,
                 'source_id' => $sourceId,
+                'checkout_session_id' => $checkoutSessionId,
             ]);
             
-            // Find order by payment intent or source ID
+            // Find order by checkout session ID, payment intent, or source ID
             $order = null;
-            if ($paymentIntentId) {
+            if ($checkoutSessionId) {
+                $order = Order::where('checkout_session_id', $checkoutSessionId)->first();
+            }
+            if (!$order && $paymentIntentId) {
                 $order = Order::where('payment_intent_id', $paymentIntentId)->first();
             }
             if (!$order && $sourceId) {
@@ -92,8 +106,10 @@ class PayMongoWebhookController extends Controller
             
             if (!$order) {
                 Log::warning('PayMongo Webhook: Order not found', [
+                    'event_type' => $eventType,
                     'payment_intent_id' => $paymentIntentId,
                     'source_id' => $sourceId,
+                    'checkout_session_id' => $checkoutSessionId,
                 ]);
                 return response()->json(['error' => 'Order not found'], 404);
             }
@@ -138,7 +154,7 @@ class PayMongoWebhookController extends Controller
         }
     }
 
-    private function handlePaymentFailed($event)
+    private function handlePaymentFailed($event, $eventType = 'payment.failed')
     {
         try {
             $payment = $event['attributes']['data'] ?? null;
@@ -150,14 +166,27 @@ class PayMongoWebhookController extends Controller
 
             $paymentIntentId = $payment['attributes']['payment_intent_id'] ?? null;
             $sourceId = $payment['attributes']['source']['id'] ?? null;
+            $checkoutSessionId = null;
+            
+            // For checkout session events, extract checkout session ID
+            if ($eventType === 'checkout_session.payment.failed') {
+                $checkoutSessionId = $payment['attributes']['checkout_session_id'] ?? 
+                                    $event['attributes']['checkout_session_id'] ?? 
+                                    $payment['checkout_session_id'] ?? null;
+            }
             
             Log::info('PayMongo Webhook: Searching for order (failed)', [
+                'event_type' => $eventType,
                 'payment_intent_id' => $paymentIntentId,
                 'source_id' => $sourceId,
+                'checkout_session_id' => $checkoutSessionId,
             ]);
             
             $order = null;
-            if ($paymentIntentId) {
+            if ($checkoutSessionId) {
+                $order = Order::where('checkout_session_id', $checkoutSessionId)->first();
+            }
+            if (!$order && $paymentIntentId) {
                 $order = Order::where('payment_intent_id', $paymentIntentId)->first();
             }
             if (!$order && $sourceId) {
@@ -166,8 +195,10 @@ class PayMongoWebhookController extends Controller
             
             if (!$order) {
                 Log::warning('PayMongo Webhook: Order not found (failed)', [
+                    'event_type' => $eventType,
                     'payment_intent_id' => $paymentIntentId,
                     'source_id' => $sourceId,
+                    'checkout_session_id' => $checkoutSessionId,
                 ]);
                 return response()->json(['error' => 'Order not found'], 404);
             }

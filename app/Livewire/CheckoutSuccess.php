@@ -18,38 +18,15 @@ class CheckoutSuccess extends Component
     {
         $this->order = Order::findOrFail($order);
         
-        // Check payment status from PayMongo if needed
-        if ($this->order->payment_status === 'pending') {
-            $paymongoService = app(\App\Services\PayMongoService::class);
-            
-            if ($this->order->payment_source_id) {
-                $source = $paymongoService->getSource($this->order->payment_source_id);
-                
-                if ($source && isset($source['attributes']['status']) && $source['attributes']['status'] === 'paid') {
-                    $this->order->update([
-                        'payment_status' => 'paid',
-                        'status' => 'processing',
-                    ]);
-                    
-                    // Clear cart after successful payment
-                    $this->clearCart();
-                }
-            } elseif ($this->order->payment_intent_id) {
-                $paymentIntent = $paymongoService->getPaymentIntent($this->order->payment_intent_id);
-                
-                if ($paymentIntent && isset($paymentIntent['attributes']['status']) && $paymentIntent['attributes']['status'] === 'succeeded') {
-                    $this->order->update([
-                        'payment_status' => 'paid',
-                        'status' => 'processing',
-                    ]);
-                    
-                    // Clear cart after successful payment
-                    $this->clearCart();
-                }
-            }
-        } elseif ($this->order->payment_status === 'paid') {
-            // If order is already marked as paid, ensure cart is cleared
+        // Rely solely on webhook-updated order status
+        // If order is marked as paid (by webhook), clear cart
+        if ($this->order->payment_status === 'paid') {
             $this->clearCart();
+            
+            // Remove pending order ID from session if it exists (for guests)
+            if (!$this->order->user_id) {
+                session()->forget('pending_order_id');
+            }
         }
     }
     

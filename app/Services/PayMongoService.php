@@ -177,4 +177,102 @@ class PayMongoService
         
         return null;
     }
+
+    /**
+     * Create a checkout session
+     * 
+     * @param array $lineItems Array of line items with name, quantity, amount, currency
+     * @param string $successUrl URL to redirect after successful payment
+     * @param string $cancelUrl URL to redirect after cancelled payment
+     * @param array $paymentMethodTypes Array of payment method types (e.g., ['gcash', 'grab_pay', 'paymaya', 'shopeepay'])
+     * @param string $description Optional description for the checkout session
+     * @param array $metadata Optional metadata
+     * @return array Checkout session data
+     */
+    public function createCheckoutSession($lineItems, $successUrl, $cancelUrl, $paymentMethodTypes = ['gcash', 'grab_pay', 'paymaya'], $description = null, $metadata = [], $customerInfo = [])
+    {
+        // Flatten metadata - PayMongo doesn't accept nested metadata
+        $flatMetadata = [];
+        foreach ($metadata as $key => $value) {
+            $flatMetadata[$key] = is_array($value) ? json_encode($value) : (string)$value;
+        }
+
+        // Prepare line items - ensure amounts are in centavos
+        $preparedLineItems = [];
+        foreach ($lineItems as $item) {
+            $preparedLineItems[] = [
+                'name' => $item['name'],
+                'quantity' => $item['quantity'],
+                'amount' => isset($item['amount']) ? (int)($item['amount'] * 100) : (int)($item['price'] * 100 * $item['quantity']), // Convert to centavos
+                'currency' => $item['currency'] ?? 'PHP',
+            ];
+        }
+
+        $attributes = [
+            'line_items' => $preparedLineItems,
+            'payment_method_types' => $paymentMethodTypes,
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+        ];
+
+        if ($description) {
+            $attributes['description'] = $description;
+        }
+
+        if (!empty($flatMetadata)) {
+            $attributes['metadata'] = $flatMetadata;
+        }
+
+        // Add customer information (billing) if provided
+        if (!empty($customerInfo)) {
+            $billing = [];
+            
+            if (isset($customerInfo['name']) && !empty($customerInfo['name'])) {
+                $billing['name'] = $customerInfo['name'];
+            }
+            
+            if (isset($customerInfo['email']) && !empty($customerInfo['email'])) {
+                $billing['email'] = $customerInfo['email'];
+            }
+            
+            if (isset($customerInfo['phone']) && !empty($customerInfo['phone'])) {
+                $billing['phone'] = $customerInfo['phone'];
+            }
+            
+            if (!empty($billing)) {
+                $attributes['billing'] = $billing;
+            }
+        }
+
+        $response = $this->httpClient()
+            ->post("{$this->apiUrl}/checkout_sessions", [
+                'data' => [
+                    'attributes' => $attributes,
+                ],
+            ]);
+            
+        if ($response->successful()) {
+            return $response->json()['data'];
+        }
+        
+        throw new \Exception('Failed to create checkout session: ' . $response->body());
+    }
+
+    /**
+     * Retrieve checkout session
+     * 
+     * @param string $checkoutSessionId
+     * @return array|null Checkout session data or null if not found
+     */
+    public function getCheckoutSession($checkoutSessionId)
+    {
+        $response = $this->httpClient()
+            ->get("{$this->apiUrl}/checkout_sessions/{$checkoutSessionId}");
+            
+        if ($response->successful()) {
+            return $response->json()['data'];
+        }
+        
+        return null;
+    }
 }

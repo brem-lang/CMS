@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Exclude webhook routes from CSRF protection
         $middleware->validateCsrfTokens(except: [
-            'webhooks/*',
+            'webhook',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -36,18 +36,7 @@ class Checkout extends Component
 
     public $orderNotes = '';
 
-    public $paymentMethod = 'gcash'; // Default: gcash. Options: gcash, grabpay, maya, shopeepay
-    
-    /**
-     * Update payment method selection
-     */
-    public function updatedPaymentMethod($value)
-    {
-        // Ensure valid payment method is selected
-        if (!in_array($value, ['gcash', 'grabpay', 'maya', 'shopeepay'])) {
-            $this->paymentMethod = 'gcash';
-        }
-    }
+    // Payment method selection removed - Checkout Session handles this
 
     public $cartItems = [];
 
@@ -89,7 +78,6 @@ class Checkout extends Component
             'postcode' => 'required|string|max:20',
             'phone' => 'required|string|max:20',
             'email' => 'required|email',
-            'paymentMethod' => 'required|in:gcash,grabpay,maya,shopeepay',
         ]);
         
         if ($this->cartItems->isEmpty()) {
@@ -112,7 +100,7 @@ class Checkout extends Component
             'order_notes' => $this->orderNotes,
             'subtotal' => $this->subtotal,
             'total' => $this->total,
-            'payment_method' => $this->paymentMethod,
+            'payment_method' => 'checkout_session', // Using checkout session
             'items' => $this->cartItems->map(function ($item) {
                 return [
                     'product_id' => $item->product_id,
@@ -135,27 +123,51 @@ class Checkout extends Component
             ]);
         }
         
-        // Process payment based on method
+        // Process payment using Checkout Session
         try {
             $paymongoService = app(PayMongoService::class);
             
-            // All payment methods (GCash, PayMaya, QR PH) use payment source
-            $source = $paymongoService->createSource(
-                $this->total,
-                $this->paymentMethod,
-                'PHP',
+            // Prepare line items for checkout session
+            $lineItems = $this->cartItems->map(function ($item) {
+                return [
+                    'name' => $item->product->name,
+                    'quantity' => $item->quantity,
+                    'price' => $item->product->price,
+                    'amount' => $item->quantity * $item->product->price,
+                    'currency' => 'PHP',
+                ];
+            })->toArray();
+            
+            // Create checkout session
+            // Valid PayMongo checkout session payment method types: gcash, grab_pay, paymaya, card
+            $checkoutSession = $paymongoService->createCheckoutSession(
+                $lineItems,
+                route('checkout.success', ['order' => $order->id]),
+                route('checkout.failed', ['order' => $order->id]),
+                ['gcash', 'grab_pay', 'paymaya'], // Payment method types (shopeepay not supported in checkout sessions)
+                "Order #{$order->order_number}",
                 [
-                    'success' => route('checkout.success', ['order' => $order->id]),
-                    'failed' => route('checkout.failed', ['order' => $order->id]),
+                    'order_id' => (string)$order->id,
+                    'order_number' => $order->order_number,
+                ],
+                [
+                    'name' => $this->fullName,
+                    'email' => $this->email,
+                    'phone' => $this->phone,
                 ]
             );
             
             $order->update([
-                'payment_source_id' => $source['id'],
+                'checkout_session_id' => $checkoutSession['id'],
             ]);
             
-            // Redirect to payment URL
-            return redirect($source['attributes']['redirect']['checkout_url']);
+            // Store order ID in session for guest users (so we can clear cart after webhook confirms payment)
+            if (!Auth::check()) {
+                session()->put('pending_order_id', $order->id);
+            }
+            
+            // Redirect to checkout session URL
+            return redirect($checkoutSession['attributes']['checkout_url']);
         } catch (\Exception $e) {
             Log::error('Payment processing error: ' . $e->getMessage());
             session()->flash('error', 'Payment processing failed. Please try again.');
