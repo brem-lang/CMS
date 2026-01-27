@@ -43,13 +43,24 @@ class PayMongoWebhookController extends Controller
             // Event type is at event['attributes']['type']
             // PayMongo webhook structure: { "data": { "type": "event", "attributes": { "type": "payment.paid", ... } } }
             $eventType = $event['attributes']['type'] ?? null;
+            
+            // Extract payment method based on event type
+            $paymentUsed = null;
+            if ($eventType === 'checkout_session.payment.paid') {
+                // For checkout_session events: data.attributes.data.attributes.payment_method_used
+                $paymentUsed = $event['attributes']['data']['attributes']['payment_method_used'] ?? null;
+            } elseif ($eventType === 'payment.paid') {
+                // For payment.paid events: payment_method_used doesn't exist, get from source.type
+                $paymentUsed = $event['attributes']['data']['attributes']['source']['type'] ?? null;
+            }
 
             Log::info('PayMongo Webhook: Processing event', [
                 'event_type' => $eventType,
+                'payment_method' => $paymentUsed,
             ]);
 
             if ($eventType === 'payment.paid' || $eventType === 'checkout_session.payment.paid') {
-                return $this->handlePaymentPaid($event, $eventType);
+                return $this->handlePaymentPaid($event, $eventType, $paymentUsed);
             } elseif ($eventType === 'payment.failed' || $eventType === 'checkout_session.payment.failed') {
                 return $this->handlePaymentFailed($event, $eventType);
             } else {
@@ -69,7 +80,7 @@ class PayMongoWebhookController extends Controller
         }
     }
 
-    private function handlePaymentPaid($event, $eventType = 'payment.paid')
+    private function handlePaymentPaid($event, $eventType = 'payment.paid', $paymentUsed = null)
     {
         try {
             $payment = $event['attributes']['data'] ?? null;
@@ -153,20 +164,24 @@ class PayMongoWebhookController extends Controller
                 return response()->json(['status' => 'already_processed', 'order_id' => $order->id]);
             }
 
-            // Extract payment method from webhook payload: data.attributes.data.attributes.payment_method_used
-            $paymentMethod = $event['attributes']['data']['attributes']['payment_method_used'] ?? null;
-            
             Log::info('PayMongo Webhook: Extracted payment method', [
                 'order_id' => $order->id,
-                'payment_method' => $paymentMethod,
+                'payment_method' => $paymentUsed,
                 'event_type' => $eventType,
             ]);
 
-            $order->update([
+            // Prepare update data
+            $updateData = [
                 'payment_status' => 'paid',
                 'status' => 'processing',
-                'payment_method' => $paymentMethod ?? $order->payment_method, // Save payment method from PayMongo, keep existing if not found
-            ]);
+            ];
+            
+            // Only update payment_method if we have a valid value
+            if ($paymentUsed) {
+                $updateData['payment_method'] = $paymentUsed;
+            }
+            
+            $order->update($updateData);
 
             Log::info('PayMongo Webhook: Order updated successfully', [
                 'order_id' => $order->id,
