@@ -38,28 +38,22 @@
 
                         <form action="{{ route('track-order.search') }}" method="POST">
                             @csrf
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <div class="checkout__input">
-                                        <p>Order Reference Number <span>*</span></p>
-                                        <input type="text" name="order_number" 
-                                            value="{{ old('order_number') }}" 
-                                            placeholder="e.g., ORD-20260125-ABC12345" 
-                                            required
-                                            style="width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 5px;">
-                                        @error('order_number')
-                                            <span style="color: #dc3545; font-size: 14px;">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="checkout__input" style="margin-top: 30px;">
-                                        <button type="submit" class="site-btn" 
-                                            style="width: 100%; padding: 12px;">
-                                            Track Order
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="checkout__input">
+                                <p>Order Reference Number <span>*</span></p>
+                                <input type="text" name="order_number" 
+                                    value="{{ old('order_number') }}" 
+                                    placeholder="e.g., ORD-20260125-ABC12345" 
+                                    required
+                                    style="width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 5px;">
+                                @error('order_number')
+                                    <span style="color: #dc3545; font-size: 14px;">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <button type="submit" class="site-btn" 
+                                    style="width: 100%; padding: 12px;">
+                                    Track Order
+                                </button>
                             </div>
                         </form>
                     </div>
