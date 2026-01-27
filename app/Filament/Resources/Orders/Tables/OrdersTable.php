@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use App\Models\Courier;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -91,7 +92,7 @@ class OrdersTable
                                     ->live(),
                                 Select::make('courier_id')
                                     ->label('Courier')
-                                    ->relationship('courier', 'name')
+                                    ->options(fn () => Courier::query()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->required(fn ($get) => $get('status') === 'shipped')
@@ -142,7 +143,7 @@ class OrdersTable
                     ]),
                 SelectFilter::make('courier_id')
                     ->label('Courier')
-                    ->relationship('courier', 'name'),
+                    ->options(fn () => Courier::query()->pluck('name', 'id')),
                 SelectFilter::make('payment_method')
                     ->label('Payment Method')
                     ->options([

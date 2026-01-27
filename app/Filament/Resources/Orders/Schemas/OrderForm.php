@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Schemas;
 
+use App\Models\Courier;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -107,7 +108,7 @@ class OrderForm
                             ->live(),
                         Select::make('courier_id')
                             ->label('Courier')
-                            ->relationship('courier', 'name')
+                            ->options(fn () => Courier::query()->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
                             ->required(fn ($get) => $get('status') === 'shipped')
