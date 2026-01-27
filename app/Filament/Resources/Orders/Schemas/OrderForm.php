@@ -116,12 +116,12 @@ class OrderForm
                             ->placeholder('Select courier')
                             ->nullable()
                             ->dehydrated(fn ($get) => $get('status') === 'shipped'),
-                        TextInput::make('payment_intent_id')
-                            ->label('Payment Intent ID')
-                            ->nullable(),
-                        TextInput::make('payment_source_id')
-                            ->label('Payment Source ID')
-                            ->nullable(),
+                        // TextInput::make('payment_intent_id')
+                        //     ->label('Payment Intent ID')
+                        //     ->nullable(),
+                        // TextInput::make('payment_source_id')
+                        //     ->label('Payment Source ID')
+                        //     ->nullable(),
                         Textarea::make('order_notes')
                             ->label('Order Notes')
                             ->rows(3)
