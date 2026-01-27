@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Courier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -79,7 +80,7 @@ class Order extends Model
     
     public function courier(): BelongsTo
     {
-        return $this->belongsTo(Courier::class);
+        return $this->belongsTo(Courier::class, 'courier_id');
     }
     
     public function products()
