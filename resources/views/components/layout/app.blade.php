@@ -251,26 +251,93 @@
 
     <!-- Cart Notification Script -->
     <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('cartUpdated', (data) => {
+        (function() {
+            let notificationTimeout = null;
+
+            function showCartNotification(messageText) {
                 const notification = document.getElementById('cart-notification');
                 const message = document.getElementById('notification-message');
 
-                if (notification && message) {
-                    message.textContent = data.message || 'Product added to cart!';
+                if (!notification || !message) return;
+
+                // Clear any existing timeout to prevent conflicts
+                if (notificationTimeout) {
+                    clearTimeout(notificationTimeout);
+                    notificationTimeout = null;
+                }
+
+                // Reset notification state completely
+                notification.classList.remove('show');
+                notification.style.display = 'none';
+                
+                // Small delay to ensure CSS transition resets
+                setTimeout(() => {
+                    // Set message
+                    message.textContent = messageText || 'Product added to cart!';
+                    
+                    // Show notification
                     notification.style.display = 'block';
+                    
+                    // Force reflow
+                    void notification.offsetHeight;
+                    
+                    // Add show class for animation
                     notification.classList.add('show');
 
                     // Auto-hide after 3 seconds
-                    setTimeout(() => {
+                    notificationTimeout = setTimeout(() => {
                         notification.classList.remove('show');
                         setTimeout(() => {
                             notification.style.display = 'none';
+                            notificationTimeout = null;
                         }, 150);
                     }, 3000);
+                }, 10);
+            }
+
+            // Event handler function
+            function handleCartUpdated(event) {
+                // In Livewire v3, event is an array: [eventName, dataObject]
+                let messageText = 'Product added to cart!';
+                
+                if (Array.isArray(event) && event.length > 1) {
+                    const data = event[1];
+                    if (data && typeof data === 'object' && data.message) {
+                        messageText = data.message;
+                    }
+                } else if (event && typeof event === 'object' && event.message) {
+                    // Fallback for different event structures
+                    messageText = event.message;
+                }
+                
+                showCartNotification(messageText);
+            }
+
+            // Setup listener when Livewire initializes
+            document.addEventListener('livewire:init', () => {
+                if (window.Livewire) {
+                    Livewire.on('cartUpdated', handleCartUpdated);
                 }
             });
-        });
+
+            // Re-setup listener after SPA navigation (Livewire v3 may clear listeners)
+            document.addEventListener('livewire:navigated', () => {
+                if (window.Livewire) {
+                    Livewire.on('cartUpdated', handleCartUpdated);
+                }
+            });
+
+            // Also setup immediately if Livewire is already loaded
+            if (window.Livewire) {
+                Livewire.on('cartUpdated', handleCartUpdated);
+            } else if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.Livewire) {
+                        Livewire.on('cartUpdated', handleCartUpdated);
+                    }
+                });
+            }
+        })();
 
         // Hide preloader on Livewire navigation
         document.addEventListener('livewire:navigated', () => {

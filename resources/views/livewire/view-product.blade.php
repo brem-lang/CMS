@@ -28,12 +28,12 @@
                         <div class="product__details__text">
                             <h4>{{ $product->name }}</h4>
                             <div class="rating">
-                                {{-- <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star-o"></i>
-                                <span> - 5 Reviews</span> --}}
+                                <span> - 5 Reviews</span>
                             </div>
                             <h3>₱{{ number_format($product->price, 2) }}</h3>
                             <p>{{ $product->description }}</p>
