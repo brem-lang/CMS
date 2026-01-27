@@ -36,11 +36,11 @@
                             <div style="display: grid; gap: 10px;">
                                 <div style="display: flex; justify-content: space-between;">
                                     <span style="color: #666;">Order Number:</span>
-                                    <span style="font-weight: 600; color: #111;">{{ $order->order_number }}</span>
+                                    <span style="font-weight: 600; color: #111;">{{ $orderNumber }}</span>
                                 </div>
                                 <div style="display: flex; justify-content: space-between;">
                                     <span style="color: #666;">Total Amount:</span>
-                                    <span style="font-weight: 600; color: #e53637;">₱{{ number_format($order->total, 2) }}</span>
+                                    <span style="font-weight: 600; color: #e53637;">₱{{ number_format($orderTotal, 2) }}</span>
                                 </div>
                             </div>
                         </div>

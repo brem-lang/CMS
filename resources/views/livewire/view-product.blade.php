@@ -23,7 +23,7 @@
         </div>
         <div class="product__details__content">
             <div class="container">
-                s <div class="row d-flex justify-content-center">
+                <div class="row d-flex justify-content-center">
                     <div class="col-lg-8">
                         <div class="product__details__text">
                             <h4>{{ $product->name }}</h4>
