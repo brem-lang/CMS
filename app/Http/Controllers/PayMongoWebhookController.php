@@ -153,15 +153,26 @@ class PayMongoWebhookController extends Controller
                 return response()->json(['status' => 'already_processed', 'order_id' => $order->id]);
             }
 
+            // Extract payment method from webhook payload: data.attributes.data.attributes.payment_method_used
+            $paymentMethod = $event['attributes']['data']['attributes']['payment_method_used'] ?? null;
+            
+            Log::info('PayMongo Webhook: Extracted payment method', [
+                'order_id' => $order->id,
+                'payment_method' => $paymentMethod,
+                'event_type' => $eventType,
+            ]);
+
             $order->update([
                 'payment_status' => 'paid',
                 'status' => 'processing',
+                'payment_method' => $paymentMethod ?? $order->payment_method, // Save payment method from PayMongo, keep existing if not found
             ]);
 
             Log::info('PayMongo Webhook: Order updated successfully', [
                 'order_id' => $order->id,
                 'new_status' => $order->status,
                 'new_payment_status' => $order->payment_status,
+                'payment_method' => $order->payment_method,
             ]);
 
             // Clear cart
