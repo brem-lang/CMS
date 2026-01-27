@@ -125,6 +125,23 @@ class CartService
     }
     
     /**
+     * Calculate total amount to pay for all cart items
+     */
+    public function calculateTotal()
+    {
+        $cartItems = $this->getCartItems();
+        $total = 0;
+        
+        foreach ($cartItems as $item) {
+            if ($item->product && isset($item->product->price)) {
+                $total += $item->quantity * $item->product->price;
+            }
+        }
+        
+        return $total;
+    }
+    
+    /**
      * Migrate guest cart to database when user logs in
      */
     public function migrateGuestCartToDatabase($userId)
