@@ -339,18 +339,18 @@
                             </ul>
                         </div>
                     </div>
-                    {{-- <div class="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
+                    <div class="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
                         <div class="footer__widget">
                             <h6>Stay Updated</h6>
                             <div class="footer__newslatter">
                                 <p>Subscribe to get updates on new arrivals and exclusive offers.</p>
-                                <form action="#">
+                                {{-- <form action="#">
                                     <input type="text" placeholder="Your email">
                                     <button type="submit"><span class="icon_mail_alt"></span></button>
-                                </form>
+                                </form> --}}
                             </div>
                         </div>
-                    </div> --}}
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-12 text-center">

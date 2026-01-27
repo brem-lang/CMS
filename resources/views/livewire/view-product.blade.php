@@ -28,12 +28,12 @@
                         <div class="product__details__text">
                             <h4>{{ $product->name }}</h4>
                             <div class="rating">
-                                <i class="fa fa-star"></i>
+                                {{-- <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star-o"></i>
-                                <span> - 5 Reviews</span>
+                                <span> - 5 Reviews</span> --}}
                             </div>
                             <h3>₱{{ number_format($product->price, 2) }}</h3>
                             <p>{{ $product->description }}</p>
@@ -68,24 +68,23 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="product__details__tab">
-                            <ul class="nav nav-tabs" role="tablist">
+                            <ul class="nav nav-tabs flex-nowrap overflow-auto justify-content-center" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-toggle="tab" href="#tabs-5"
                                         role="tab">Description</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#tabs-6" role="tab">Customer
-                                        Previews(5)</a>
+                                    <a class="nav-link" data-toggle="tab" href="#tabs-7" role="tab">Additional
+                                        Information</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#tabs-7" role="tab">Additional
-                                        information</a>
+                                    <a class="nav-link" data-toggle="tab" href="#tabs-6" role="tab">Customer
+                                        Reviews</a>
                                 </li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tabs-5" role="tabpanel">
                                     <div class="product__details__tab__content">
-                                        <p class="note">{{ $product->description }}</p>
                                         <div class="product__details__tab__content__item">
                                             <h5>Product Information</h5>
                                             <p>{{ $product->description }}</p>
@@ -102,10 +101,9 @@
                                 </div>
                                 <div class="tab-pane" id="tabs-7" role="tabpanel">
                                     <div class="product__details__tab__content">
-                                        <p class="note">Additional product information.</p>
                                         <div class="product__details__tab__content__item">
-                                            <h5>Product Details</h5>
-                                            <ul>
+                                            <h5>Additional product information.</h5>
+                                            <ul class="list-unstyled px-2">
                                                 <li><span>Product ID:</span> {{ $product->id }}</li>
                                                 <li><span>Name:</span> {{ $product->name }}</li>
                                                 <li><span>Price:</span> ₱{{ number_format($product->price, 2) }}</li>

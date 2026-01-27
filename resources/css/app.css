@@ -1,2 +1,5 @@
 /* Bootstrap template uses its own CSS from public/bootstrap/css/ */
 /* This file is kept for Vite compatibility but doesn't need Tailwind */
+.nav-tabs.overflow-auto {
+    -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+}
