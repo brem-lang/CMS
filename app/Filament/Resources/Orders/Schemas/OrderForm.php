@@ -83,7 +83,7 @@ class OrderForm
                             ->options([
                                 'gcash' => 'GCash',
                                 'paymaya' => 'PayMaya',
-                                'bank_transfer' => 'Bank Transfer',
+                                'grab_pay' => 'GrabPay',
                             ])
                             ->required(),
                         Select::make('payment_status')
@@ -98,6 +98,7 @@ class OrderForm
                         Select::make('status')
                             ->label('Order Status')
                             ->options([
+                                'processing' => 'Processing',
                                 'pending' => 'Pending',
                                 'confirm' => 'Order Confirmed',
                                 'shipped' => 'Shipped',

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Schemas;
 
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -108,42 +109,30 @@ class OrderInfolist
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
-                // Section::make('Order Items')
-                //     ->schema([
-                //         TextEntry::make('items')
-                //             ->label('Items')
-                //             ->formatStateUsing(function ($state) {
-                //                 if (empty($state)) {
-                //                     return 'No items';
-                //                 }
-                                
-                //                 $items = is_string($state) ? json_decode($state, true) : $state;
-                //                 if (!is_array($items)) {
-                //                     return 'No items';
-                //                 }
-                                
-                //                 $html = '<div class="space-y-2">';
-                //                 foreach ($items as $item) {
-                //                     $name = $item['name'] ?? 'Unknown';
-                //                     $quantity = $item['quantity'] ?? 0;
-                //                     $price = $item['price'] ?? 0;
-                //                     $subtotal = $item['subtotal'] ?? ($quantity * $price);
-                                    
-                //                     $html .= '<div class="flex justify-between items-center p-2 bg-gray-50 rounded">';
-                //                     $html .= '<div>';
-                //                     $html .= '<span class="font-medium">' . htmlspecialchars($name) . '</span>';
-                //                     $html .= '<span class="text-gray-500 ml-2">x' . $quantity . '</span>';
-                //                     $html .= '</div>';
-                //                     $html .= '<div class="font-medium">₱' . number_format($subtotal, 2) . '</div>';
-                //                     $html .= '</div>';
-                //                 }
-                //                 $html .= '</div>';
-                                
-                //                 return new \Illuminate\Support\HtmlString($html);
-                //             })
-                //             ->html()
-                //             ->columnSpanFull(),
-                //     ]),
+                Section::make('Order Items')
+                    ->schema([
+                        RepeatableEntry::make('orderItems')
+                            ->label('Items')
+                            ->schema([
+                                TextEntry::make('product.name')
+                                    ->label('Product')
+                                    ->weight('bold')
+                                    ->placeholder('Product not found'),
+                                TextEntry::make('quantity')
+                                    ->label('Quantity')
+                                    ->numeric(),
+                                TextEntry::make('price')
+                                    ->label('Unit Price')
+                                    ->money('PHP'),
+                                TextEntry::make('subtotal')
+                                    ->label('Subtotal')
+                                    ->money('PHP')
+                                    ->weight('bold'),
+                            ])
+                            ->columns(4)
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible(),
             ]);
     }
 }
