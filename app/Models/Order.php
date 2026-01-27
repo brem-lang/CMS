@@ -8,18 +8,40 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    protected $guarded = [];
-    
+    protected $fillable = [
+        'order_number',
+        'user_id',
+        'email',
+        'full_name',
+        'phone',
+        'address',
+        'town',
+        'state',
+        'postcode',
+        'country',
+        'order_notes',
+        'subtotal',
+        'total',
+        'payment_method',
+        'payment_status',
+        'payment_intent_id',
+        'payment_source_id',
+        'checkout_session_id',
+        'status',
+        'courier_id',
+        'items',
+    ];
+
     protected $casts = [
         'items' => 'array',
         'subtotal' => 'decimal:2',
         'total' => 'decimal:2',
     ];
-    
+
     protected static function boot()
     {
         parent::boot();
-        
+
         // Track status changes when order is updated
         static::updating(function ($order) {
             if ($order->isDirty('status') || $order->isDirty('courier_id')) {
@@ -27,7 +49,7 @@ class Order extends Model
                 $newStatus = $order->status;
                 $oldCourierId = $order->getOriginal('courier_id');
                 $newCourierId = $order->courier_id;
-                
+
                 $notes = [];
                 if ($oldStatus !== $newStatus) {
                     $notes[] = "Status changed from {$oldStatus} to {$newStatus}";
@@ -37,20 +59,20 @@ class Order extends Model
                         $courierName = Courier::find($newCourierId)?->name ?? 'Unknown';
                         $notes[] = "Courier set to {$courierName}";
                     } else {
-                        $notes[] = "Courier removed";
+                        $notes[] = 'Courier removed';
                     }
                 }
-                
+
                 // Create status history entry
                 OrderStatusHistory::create([
                     'order_id' => $order->id,
                     'status' => $newStatus,
                     'courier' => $order->courier?->name,
-                    'notes' => !empty($notes) ? implode('. ', $notes) : null,
+                    'notes' => ! empty($notes) ? implode('. ', $notes) : null,
                 ]);
             }
         });
-        
+
         // Create initial status history when order is created
         static::created(function ($order) {
             OrderStatusHistory::create([
@@ -61,36 +83,36 @@ class Order extends Model
             ]);
         });
     }
-    
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-    
+
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
-    
+
     public function statusHistory(): HasMany
     {
         return $this->hasMany(OrderStatusHistory::class)->orderBy('created_at', 'asc');
     }
-    
+
     public function courier(): BelongsTo
     {
-        return $this->belongsTo(Courier::class);
+        return $this->belongsTo(Courier::class, 'courier_id');
     }
-    
+
     public function products()
     {
         return $this->belongsToMany(Product::class, 'order_items')
             ->withPivot('quantity', 'price', 'subtotal')
             ->withTimestamps();
     }
-    
+
     public static function generateOrderNumber()
     {
-        return 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -8));
+        return 'ORD-'.date('Ymd').'-'.strtoupper(substr(uniqid(), -8));
     }
 }

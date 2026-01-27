@@ -56,32 +56,92 @@
                 </div>
                 <div class="col-lg-6 col-md-6">
                     <div class="contact__form">
-                        <form action="#">
+                        @if($success)
+                            <div class="alert alert-success alert-dismissible fade show" role="alert"
+                                style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
+                                <strong>Success!</strong> Your message has been sent successfully. We'll get back to you soon!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                                    wire:click="$set('success', false)"
+                                    style="float: right; background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+                            </div>
+                        @endif
+
+                        @if($errors->any())
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                                style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
+                                <strong>Error!</strong> Please fix the following errors:
+                                <ul style="margin: 10px 0 0 20px;">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                                    onclick="this.parentElement.remove()"
+                                    style="float: right; background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+                            </div>
+                        @endif
+
+                        <form wire:submit.prevent="submit">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <input type="text"
-                                        class="form-control border-secondary shadow-none transition-all"
-                                        placeholder="Email" onfocus="this.classList.add('border-dark', 'shadow-sm')"
+                                        wire:model="name"
+                                        class="form-control border-secondary shadow-none transition-all @error('name') border-danger @enderror"
+                                        placeholder="Your Name" 
+                                        onfocus="this.classList.add('border-dark', 'shadow-sm')"
                                         onblur="this.classList.remove('border-dark', 'shadow-sm')"
                                         style="transition: 0.3s;">
+                                    @error('name')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
                                 <div class="col-lg-6">
-                                    <input type="text"
-                                        class="form-control border-secondary shadow-none transition-all"
-                                        placeholder="Email" onfocus="this.classList.add('border-dark', 'shadow-sm')"
+                                    <input type="email"
+                                        wire:model="email"
+                                        class="form-control border-secondary shadow-none transition-all @error('email') border-danger @enderror"
+                                        placeholder="Your Email" 
+                                        onfocus="this.classList.add('border-dark', 'shadow-sm')"
                                         onblur="this.classList.remove('border-dark', 'shadow-sm')"
                                         style="transition: 0.3s;">
+                                    @error('email')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
                                 <div class="col-lg-12">
-                                    <textarea class="form-control border-secondary shadow-none transition-all" placeholder="Message" rows="4"
-                                        onfocus="this.classList.add('border-dark', 'shadow-sm')" onblur="this.classList.remove('border-dark', 'shadow-sm')"
-                                        style="transition: 0.3s;"></textarea>
+                                    <input type="text"
+                                        wire:model="phone"
+                                        class="form-control border-secondary shadow-none transition-all @error('phone') border-danger @enderror"
+                                        placeholder="Your Phone (Optional)" 
+                                        onfocus="this.classList.add('border-dark', 'shadow-sm')"
+                                        onblur="this.classList.remove('border-dark', 'shadow-sm')"
+                                        style="transition: 0.3s; margin-top: 15px;">
+                                    @error('phone')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                                <div class="col-lg-12">
+                                    <textarea 
+                                        wire:model="message"
+                                        class="form-control border-secondary shadow-none transition-all @error('message') border-danger @enderror" 
+                                        placeholder="Your Message" 
+                                        rows="4"
+                                        onfocus="this.classList.add('border-dark', 'shadow-sm')" 
+                                        onblur="this.classList.remove('border-dark', 'shadow-sm')"
+                                        style="transition: 0.3s; margin-top: 15px;"></textarea>
+                                    @error('message')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                     <button type="submit"
-                                        class="site-btn btn primary-btn text-white shadow-sm border-0 transition-all"
-                                        onmouseover="this.style.opacity='0.75'; this.classList.replace('shadow-sm', 'shadow-lg'); this.style.transform='translateY(-2px)'"
-                                        onmouseout="this.style.opacity='1'; this.classList.replace('shadow-lg', 'shadow-sm'); this.style.transform='translateY(0)'"
+                                        wire:loading.attr="disabled"
+                                        class="site-btn btn primary-btn text-white shadow-sm border-0 transition-all mt-3"
+                                        onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.style.transform='translateY(-2px)'"
+                                        onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.style.transform='translateY(0)'"
                                         style="transition: all 0.3s ease; opacity: 1;">
-                                        Send Message
+                                        <span wire:loading.remove wire:target="submit">Send Message</span>
+                                        <span wire:loading wire:target="submit">
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            Sending...
+                                        </span>
                                     </button>
                                 </div>
                             </div>

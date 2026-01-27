@@ -5,10 +5,40 @@
             <div class="hero__items" style="position: relative; overflow: hidden; height: 800px;">
                 <video autoplay muted loop playsinline
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;"
-                    id="hero-video">
+                    id="hero-video" data-protected="true">
                     <source src="{{ asset('videos/Brader-Skate.mp4') }}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
+                <script>
+                    // Immediately protect video from removal (runs before any other scripts)
+                    (function() {
+                        var video = document.getElementById('hero-video');
+                        if (video) {
+                            // Prevent removal by overriding removeChild
+                            var parent = video.parentNode;
+                            if (parent && parent.removeChild) {
+                                var originalRemoveChild = parent.removeChild;
+                                parent.removeChild = function(node) {
+                                    if (node && node.id === 'hero-video') {
+                                        console.log('Prevented video removal');
+                                        return node;
+                                    }
+                                    return originalRemoveChild.call(this, node);
+                                };
+                            }
+                            
+                            // Ensure video stays visible
+                            video.style.display = 'block';
+                            video.style.visibility = 'visible';
+                            video.style.opacity = '1';
+                            
+                            // Try to play
+                            if (video.paused) {
+                                video.play().catch(function() {});
+                            }
+                        }
+                    })();
+                </script>
                 <div class="container" style="position: relative; z-index: 1;">
                     <div class="row">
                         <div class="col-xl-5 col-lg-7 col-md-8">
@@ -205,6 +235,12 @@
             if (heroSlider && heroSlider.querySelector('video')) {
                 // Remove owl-carousel class if it exists
                 heroSlider.classList.remove('owl-carousel');
+                
+                // Protect video from removal - add a data attribute
+                var video = heroSlider.querySelector('video#hero-video');
+                if (video) {
+                    video.setAttribute('data-protected', 'true');
+                }
             }
         }
         
@@ -214,7 +250,15 @@
         // Also run when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', preventCarouselInit);
+        } else {
+            preventCarouselInit();
         }
+        
+        // Also run on window load (for full page reloads like logout)
+        window.addEventListener('load', function() {
+            setTimeout(preventCarouselInit, 50);
+            setTimeout(preventCarouselInit, 200);
+        });
     })();
 </script>
 
@@ -338,11 +382,215 @@
         }, 50);
     });
 
-    // Re-set background images after Livewire navigation
-    document.addEventListener('livewire:navigated', () => {
-        setTimeout(function() {
-            setBackgroundImages();
+    // Function to recreate video element if it was removed during navigation
+    function recreateVideoIfNeeded() {
+        var heroSlider = document.querySelector('.hero__slider');
+        if (!heroSlider) return;
+        
+        var heroItems = heroSlider.querySelector('.hero__items');
+        if (!heroItems) return;
+        
+        var video = heroItems.querySelector('video#hero-video');
+        
+        // If video doesn't exist, recreate it
+        if (!video) {
+            video = document.createElement('video');
+            video.id = 'hero-video';
+            video.setAttribute('autoplay', '');
+            video.setAttribute('muted', '');
+            video.setAttribute('loop', '');
+            video.setAttribute('playsinline', '');
+            video.setAttribute('data-protected', 'true');
+            video.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;';
+            
+            var source = document.createElement('source');
+            source.src = '{{ asset("videos/Brader-Skate.mp4") }}';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+            
+            // Insert video as first child of hero__items
+            heroItems.insertBefore(video, heroItems.firstChild);
+            
+            // Ensure video plays
+            video.play().catch(function(err) {
+                console.log('Video autoplay prevented:', err);
+            });
+        } else {
+            // Video exists, ensure it's protected and visible
+            video.setAttribute('data-protected', 'true');
             ensureVideoVisible();
-        }, 50);
+            if (video.paused) {
+                video.play().catch(function(err) {
+                    console.log('Video play prevented:', err);
+                });
+            }
+        }
+    }
+    
+    // Function to ensure video is always present (called on all page events)
+    function ensureVideoAlwaysPresent() {
+        recreateVideoIfNeeded();
+        ensureVideoVisible();
+    }
+    
+    // Handle full page reloads (logout uses form submission, not Livewire)
+    window.addEventListener('load', function() {
+        setTimeout(ensureVideoAlwaysPresent, 100);
+        setTimeout(ensureVideoAlwaysPresent, 300);
+        setTimeout(ensureVideoAlwaysPresent, 500);
     });
+    
+    // Handle DOM ready (for initial page load)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(ensureVideoAlwaysPresent, 50);
+            setTimeout(ensureVideoAlwaysPresent, 200);
+            setTimeout(ensureVideoAlwaysPresent, 500);
+        });
+    } else {
+        setTimeout(ensureVideoAlwaysPresent, 50);
+        setTimeout(ensureVideoAlwaysPresent, 200);
+        setTimeout(ensureVideoAlwaysPresent, 500);
+    }
+    
+    // Re-set background images after Livewire navigation (login, logout, etc.)
+    document.addEventListener('livewire:navigated', () => {
+        // Multiple checks with increasing delays to catch video removal
+        setTimeout(function() {
+            ensureVideoAlwaysPresent();
+            setBackgroundImages();
+        }, 50);
+        
+        setTimeout(function() {
+            ensureVideoAlwaysPresent();
+        }, 150);
+        
+        setTimeout(function() {
+            ensureVideoAlwaysPresent();
+        }, 300);
+        
+        setTimeout(function() {
+            ensureVideoAlwaysPresent();
+        }, 600);
+    });
+    
+    // Watch for DOM changes that might remove the video (login, logout, navigation)
+    if (typeof MutationObserver !== 'undefined') {
+        var videoObserver = null;
+        
+        function startObserving() {
+            // Disconnect existing observer if any
+            if (videoObserver) {
+                videoObserver.disconnect();
+            }
+            
+            var heroSlider = document.querySelector('.hero__slider');
+            if (heroSlider) {
+                videoObserver = new MutationObserver(function(mutations) {
+                    var video = heroSlider.querySelector('video#hero-video');
+                    if (!video) {
+                        // Video was removed, recreate it immediately
+                        recreateVideoIfNeeded();
+                    } else {
+                        // Video exists, ensure it's visible
+                        ensureVideoVisible();
+                    }
+                });
+                
+                videoObserver.observe(heroSlider, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['style', 'class']
+                });
+            }
+        }
+        
+        // Start observing immediately
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(startObserving, 50);
+            });
+        } else {
+            setTimeout(startObserving, 50);
+        }
+        
+        // Re-observe after Livewire navigation (login, logout, etc.)
+        document.addEventListener('livewire:navigated', function() {
+            setTimeout(function() {
+                startObserving();
+                recreateVideoIfNeeded();
+            }, 50);
+        });
+        
+        // Also re-observe after Livewire updates
+        document.addEventListener('livewire:update', function() {
+            setTimeout(function() {
+                var heroSlider = document.querySelector('.hero__slider');
+                if (!heroSlider || !heroSlider.querySelector('video#hero-video')) {
+                    startObserving();
+                    recreateVideoIfNeeded();
+                }
+            }, 50);
+        });
+    }
+    
+    // Additional check: periodically verify video exists (as fallback)
+    // This ensures video persists even if something removes it
+    setInterval(function() {
+        var heroSlider = document.querySelector('.hero__slider');
+        if (heroSlider) {
+            var video = heroSlider.querySelector('video#hero-video');
+            if (!video) {
+                recreateVideoIfNeeded();
+                ensureVideoVisible();
+            } else {
+                // Video exists, but ensure it's visible and playing
+                ensureVideoVisible();
+                if (video.paused) {
+                    video.play().catch(function(err) {
+                        console.log('Video play prevented:', err);
+                    });
+                }
+            }
+        }
+    }, 500); // Check every 500ms for faster recovery
+    
+    // Also intercept any attempts to remove the video element (for full page reloads like logout)
+    if (typeof MutationObserver !== 'undefined') {
+        var removalObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                mutation.removedNodes.forEach(function(node) {
+                    if (node.nodeType === 1 && node.id === 'hero-video') {
+                        // Video was removed, recreate immediately
+                        setTimeout(function() {
+                            recreateVideoIfNeeded();
+                            ensureVideoVisible();
+                        }, 10);
+                    }
+                });
+            });
+        });
+        
+        // Observe the entire document for video removal
+        function startRemovalObserver() {
+            if (document.body) {
+                removalObserver.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+        
+        if (document.body) {
+            startRemovalObserver();
+        } else {
+            document.addEventListener('DOMContentLoaded', startRemovalObserver);
+        }
+        
+        // Re-observe after page load (for full page reloads)
+        window.addEventListener('load', function() {
+            setTimeout(startRemovalObserver, 100);
+        });
+    }
 </script>

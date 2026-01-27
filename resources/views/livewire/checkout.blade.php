@@ -48,7 +48,8 @@
                             <h6 class="checkout__title">Billing Details</h6>
                             <div class="checkout__input">
                                 <p>Full Name<span>*</span></p>
-                                <input type="text" wire:model="fullName" required name="fullName" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                                <input type="text" wire:model="fullName" required name="fullName" 
+                                    @if(auth()->check()) readonly style="background-color: #f5f5f5; cursor: not-allowed;" @endif>
                                 @error('fullName')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -104,7 +105,8 @@
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Email<span>*</span></p>
-                                        <input type="email" wire:model="email" required name="email" readonly style="background-color: #f5f5f5; cursor: not-allowed;">
+                                        <input type="email" wire:model="email" required name="email" 
+                                            @if(auth()->check()) readonly style="background-color: #f5f5f5; cursor: not-allowed;" @endif>
                                         @error('email')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

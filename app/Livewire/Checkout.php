@@ -8,6 +8,7 @@ use App\Services\CartService;
 use App\Services\PayMongoService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -69,57 +70,99 @@ class Checkout extends Component
 
     public function placeOrder()
     {
-        $this->validate([
+        // Rate limiting: max 5 orders per minute per IP/user
+        $rateLimitKey = 'placeOrder:' . (Auth::id() ?? request()->ip());
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
+            $seconds = RateLimiter::availableIn($rateLimitKey);
+            session()->flash('error', "Too many checkout attempts. Please try again in {$seconds} seconds.");
+            return;
+        }
+        RateLimiter::hit($rateLimitKey, 60); // 60 seconds window
+        
+        // Enhanced validation with security measures
+        $validationRules = [
             'fullName' => 'required|string|max:255',
             'country' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
+            'address' => 'required|string|max:500',
             'town' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'postcode' => 'required|string|max:20',
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email',
-        ]);
+            'phone' => ['required', 'string', 'max:20', 'regex:/^[\d\s\-\+\(\)]+$/'],
+            'email' => 'required|email|max:255',
+        ];
+        
+        // For authenticated users, enforce email and name from account
+        if (Auth::check()) {
+            $user = Auth::user();
+            $this->email = $user->email ?? '';
+            $this->fullName = $user->name ?? '';
+        }
+        
+        $this->validate($validationRules);
         
         if ($this->cartItems->isEmpty()) {
             session()->flash('error', 'Your cart is empty.');
             return;
         }
         
-        // Create order
-        $order = Order::create([
+        // Re-verify product prices from database to prevent price manipulation
+        $verifiedCartItems = [];
+        $verifiedSubtotal = 0;
+        
+        foreach ($this->cartItems as $cartItem) {
+            $product = \App\Models\Product::find($cartItem->product_id);
+            
+            if (!$product || !$product->status) {
+                session()->flash('error', 'One or more products in your cart are no longer available.');
+                return;
+            }
+            
+            // Use verified price from database, not from cart
+            $verifiedPrice = $product->price;
+            $quantity = $cartItem->quantity;
+            $itemSubtotal = $verifiedPrice * $quantity;
+            
+            $verifiedCartItems[] = [
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'quantity' => $quantity,
+                'price' => $verifiedPrice,
+                'subtotal' => $itemSubtotal,
+            ];
+            
+            $verifiedSubtotal += $itemSubtotal;
+        }
+        
+        // Sanitize user input to prevent XSS
+        $sanitizedData = [
             'order_number' => Order::generateOrderNumber(),
             'user_id' => Auth::id(),
-            'email' => $this->email,
-            'full_name' => $this->fullName,
-            'phone' => $this->phone,
-            'address' => $this->address . ($this->addressDetails ? ', ' . $this->addressDetails : ''),
-            'town' => $this->town,
-            'state' => $this->state,
-            'postcode' => $this->postcode,
-            'country' => $this->country ?: 'Philippines',
-            'order_notes' => $this->orderNotes,
-            'subtotal' => $this->subtotal,
-            'total' => $this->total,
-            'payment_method' => 'checkout_session', // Using checkout session
-            'items' => $this->cartItems->map(function ($item) {
-                return [
-                    'product_id' => $item->product_id,
-                    'product_name' => $item->product->name,
-                    'quantity' => $item->quantity,
-                    'price' => $item->product->price,
-                    'subtotal' => $item->quantity * $item->product->price,
-                ];
-            })->toArray(),
-        ]);
+            'email' => filter_var(trim($this->email), FILTER_SANITIZE_EMAIL),
+            'full_name' => strip_tags(trim($this->fullName)),
+            'phone' => preg_replace('/[^0-9\s\-\+\(\)]/', '', trim($this->phone)),
+            'address' => strip_tags(trim($this->address . ($this->addressDetails ? ', ' . $this->addressDetails : ''))),
+            'town' => strip_tags(trim($this->town)),
+            'state' => strip_tags(trim($this->state)),
+            'postcode' => strip_tags(trim($this->postcode)),
+            'country' => strip_tags(trim($this->country ?: 'Philippines')),
+            'order_notes' => strip_tags(trim($this->orderNotes ?? '')),
+            'subtotal' => $verifiedSubtotal,
+            'total' => $verifiedSubtotal,
+            'payment_method' => 'checkout_session',
+            'items' => $verifiedCartItems,
+        ];
         
-        // Create order items (pivot table records)
-        foreach ($this->cartItems as $item) {
+        // Create order with sanitized and verified data
+        $order = Order::create($sanitizedData);
+        
+        // Create order items (pivot table records) with verified prices
+        foreach ($verifiedCartItems as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
-                'price' => $item->product->price,
-                'subtotal' => $item->quantity * $item->product->price,
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'price' => $item['price'],
+                'subtotal' => $item['subtotal'],
             ]);
         }
         
@@ -127,13 +170,13 @@ class Checkout extends Component
         try {
             $paymongoService = app(PayMongoService::class);
             
-            // Prepare line items for checkout session
-            $lineItems = $this->cartItems->map(function ($item) {
+            // Prepare line items for checkout session using verified prices
+            $lineItems = collect($verifiedCartItems)->map(function ($item) {
                 return [
-                    'name' => $item->product->name,
-                    'quantity' => $item->quantity,
-                    'price' => $item->product->price,
-                    'amount' => $item->quantity * $item->product->price,
+                    'name' => $item['product_name'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                    'amount' => $item['price'] * $item['quantity'],
                     'currency' => 'PHP',
                 ];
             })->toArray();
@@ -151,15 +194,18 @@ class Checkout extends Component
                     'order_number' => $order->order_number,
                 ],
                 [
-                    'name' => $this->fullName,
-                    'email' => $this->email,
-                    'phone' => $this->phone,
+                    'name' => $sanitizedData['full_name'],
+                    'email' => $sanitizedData['email'],
+                    'phone' => $sanitizedData['phone'],
                 ]
             );
             
             $order->update([
                 'checkout_session_id' => $checkoutSession['id'],
             ]);
+            
+            // Clear rate limiter on successful order creation
+            RateLimiter::clear($rateLimitKey);
             
             // Store order ID in session for guest users (so we can clear cart after webhook confirms payment)
             if (!Auth::check()) {

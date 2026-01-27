@@ -71,8 +71,180 @@
     <script src="{{ asset('bootstrap/js/mixitup.min.js') }}"></script>
     <script src="{{ asset('bootstrap/js/owl.carousel.min.js') }}"></script>
 
+    <!-- Prevent Owl Carousel from initializing on hero slider with video -->
+    <script>
+        // Override owlCarousel BEFORE main.js loads to prevent hero slider initialization
+        (function() {
+            // Wait for jQuery to be available
+            function setupOwlCarouselOverride() {
+                if (typeof $ !== 'undefined' && typeof $.fn !== 'undefined') {
+                    // Only override if not already overridden
+                    if (!$.fn.owlCarousel._original) {
+                        // Store original owlCarousel
+                        $.fn.owlCarousel._original = $.fn.owlCarousel;
+                        
+                        // Override owlCarousel
+                        $.fn.owlCarousel = function(options) {
+                            // Check if this selector matches hero slider
+                            var isHeroSlider = false;
+                            var hasVideo = false;
+                            
+                            // Check each element in the jQuery collection
+                            this.each(function() {
+                                var $el = $(this);
+                                if ($el.hasClass('hero__slider') || $el.is('.hero__slider')) {
+                                    isHeroSlider = true;
+                                    if ($el.find('video').length > 0) {
+                                        hasVideo = true;
+                                        return false; // break loop
+                                    }
+                                }
+                            });
+                            
+                            // If hero slider with video, skip initialization
+                            if (isHeroSlider && hasVideo) {
+                                console.log('Skipping Owl Carousel initialization on hero slider with video');
+                                // Ensure video stays visible
+                                var $video = this.find('video#hero-video');
+                                if ($video.length) {
+                                    $video.css({
+                                        'display': 'block',
+                                        'visibility': 'visible',
+                                        'opacity': '1'
+                                    });
+                                    var videoEl = $video[0];
+                                    if (videoEl && videoEl.paused) {
+                                        videoEl.play().catch(function() {});
+                                    }
+                                }
+                                return this; // Return jQuery object without initializing
+                            }
+                            
+                            // For all other cases, use original owlCarousel
+                            return $.fn.owlCarousel._original.apply(this, arguments);
+                        };
+                    }
+                }
+            }
+            
+            // Try immediately
+            setupOwlCarouselOverride();
+            
+            // Also try when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setupOwlCarouselOverride);
+            }
+        })();
+    </script>
+
     <!-- Main Template JS (must load last) -->
     <script src="{{ asset('bootstrap/js/main.js') }}"></script>
+    
+    <!-- Immediately after main.js loads, restore video if it was removed -->
+    <script>
+        (function() {
+            function restoreVideoAndPreventCarousel() {
+                if (typeof $ !== 'undefined') {
+                    var $heroSlider = $('.hero__slider');
+                    if ($heroSlider.length) {
+                        var $heroItems = $heroSlider.find('.hero__items');
+                        if ($heroItems.length) {
+                            var $video = $heroItems.find('video#hero-video');
+                            var hasVideo = $video.length > 0;
+                            
+                            // If video doesn't exist, recreate it
+                            if (!hasVideo) {
+                                console.log('Video was removed, recreating...');
+                                var videoHtml = '<video autoplay muted loop playsinline id="hero-video" data-protected="true" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;"><source src="{{ asset("videos/Brader-Skate.mp4") }}" type="video/mp4">Your browser does not support the video tag.</video>';
+                                $heroItems.prepend(videoHtml);
+                                $video = $heroItems.find('video#hero-video');
+                                
+                                // Try to play
+                                var videoEl = $video[0];
+                                if (videoEl) {
+                                    videoEl.play().catch(function() {});
+                                }
+                            }
+                            
+                            // Destroy any carousel instance
+                            if ($heroSlider.hasClass('owl-carousel')) {
+                                try {
+                                    $heroSlider.trigger('destroy.owl.carousel');
+                                } catch(e) {}
+                                $heroSlider.removeClass('owl-carousel');
+                            }
+                            
+                            // Ensure video is visible and styled correctly
+                            if ($video.length) {
+                                $video.css({
+                                    'display': 'block',
+                                    'visibility': 'visible',
+                                    'opacity': '1',
+                                    'position': 'absolute',
+                                    'top': '0',
+                                    'left': '0',
+                                    'width': '100%',
+                                    'height': '100%',
+                                    'object-fit': 'cover',
+                                    'z-index': '0'
+                                });
+                                
+                                // Ensure parent has correct styles
+                                $heroItems.css({
+                                    'position': 'relative',
+                                    'overflow': 'hidden',
+                                    'height': '800px'
+                                });
+                                
+                                // Try to play video
+                                var videoEl = $video[0];
+                                if (videoEl && videoEl.paused) {
+                                    videoEl.play().catch(function() {});
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Run immediately after main.js (synchronous)
+            restoreVideoAndPreventCarousel();
+            
+            // Also run with delays to catch any async initialization
+            setTimeout(restoreVideoAndPreventCarousel, 10);
+            setTimeout(restoreVideoAndPreventCarousel, 50);
+            setTimeout(restoreVideoAndPreventCarousel, 100);
+            setTimeout(restoreVideoAndPreventCarousel, 300);
+            setTimeout(restoreVideoAndPreventCarousel, 500);
+            
+            // Run on DOM ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(restoreVideoAndPreventCarousel, 50);
+                    setTimeout(restoreVideoAndPreventCarousel, 200);
+                });
+            }
+            
+            // Run on window load (for full page reloads like logout)
+            window.addEventListener('load', function() {
+                setTimeout(restoreVideoAndPreventCarousel, 50);
+                setTimeout(restoreVideoAndPreventCarousel, 200);
+                setTimeout(restoreVideoAndPreventCarousel, 500);
+                setTimeout(restoreVideoAndPreventCarousel, 1000);
+            });
+            
+            // Periodic check as fallback
+            setInterval(function() {
+                var $heroSlider = $('.hero__slider');
+                if ($heroSlider.length) {
+                    var $video = $heroSlider.find('video#hero-video');
+                    if (!$video.length) {
+                        restoreVideoAndPreventCarousel();
+                    }
+                }
+            }, 500);
+        })();
+    </script>
 
     <!-- Cart Notification Script -->
     <script>
@@ -177,21 +349,22 @@
                         </div>
                     </div>
                 </div>
-                {{-- <div class="row">
-                <div class="col-lg-12 text-center">
-                    <div class="footer__copyright__text">
-                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                        <p>Copyright ©
-                            <script>
-                                document.write(new Date().getFullYear());
-                            </script>2020
-                            All rights reserved | This template is made with <i class="fa fa-heart-o"
-                                aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                        </p>
-                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <div class="footer__copyright__text">
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            <p>Copyright ©
+                                <script>
+                                    document.write(new Date().getFullYear());
+                                </script>
+                                All rights reserved | This template is made with <i class="fa fa-heart-o"
+                                    aria-hidden="true"></i> by <a href="https://colorlib.com"
+                                    target="_blank">Colorlib</a>
+                            </p>
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        </div>
                     </div>
                 </div>
-            </div> --}}
             </div>
         </footer>
     @endif

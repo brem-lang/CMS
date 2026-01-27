@@ -40,7 +40,8 @@ class CheckoutSuccess extends Component
         }
         
         // Dispatch cart updated event to refresh cart count and sidebar
-        $this->dispatch('cartUpdated');
+        // Use a success message instead of default "Product added to cart!"
+        $this->dispatch('cartUpdated', message: 'Order placed successfully!');
     }
 
     public function render()

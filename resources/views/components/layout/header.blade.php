@@ -21,16 +21,7 @@
                                 @else
                                     <a href="{{ route('login') }}">Sign in</a>
                                 @endauth
-                                {{-- <a href="#">FAQs</a> --}}
                             </div>
-                            {{-- <div class="header__top__hover">
-                                <span>Usd <i class="arrow_carrot-down"></i></span>
-                                <ul>
-                                    <li>USD</li>
-                                    <li>EUR</li>
-                                    <li>USD</li>
-                                </ul>
-                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -61,14 +52,6 @@
                 <div class="col-lg-3 col-md-3">
                     <nav class="header__menu mobile-menu">
                         <ul class="d-flex align-items-center justify-content-end mb-0" style="list-style: none;">
-                            {{-- @auth
-                                <li class="me-3">
-                                    <a href="#" class="text-dark text-decoration-none fw-bold"
-                                        style="text-decoration: none;">
-                                        {{ auth()->user()->name }}
-                                    </a>
-                                </li>
-                            @endauth --}}
                             @auth
                                 <li class="position-relative me-3">
                                     <a href="{{ route('orders') }}" class="text-decoration-none"
