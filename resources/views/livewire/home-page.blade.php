@@ -42,12 +42,13 @@
                 <div class="container" style="position: relative; z-index: 1;">
                     <div class="row">
                         <div class="col-xl-5 col-lg-7 col-md-8">
-                            <div class="hero__text">
-                                <h2 style="color: white;">
+                            <div class="hero__text" style="position: relative; z-index: 2;">
+                                <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); opacity: 1 !important; top: 0 !important; position: relative !important;">
                                     I make people laugh, think, and chase freedom — through content that entertains,
                                     empowers, and sells.</h2>
                                 <a href="/shop"
                                     class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                                    style="opacity: 1 !important; top: 0 !important; position: relative !important;"
                                     onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
                                     onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
 
