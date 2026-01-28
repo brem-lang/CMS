@@ -22,7 +22,10 @@ class ProductInfolist
                         TextEntry::make('price')
                             ->money('PHP'),
                         TextEntry::make('stock_quantity')
-                            ->numeric(),
+                            ->numeric()
+                            ->formatStateUsing(fn ($state) => $state == 0 ? 'Out of Stock' : $state)
+                            ->color(fn ($state) => $state == 0 ? 'danger' : null)
+                            ->weight(fn ($state) => $state == 0 ? 'bold' : null),
                         IconEntry::make('status')
                             ->boolean(),
                         TextEntry::make('created_at')

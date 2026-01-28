@@ -120,10 +120,16 @@
                                 <div class="product__item">
                                     <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
                                         data-setbg="{{ $product->image_url }}"
-                                        style="background-image: url('{{ $product->image_url }}');"
+                                        style="background-image: url('{{ $product->image_url }}'); position: relative; {{ ($product->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}"
                                         wire:click="selectProduct({{ $product->id }})"
                                         onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
                                         onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
+
+                                        @if(($product->stock_quantity ?? 0) == 0)
+                                            <div style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                                Out of Stock
+                                            </div>
+                                        @endif
 
                                         <div class="opacity-0 hover-show d-none d-md-block">
                                             <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
@@ -133,10 +139,16 @@
                                     </div>
                                     <div class="product__item__text">
                                         <h6>{{ $product->name }}</h6>
-                                        <a href="#" wire:click.prevent="addToCart({{ $product->id }})"
-                                            class="add-cart">
-                                            + Add To Cart
-                                        </a>
+                                        @if(($product->stock_quantity ?? 0) == 0)
+                                            <a href="#" class="add-cart" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;" onclick="return false;">
+                                                + Add To Cart
+                                            </a>
+                                        @else
+                                            <a href="#" wire:click.prevent="addToCart({{ $product->id }})"
+                                                class="add-cart">
+                                                + Add To Cart
+                                            </a>
+                                        @endif
                                         <div class="rating">
                                             <i class="fa fa-star-o"></i>
                                             <i class="fa fa-star-o"></i>

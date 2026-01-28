@@ -13,9 +13,14 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="product__details__pic__item" style="text-align: center;">
+                        <div class="product__details__pic__item" style="text-align: center; position: relative;">
                             <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid"
-                                style="max-width: 100%; height: auto; margin: 0 auto;">
+                                style="max-width: 100%; height: auto; margin: 0 auto; {{ ($product->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}">
+                            @if(($product->stock_quantity ?? 0) == 0)
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(220, 53, 69, 0.9); color: white; padding: 15px 30px; border-radius: 5px; font-weight: bold; font-size: 18px; text-transform: uppercase; z-index: 10;">
+                                    Out of Stock
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -38,27 +43,48 @@
                             <h3>₱{{ number_format($product->price, 2) }}</h3>
                             <p>{{ $product->description }}</p>
                             <div class="product__details__cart__option">
-                                <div class="quantity">
-                                    <div
-                                        style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
-                                        <button type="button" wire:click="decrementQuantity"
-                                            style="background: #f5f5f5; border: none; border-right: 1px solid #e5e5e5; padding: 10px 15px; cursor: pointer; font-size: 14px; font-weight: 700; color: #111111; transition: background 0.2s ease; user-select: none;"
-                                            onmouseover="this.style.background='#ebebeb'"
-                                            onmouseout="this.style.background='#f5f5f5'">−</button>
-                                        <input type="number" value="{{ $quantity }}" readonly
-                                            style="border: none; background: transparent; text-align: center; width: 45px; font-weight: 600; color: #111111; padding: 10px 0; user-select: none; -moz-appearance: textfield;">
-                                        <button type="button" wire:click="incrementQuantity"
-                                            style="background: #f5f5f5; border: none; border-left: 1px solid #e5e5e5; padding: 10px 15px; cursor: pointer; font-size: 14px; font-weight: 700; color: #111111; transition: background 0.2s ease; user-select: none;"
-                                            onmouseover="this.style.background='#ebebeb'"
-                                            onmouseout="this.style.background='#f5f5f5'">+</button>
+                                @if(($product->stock_quantity ?? 0) == 0)
+                                    <div class="quantity" style="opacity: 0.5; pointer-events: none;">
+                                        <div
+                                            style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
+                                            <button type="button" disabled
+                                                style="background: #f5f5f5; border: none; border-right: 1px solid #e5e5e5; padding: 10px 15px; cursor: not-allowed; font-size: 14px; font-weight: 700; color: #999999;">−</button>
+                                            <input type="number" value="{{ $quantity }}" readonly
+                                                style="border: none; background: transparent; text-align: center; width: 45px; font-weight: 600; color: #999999; padding: 10px 0; user-select: none; -moz-appearance: textfield;">
+                                            <button type="button" disabled
+                                                style="background: #f5f5f5; border: none; border-left: 1px solid #e5e5e5; padding: 10px 15px; cursor: not-allowed; font-size: 14px; font-weight: 700; color: #999999;">+</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <a href="#" wire:click.prevent="addToCart" class="primary-btn">add to cart</a>
+                                    <a href="#" class="primary-btn" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;" onclick="return false;">add to cart</a>
+                                @else
+                                    <div class="quantity">
+                                        <div
+                                            style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
+                                            <button type="button" wire:click="decrementQuantity"
+                                                style="background: #f5f5f5; border: none; border-right: 1px solid #e5e5e5; padding: 10px 15px; cursor: pointer; font-size: 14px; font-weight: 700; color: #111111; transition: background 0.2s ease; user-select: none;"
+                                                onmouseover="this.style.background='#ebebeb'"
+                                                onmouseout="this.style.background='#f5f5f5'">−</button>
+                                            <input type="number" value="{{ $quantity }}" readonly
+                                                style="border: none; background: transparent; text-align: center; width: 45px; font-weight: 600; color: #111111; padding: 10px 0; user-select: none; -moz-appearance: textfield;">
+                                            <button type="button" wire:click="incrementQuantity"
+                                                style="background: #f5f5f5; border: none; border-left: 1px solid #e5e5e5; padding: 10px 15px; cursor: pointer; font-size: 14px; font-weight: 700; color: #111111; transition: background 0.2s ease; user-select: none;"
+                                                onmouseover="this.style.background='#ebebeb'"
+                                                onmouseout="this.style.background='#f5f5f5'">+</button>
+                                        </div>
+                                    </div>
+                                    <a href="#" wire:click.prevent="addToCart" class="primary-btn">add to cart</a>
+                                @endif
                             </div>
                             <div class="product__details__last__option">
                                 <ul>
                                     <li><span>SKU:</span> {{ $product->id }}</li>
-                                    <li><span>Stock:</span> {{ $product->stock_quantity ?? 'N/A' }} available</li>
+                                    <li><span>Stock:</span> 
+                                        @if(($product->stock_quantity ?? 0) == 0)
+                                            <span style="color: #dc3545; font-weight: bold;">Out of Stock</span>
+                                        @else
+                                            {{ $product->stock_quantity }} available
+                                        @endif
+                                    </li>
                                     <li><span>Price:</span> ₱{{ number_format($product->price, 2) }}</li>
                                 </ul>
                             </div>
@@ -107,7 +133,13 @@
                                                 <li><span>Product ID:</span> {{ $product->id }}</li>
                                                 <li><span>Name:</span> {{ $product->name }}</li>
                                                 <li><span>Price:</span> ₱{{ number_format($product->price, 2) }}</li>
-                                                <li><span>Stock:</span> {{ $product->stock_quantity ?? 'N/A' }}</li>
+                                                <li><span>Stock:</span> 
+                                                    @if(($product->stock_quantity ?? 0) == 0)
+                                                        <span style="color: #dc3545; font-weight: bold;">Out of Stock</span>
+                                                    @else
+                                                        {{ $product->stock_quantity }}
+                                                    @endif
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>

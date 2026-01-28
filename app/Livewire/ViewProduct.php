@@ -28,7 +28,10 @@ class ViewProduct extends Component
 
     public function incrementQuantity()
     {
-        $this->quantity++;
+        $maxQuantity = $this->product->stock_quantity ?? 0;
+        if ($this->quantity < $maxQuantity) {
+            $this->quantity++;
+        }
     }
 
     public function decrementQuantity()
@@ -40,6 +43,18 @@ class ViewProduct extends Component
 
     public function addToCart()
     {
+        // Check if product is out of stock
+        if (($this->product->stock_quantity ?? 0) <= 0) {
+            $this->dispatch('cartUpdated', message: 'This product is currently out of stock.', type: 'error');
+            return;
+        }
+
+        // Check if requested quantity exceeds available stock
+        if ($this->quantity > $this->product->stock_quantity) {
+            $this->dispatch('cartUpdated', message: 'Requested quantity exceeds available stock.', type: 'error');
+            return;
+        }
+
         app(CartService::class)->addToCart($this->product->id, $this->quantity);
         $this->dispatch('cartUpdated', message: 'Product added to cart successfully!');
         $this->quantity = 1;

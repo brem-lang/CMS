@@ -100,6 +100,13 @@ class Shop extends Component
     public function addToCart($id)
     {
         $product = Product::findOrFail($id);
+        
+        // Check if product is out of stock
+        if (($product->stock_quantity ?? 0) <= 0) {
+            $this->dispatch('cartUpdated', message: 'This product is currently out of stock.', type: 'error');
+            return;
+        }
+
         app(CartService::class)->addToCart($id, 1);
         $this->dispatch('cartUpdated', message: 'Product added to cart successfully!');
     }
