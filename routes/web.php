@@ -45,5 +45,11 @@ Route::get('/checkout/failed/{order}', \App\Livewire\CheckoutFailed::class)->nam
 Route::get('/checkout/bank-transfer/{order}', \App\Livewire\BankTransferInstructions::class)->name('checkout.bank-transfer');
 Route::post('/webhook', [\App\Http\Controllers\PayMongoWebhookController::class, 'handle'])->name('webhook');
 
+// Google OAuth routes
+Route::get('auth/google', [\App\Http\Controllers\Auth\GoogleController::class, 'redirect'])
+    ->name('auth.google');
+Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleController::class, 'callback'])
+    ->name('auth.google.callback');
+
 // Authentication routes (using Breeze's secure authentication)
 require __DIR__.'/auth.php';

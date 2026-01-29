@@ -32,14 +32,14 @@ class CartSidebar extends Component
     public function removeItem($productId)
     {
         app(CartService::class)->removeFromCart($productId);
-        $this->dispatch('cartUpdated');
+        $this->dispatch('cartUpdated', message: 'Item removed from cart!');
         session()->flash('message', 'Item removed from cart!');
     }
 
     public function updateQuantity($productId, $quantity)
     {
         app(CartService::class)->updateQuantity($productId, $quantity);
-        $this->dispatch('cartUpdated');
+        $this->dispatch('cartUpdated', message: 'Cart updated successfully!');
     }
 
     public function render()

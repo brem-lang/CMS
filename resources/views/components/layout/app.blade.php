@@ -10,6 +10,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
         rel="stylesheet">
 
+    <!-- Bootstrap Template CSS Files -->
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/font-awesome.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/elegant-icons.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/magnific-popup.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/nice-select.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/owl.carousel.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/slicknav.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/style.css') }}" type="text/css">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -72,6 +82,315 @@
 
     <!-- Main Template JS (must load last) -->
     <script src="{{ asset('bootstrap/js/main.js') }}"></script>
+
+    <!-- Prevent Owl Carousel from initializing on hero slider with video -->
+    <script>
+        // Override owlCarousel BEFORE main.js loads to prevent hero slider initialization
+        (function() {
+            // Wait for jQuery to be available
+            function setupOwlCarouselOverride() {
+                if (typeof $ !== 'undefined' && typeof $.fn !== 'undefined') {
+                    // Only override if not already overridden
+                    if (!$.fn.owlCarousel._original) {
+                        // Store original owlCarousel
+                        $.fn.owlCarousel._original = $.fn.owlCarousel;
+
+                        // Override owlCarousel
+                        $.fn.owlCarousel = function(options) {
+                            // Check if this selector matches hero slider
+                            var isHeroSlider = false;
+                            var hasVideo = false;
+
+                            // Check each element in the jQuery collection
+                            this.each(function() {
+                                var $el = $(this);
+                                if ($el.hasClass('hero__slider') || $el.is('.hero__slider')) {
+                                    isHeroSlider = true;
+                                    if ($el.find('video').length > 0) {
+                                        hasVideo = true;
+                                        return false; // break loop
+                                    }
+                                }
+                            });
+
+                            // If hero slider with video, skip initialization
+                            if (isHeroSlider && hasVideo) {
+                                console.log('Skipping Owl Carousel initialization on hero slider with video');
+                                // Ensure video stays visible
+                                var $video = this.find('video#hero-video');
+                                if ($video.length) {
+                                    $video.css({
+                                        'display': 'block',
+                                        'visibility': 'visible',
+                                        'opacity': '1'
+                                    });
+                                    var videoEl = $video[0];
+                                    if (videoEl && videoEl.paused) {
+                                        videoEl.play().catch(function() {});
+                                    }
+                                }
+                                return this; // Return jQuery object without initializing
+                            }
+
+                            // For all other cases, use original owlCarousel
+                            return $.fn.owlCarousel._original.apply(this, arguments);
+                        };
+                    }
+                }
+            }
+
+            // Try immediately
+            setupOwlCarouselOverride();
+
+            // Also try when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setupOwlCarouselOverride);
+            }
+        })();
+    </script>
+
+    <!-- Immediately after main.js loads, restore video if it was removed -->
+    <script>
+        (function() {
+            function restoreVideoAndPreventCarousel() {
+                if (typeof $ !== 'undefined') {
+                    var $heroSlider = $('.hero__slider');
+                    if ($heroSlider.length) {
+                        var $heroItems = $heroSlider.find('.hero__items');
+                        if ($heroItems.length) {
+                            var $video = $heroItems.find('video#hero-video');
+                            var hasVideo = $video.length > 0;
+
+                            // If video doesn't exist, recreate it
+                            if (!hasVideo) {
+                                console.log('Video was removed, recreating...');
+                                var videoHtml =
+                                    '<video autoplay muted loop playsinline id="hero-video" data-protected="true" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;"><source src="{{ asset('videos/Brader-Skate.mp4') }}" type="video/mp4">Your browser does not support the video tag.</video>';
+                                $heroItems.prepend(videoHtml);
+                                $video = $heroItems.find('video#hero-video');
+
+                                // Try to play
+                                var videoEl = $video[0];
+                                if (videoEl) {
+                                    videoEl.play().catch(function() {});
+                                }
+                            }
+
+                            // Destroy any carousel instance
+                            if ($heroSlider.hasClass('owl-carousel')) {
+                                try {
+                                    $heroSlider.trigger('destroy.owl.carousel');
+                                } catch (e) {}
+                                $heroSlider.removeClass('owl-carousel');
+                            }
+
+                            // Ensure video is visible and styled correctly
+                            if ($video.length) {
+                                $video.css({
+                                    'display': 'block',
+                                    'visibility': 'visible',
+                                    'opacity': '1',
+                                    'position': 'absolute',
+                                    'top': '0',
+                                    'left': '0',
+                                    'width': '100%',
+                                    'height': '100%',
+                                    'object-fit': 'cover',
+                                    'z-index': '0'
+                                });
+
+                                // Ensure parent has correct styles
+                                $heroItems.css({
+                                    'position': 'relative',
+                                    'overflow': 'hidden',
+                                    'height': '800px'
+                                });
+
+                                // Try to play video
+                                var videoEl = $video[0];
+                                if (videoEl && videoEl.paused) {
+                                    videoEl.play().catch(function() {});
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Run immediately after main.js (synchronous)
+            restoreVideoAndPreventCarousel();
+
+            // Also run with delays to catch any async initialization
+            setTimeout(restoreVideoAndPreventCarousel, 10);
+            setTimeout(restoreVideoAndPreventCarousel, 50);
+            setTimeout(restoreVideoAndPreventCarousel, 100);
+            setTimeout(restoreVideoAndPreventCarousel, 300);
+            setTimeout(restoreVideoAndPreventCarousel, 500);
+
+            // Run on DOM ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(restoreVideoAndPreventCarousel, 50);
+                    setTimeout(restoreVideoAndPreventCarousel, 200);
+                });
+            }
+
+            // Run on window load (for full page reloads like logout)
+            window.addEventListener('load', function() {
+                setTimeout(restoreVideoAndPreventCarousel, 50);
+                setTimeout(restoreVideoAndPreventCarousel, 200);
+                setTimeout(restoreVideoAndPreventCarousel, 500);
+                setTimeout(restoreVideoAndPreventCarousel, 1000);
+            });
+
+            // Periodic check as fallback
+            setInterval(function() {
+                var $heroSlider = $('.hero__slider');
+                if ($heroSlider.length) {
+                    var $video = $heroSlider.find('video#hero-video');
+                    if (!$video.length) {
+                        restoreVideoAndPreventCarousel();
+                    }
+                }
+            }, 500);
+        })();
+    </script>
+
+    <!-- Cart Notification Script -->
+    <script>
+        (function() {
+            let notificationTimeout = null;
+
+            function showCartNotification(messageText) {
+                const notification = document.getElementById('cart-notification');
+                const message = document.getElementById('notification-message');
+
+                if (!notification || !message) return;
+
+                // Clear any existing timeout to prevent conflicts
+                if (notificationTimeout) {
+                    clearTimeout(notificationTimeout);
+                    notificationTimeout = null;
+                }
+
+                // Reset notification state completely
+                notification.classList.remove('show');
+                notification.style.display = 'none';
+                
+                // Small delay to ensure CSS transition resets
+                setTimeout(() => {
+                    // Set message
+                    message.textContent = messageText || 'Product added to cart!';
+                    
+                    // Show notification
+                    notification.style.display = 'block';
+                    
+                    // Force reflow
+                    void notification.offsetHeight;
+                    
+                    // Add show class for animation
+                    notification.classList.add('show');
+
+                    // Auto-hide after 3 seconds
+                    notificationTimeout = setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => {
+                            notification.style.display = 'none';
+                            notificationTimeout = null;
+                        }, 150);
+                    }, 3000);
+                }, 10);
+            }
+
+            // Event handler function
+            function handleCartUpdated(...args) {
+                // Livewire v3 can pass events in different formats
+                let messageText = 'Product added to cart!';
+                
+                // Check all arguments passed to the handler
+                for (let arg of args) {
+                    // Format 1: Array with data object [eventName, {message: '...'}]
+                    if (Array.isArray(arg) && arg.length > 1) {
+                        const data = arg[1];
+                        if (data && typeof data === 'object' && data.message) {
+                            messageText = data.message;
+                            break;
+                        }
+                    }
+                    // Format 2: Direct object with message property
+                    else if (arg && typeof arg === 'object') {
+                        if (arg.message) {
+                            messageText = arg.message;
+                            break;
+                        }
+                        if (arg.detail && arg.detail.message) {
+                            messageText = arg.detail.message;
+                            break;
+                        }
+                    }
+                    // Format 3: Direct string message
+                    else if (typeof arg === 'string') {
+                        messageText = arg;
+                        break;
+                    }
+                }
+                
+                showCartNotification(messageText);
+            }
+
+            // Setup listener when Livewire initializes
+            document.addEventListener('livewire:init', () => {
+                if (window.Livewire) {
+                    Livewire.on('cartUpdated', handleCartUpdated);
+                }
+            });
+
+            // Re-setup listener after SPA navigation (Livewire v3 may clear listeners)
+            document.addEventListener('livewire:navigated', () => {
+                if (window.Livewire) {
+                    Livewire.on('cartUpdated', handleCartUpdated);
+                }
+            });
+
+            // Also setup immediately if Livewire is already loaded
+            if (window.Livewire) {
+                Livewire.on('cartUpdated', handleCartUpdated);
+            } else if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.Livewire) {
+                        Livewire.on('cartUpdated', handleCartUpdated);
+                    }
+                });
+            }
+
+            // Fallback: Also listen using window event
+            window.addEventListener('cartUpdated', (event) => {
+                const message = event.detail?.message || event.detail || 'Product added to cart!';
+                showCartNotification(message);
+            });
+        })();
+
+        // Hide preloader on Livewire navigation
+        document.addEventListener('livewire:navigated', () => {
+            if (typeof $ !== 'undefined') {
+                $(".loader").fadeOut();
+                $("#preloder").delay(200).fadeOut("slow");
+            } else {
+                // Fallback if jQuery isn't loaded yet
+                const loader = document.querySelector(".loader");
+                const preloder = document.getElementById("preloder");
+                if (loader) loader.style.display = 'none';
+                if (preloder) preloder.style.display = 'none';
+            }
+        });
+
+        // Handle session flash messages
+        @if (session('message'))
+            setTimeout(() => {
+                $('.alert').fadeOut('slow');
+            }, 3000);
+        @endif
+    </script>
 
     @if (!request()->routeIs('login') && !request()->routeIs('register'))
         {{-- footer --}}
