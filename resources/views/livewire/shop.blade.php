@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-3">
+                <div class="col-12 col-lg-3 mb-3 mb-lg-0 p-6">
                     <div class="shop__sidebar">
                         <div class="shop__sidebar__search">
                             <form wire:submit.prevent>
@@ -40,51 +40,65 @@
                             </form>
                         </div>
                         <div class="shop__sidebar__accordion">
-                            <div class="accordion" id="accordionExample">
+                            <div class="accordion" id="priceFilterAccordion">
                                 <div class="card">
-                                    <div class="card-heading">
-                                        <h6 style="margin-bottom: 15px; font-weight: 600;">Filter Price</h6>
+                                    <div class="card-heading" data-toggle="collapse" data-target="#priceFilterCollapse"
+                                         aria-expanded="false" aria-controls="priceFilterCollapse"
+                                         style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                        <h6 style="margin-bottom: 15px; font-weight: 600; margin-right: 10px;">Filter Price</h6>
+                                        <i class="fa fa-chevron-down d-lg-none" id="priceFilterIcon"
+                                            style="transition: transform 0.3s; margin-bottom: 15px; align-self: flex-start; margin-top: 2px;"></i>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="shop__sidebar__price">
-                                            <ul>
-                                                <li>
-                                                    <a href="#" wire:click.prevent="$set('priceRange', '0-50')"
-                                                        class="{{ $priceRange === '0-50' ? 'active' : '' }}"
-                                                        style="cursor: pointer;">₱0.00 - ₱50.00</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" wire:click.prevent="$set('priceRange', '50-100')"
-                                                        class="{{ $priceRange === '50-100' ? 'active' : '' }}"
-                                                        style="cursor: pointer;">₱50.00 - ₱100.00</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" wire:click.prevent="$set('priceRange', '100-150')"
-                                                        class="{{ $priceRange === '100-150' ? 'active' : '' }}"
-                                                        style="cursor: pointer;">₱100.00 - ₱150.00</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" wire:click.prevent="$set('priceRange', '150-200')"
-                                                        class="{{ $priceRange === '150-200' ? 'active' : '' }}"
-                                                        style="cursor: pointer;">₱150.00 - ₱200.00</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" wire:click.prevent="$set('priceRange', '200-250')"
-                                                        class="{{ $priceRange === '200-250' ? 'active' : '' }}"
-                                                        style="cursor: pointer;">₱200.00 - ₱250.00</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" wire:click.prevent="$set('priceRange', '250+')"
-                                                        class="{{ $priceRange === '250+' ? 'active' : '' }}"
-                                                        style="cursor: pointer;">₱250.00+</a>
-                                                </li>
-                                                @if ($priceRange)
+                                    <div id="priceFilterCollapse" class="collapse d-lg-block"
+                                        data-parent="#priceFilterAccordion">
+                                        <div class="card-body">
+                                            <div class="shop__sidebar__price">
+                                                <ul>
                                                     <li>
-                                                        <a href="#" wire:click.prevent="clearFilters"
-                                                            style="cursor: pointer; color: #dc3545;">Clear Filter</a>
+                                                        <a href="#"
+                                                            wire:click.prevent="$set('priceRange', '0-50')"
+                                                            class="{{ $priceRange === '0-50' ? 'active' : '' }}"
+                                                            style="cursor: pointer;">₱0.00 - ₱50.00</a>
                                                     </li>
-                                                @endif
-                                            </ul>
+                                                    <li>
+                                                        <a href="#"
+                                                            wire:click.prevent="$set('priceRange', '50-100')"
+                                                            class="{{ $priceRange === '50-100' ? 'active' : '' }}"
+                                                            style="cursor: pointer;">₱50.00 - ₱100.00</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#"
+                                                            wire:click.prevent="$set('priceRange', '100-150')"
+                                                            class="{{ $priceRange === '100-150' ? 'active' : '' }}"
+                                                            style="cursor: pointer;">₱100.00 - ₱150.00</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#"
+                                                            wire:click.prevent="$set('priceRange', '150-200')"
+                                                            class="{{ $priceRange === '150-200' ? 'active' : '' }}"
+                                                            style="cursor: pointer;">₱150.00 - ₱200.00</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#"
+                                                            wire:click.prevent="$set('priceRange', '200-250')"
+                                                            class="{{ $priceRange === '200-250' ? 'active' : '' }}"
+                                                            style="cursor: pointer;">₱200.00 - ₱250.00</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#"
+                                                            wire:click.prevent="$set('priceRange', '250+')"
+                                                            class="{{ $priceRange === '250+' ? 'active' : '' }}"
+                                                            style="cursor: pointer;">₱250.00+</a>
+                                                    </li>
+                                                    @if ($priceRange)
+                                                        <li>
+                                                            <a href="#" wire:click.prevent="clearFilters"
+                                                                style="cursor: pointer; color: #dc3545;">Clear
+                                                                Filter</a>
+                                                        </li>
+                                                    @endif
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -92,7 +106,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-9">
+                <div class="col-12 col-lg-9">
                     <div class="shop__product__option">
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6">
@@ -116,7 +130,7 @@
                     </div>
                     <div class="row">
                         @forelse($products as $product)
-                            <div class="col-lg-4 col-md-6 col-sm-6" wire:key="product-{{ $product->id }}">
+                            <div class="col-6 col-lg-4" wire:key="product-{{ $product->id }}">
                                 <div class="product__item">
                                     <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
                                         data-setbg="{{ $product->image_url }}"
@@ -125,8 +139,9 @@
                                         onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
                                         onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
 
-                                        @if(($product->stock_quantity ?? 0) == 0)
-                                            <div style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                        @if (($product->stock_quantity ?? 0) == 0)
+                                            <div
+                                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                                                 Out of Stock
                                             </div>
                                         @endif
@@ -139,8 +154,10 @@
                                     </div>
                                     <div class="product__item__text">
                                         <h6>{{ $product->name }}</h6>
-                                        @if(($product->stock_quantity ?? 0) == 0)
-                                            <a href="#" class="add-cart" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;" onclick="return false;">
+                                        @if (($product->stock_quantity ?? 0) == 0)
+                                            <a href="#" class="add-cart"
+                                                style="opacity: 0.5; cursor: not-allowed; pointer-events: none;"
+                                                onclick="return false;">
                                                 + Add To Cart
                                             </a>
                                         @else
@@ -227,4 +244,29 @@
         // Re-set background images after DOM update
         setBackgroundImages();
     });
+
+    // Handle price filter collapse icon rotation on mobile
+    function initPriceFilterIcon() {
+        const priceFilterCollapse = document.getElementById('priceFilterCollapse');
+        const priceFilterIcon = document.getElementById('priceFilterIcon');
+
+        if (priceFilterCollapse && priceFilterIcon) {
+            $(priceFilterCollapse).off('show.bs.collapse hide.bs.collapse');
+            $(priceFilterCollapse).on('show.bs.collapse', function() {
+                if (priceFilterIcon) {
+                    priceFilterIcon.style.transform = 'rotate(180deg)';
+                }
+            });
+            $(priceFilterCollapse).on('hide.bs.collapse', function() {
+                if (priceFilterIcon) {
+                    priceFilterIcon.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', initPriceFilterIcon);
+    document.addEventListener('livewire:init', initPriceFilterIcon);
+    document.addEventListener('livewire:update', initPriceFilterIcon);
 </script>

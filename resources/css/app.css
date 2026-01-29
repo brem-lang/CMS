@@ -3,3 +3,39 @@
 .nav-tabs.overflow-auto {
     -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
 }
+
+/* Mobile responsive styles for shop filter - collapsible on mobile only */
+@media (max-width: 991.98px) {
+    .shop__sidebar {
+        padding-right: 0;
+    }
+    
+    /* Adjust product image height for mobile 2-column layout */
+    .product__item__pic {
+        height: 200px !important;
+        background-size: cover;
+        background-position: center center;
+    }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 575.98px) {
+    .product__item__pic {
+        height: 180px !important;
+    }
+}
+
+/* Desktop - always show filter, hide chevron icon */
+@media (min-width: 992px) {
+    #priceFilterCollapse {
+        display: block !important;
+    }
+    
+    #priceFilterIcon {
+        display: none !important;
+    }
+    
+    .shop__sidebar__accordion .card-heading {
+        cursor: default !important;
+    }
+}
