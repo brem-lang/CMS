@@ -1,5 +1,14 @@
-/* Bootstrap template uses its own CSS from public/bootstrap/css/ */
-/* This file is kept for Vite compatibility but doesn't need Tailwind */
+/* Import vendor CSS files - order matters */
+@import '../../public/bootstrap/css/bootstrap.min.css';
+@import '../../public/bootstrap/css/font-awesome.min.css';
+@import '../../public/bootstrap/css/elegant-icons.css';
+@import '../../public/bootstrap/css/magnific-popup.css';
+@import '../../public/bootstrap/css/nice-select.css';
+@import '../../public/bootstrap/css/owl.carousel.min.css';
+@import '../../public/bootstrap/css/slicknav.min.css';
+@import '../../public/bootstrap/css/style.css';
+
+/* Custom CSS below */
 .nav-tabs.overflow-auto {
     -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
 }
