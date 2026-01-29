@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Orders\Tables;
 
 use App\Models\Courier;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class OrdersTable
 {
@@ -155,6 +157,45 @@ class OrdersTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('updateStatus')
+                        ->label('Update Status')
+                        ->icon('heroicon-o-arrow-path')
+                        ->requiresConfirmation()
+                        ->schema([
+                            Select::make('status')
+                                ->label('Order Status')
+                                ->options([
+                                    'pending' => 'Pending',
+                                    'confirm' => 'Order Confirmed',
+                                    'shipped' => 'Shipped',
+                                    'delivered' => 'Complete',
+                                    'cancelled' => 'Cancelled',
+                                ])
+                                ->required()
+                                ->live(),
+                            Select::make('courier_id')
+                                ->label('Courier')
+                                ->options(fn () => Courier::query()->pluck('name', 'id'))
+                                ->searchable()
+                                ->preload()
+                                ->required(fn ($get) => $get('status') === 'shipped')
+                                ->visible(fn ($get) => $get('status') === 'shipped')
+                                ->placeholder('Select courier'),
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            foreach ($records as $record) {
+                                $record->update([
+                                    'status' => $data['status'],
+                                    'courier_id' => $data['status'] === 'shipped' ? ($data['courier_id'] ?? null) : null,
+                                ]);
+                            }
+                        })
+                        ->successNotificationTitle(fn (Collection $records) => count($records) . ' order(s) status updated successfully')
+                        ->deselectRecordsAfterCompletion(),
+                ]),
             ])
             ->defaultSort('created_at', 'desc');
     }
