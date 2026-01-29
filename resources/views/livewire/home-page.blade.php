@@ -26,12 +26,12 @@
                                     return originalRemoveChild.call(this, node);
                                 };
                             }
-                            
+
                             // Ensure video stays visible
                             video.style.display = 'block';
                             video.style.visibility = 'visible';
                             video.style.opacity = '1';
-                            
+
                             // Try to play
                             if (video.paused) {
                                 video.play().catch(function() {});
@@ -43,7 +43,8 @@
                     <div class="row">
                         <div class="col-xl-5 col-lg-7 col-md-8">
                             <div class="hero__text" style="position: relative; z-index: 2;">
-                                <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); opacity: 1 !important; top: 0 !important; position: relative !important;">
+                                <h2
+                                    style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); opacity: 1 !important; top: 0 !important; position: relative !important;">
                                     I make people laugh, think, and chase freedom — through content that entertains,
                                     empowers, and sells.</h2>
                                 <a href="/shop"
@@ -70,8 +71,49 @@
     </section>
     <!-- Hero Section End -->
 
+    <!-- BUenas Section Begin -->
+    <section class="services spad" style="margin-top:-50px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <h2>Buenas</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="services__image">
+                        <img src="{{ asset('img/buenas_logo.png') }}" alt="Services" class="img-fluid"
+                            style="margin-top:-57px;">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="services__content">
+                        <h5 class="text-secondary" style="text-align: justify;">
+                            <strong>Game ni brader.</strong> laro na at ikaw na sunod pumaldo! 💸💸♥️
+                            <strong>Buenas PH</strong> |
+                            <strong>#PagBinuBuenasKaNgaNaman</strong> – Sign Up &amp; Win!
+                        </h5>
+
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="https://bit.ly/CristBriand-buenasph" target="_blank" rel="noopener noreferrer"
+                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                            Play Now
+                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- BUenas Section End -->
+
     <!-- Product Section Begin -->
-    <section class="product spad" style="margin-top: 60px;">
+    <section class="product spad" style="margin-top: -60px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -103,8 +145,9 @@
                                 onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
                                 onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
 
-                                @if(($product->stock_quantity ?? 0) == 0)
-                                    <div style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                @if (($product->stock_quantity ?? 0) == 0)
+                                    <div
+                                        style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                                         Out of Stock
                                     </div>
                                 @endif
@@ -190,8 +233,6 @@
     </section>
     <!-- Services Section End -->
 
-
-
     <!-- Latest Blog Section Begin -->
     <section class="latest spad" style="margin-top:-120px;">
         <div class="container">
@@ -242,7 +283,7 @@
             if (heroSlider && heroSlider.querySelector('video')) {
                 // Remove owl-carousel class if it exists
                 heroSlider.classList.remove('owl-carousel');
-                
+
                 // Protect video from removal - add a data attribute
                 var video = heroSlider.querySelector('video#hero-video');
                 if (video) {
@@ -250,17 +291,17 @@
                 }
             }
         }
-        
+
         // Run immediately
         preventCarouselInit();
-        
+
         // Also run when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', preventCarouselInit);
         } else {
             preventCarouselInit();
         }
-        
+
         // Also run on window load (for full page reloads like logout)
         window.addEventListener('load', function() {
             setTimeout(preventCarouselInit, 50);
@@ -275,7 +316,7 @@
         if (typeof $ !== 'undefined' && typeof $.fn.owlCarousel !== 'undefined') {
             // Store original owlCarousel function
             var originalOwlCarousel = $.fn.owlCarousel;
-            
+
             // Override owlCarousel to skip hero slider if it has a video
             $.fn.owlCarousel = function(options) {
                 var $this = $(this);
@@ -324,7 +365,7 @@
     function ensureVideoVisible() {
         var video = document.getElementById('hero-video') || document.querySelector('.hero__slider video');
         var $slider = typeof $ !== 'undefined' ? $('.hero__slider') : null;
-        
+
         if (video) {
             // Ensure video is always visible with explicit styles
             video.style.display = 'block';
@@ -337,7 +378,7 @@
             video.style.height = '100%';
             video.style.objectFit = 'cover';
             video.style.zIndex = '0';
-            
+
             // Ensure parent container has proper positioning
             var heroItems = video.closest('.hero__items');
             if (heroItems) {
@@ -347,14 +388,14 @@
                     heroItems.style.height = '800px';
                 }
             }
-            
+
             // Destroy any existing Owl Carousel instance
             if ($slider && $slider.length && typeof $.fn.owlCarousel !== 'undefined') {
                 if ($slider.data('owl.carousel')) {
                     try {
                         $slider.trigger('destroy.owl.carousel');
                         $slider.removeData('owl.carousel');
-                    } catch(e) {
+                    } catch (e) {
                         // Carousel already destroyed or not initialized
                     }
                 }
@@ -393,12 +434,12 @@
     function recreateVideoIfNeeded() {
         var heroSlider = document.querySelector('.hero__slider');
         if (!heroSlider) return;
-        
+
         var heroItems = heroSlider.querySelector('.hero__items');
         if (!heroItems) return;
-        
+
         var video = heroItems.querySelector('video#hero-video');
-        
+
         // If video doesn't exist, recreate it
         if (!video) {
             video = document.createElement('video');
@@ -408,16 +449,17 @@
             video.setAttribute('loop', '');
             video.setAttribute('playsinline', '');
             video.setAttribute('data-protected', 'true');
-            video.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;';
-            
+            video.style.cssText =
+                'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;';
+
             var source = document.createElement('source');
-            source.src = '{{ asset("videos/Brader-Skate.mp4") }}';
+            source.src = '{{ asset('videos/Brader-Skate.mp4') }}';
             source.type = 'video/mp4';
             video.appendChild(source);
-            
+
             // Insert video as first child of hero__items
             heroItems.insertBefore(video, heroItems.firstChild);
-            
+
             // Ensure video plays
             video.play().catch(function(err) {
                 console.log('Video autoplay prevented:', err);
@@ -433,20 +475,20 @@
             }
         }
     }
-    
+
     // Function to ensure video is always present (called on all page events)
     function ensureVideoAlwaysPresent() {
         recreateVideoIfNeeded();
         ensureVideoVisible();
     }
-    
+
     // Handle full page reloads (logout uses form submission, not Livewire)
     window.addEventListener('load', function() {
         setTimeout(ensureVideoAlwaysPresent, 100);
         setTimeout(ensureVideoAlwaysPresent, 300);
         setTimeout(ensureVideoAlwaysPresent, 500);
     });
-    
+
     // Handle DOM ready (for initial page load)
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
@@ -459,7 +501,7 @@
         setTimeout(ensureVideoAlwaysPresent, 200);
         setTimeout(ensureVideoAlwaysPresent, 500);
     }
-    
+
     // Re-set background images after Livewire navigation (login, logout, etc.)
     document.addEventListener('livewire:navigated', () => {
         // Multiple checks with increasing delays to catch video removal
@@ -467,30 +509,30 @@
             ensureVideoAlwaysPresent();
             setBackgroundImages();
         }, 50);
-        
+
         setTimeout(function() {
             ensureVideoAlwaysPresent();
         }, 150);
-        
+
         setTimeout(function() {
             ensureVideoAlwaysPresent();
         }, 300);
-        
+
         setTimeout(function() {
             ensureVideoAlwaysPresent();
         }, 600);
     });
-    
+
     // Watch for DOM changes that might remove the video (login, logout, navigation)
     if (typeof MutationObserver !== 'undefined') {
         var videoObserver = null;
-        
+
         function startObserving() {
             // Disconnect existing observer if any
             if (videoObserver) {
                 videoObserver.disconnect();
             }
-            
+
             var heroSlider = document.querySelector('.hero__slider');
             if (heroSlider) {
                 videoObserver = new MutationObserver(function(mutations) {
@@ -503,7 +545,7 @@
                         ensureVideoVisible();
                     }
                 });
-                
+
                 videoObserver.observe(heroSlider, {
                     childList: true,
                     subtree: true,
@@ -512,7 +554,7 @@
                 });
             }
         }
-        
+
         // Start observing immediately
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
@@ -521,7 +563,7 @@
         } else {
             setTimeout(startObserving, 50);
         }
-        
+
         // Re-observe after Livewire navigation (login, logout, etc.)
         document.addEventListener('livewire:navigated', function() {
             setTimeout(function() {
@@ -529,7 +571,7 @@
                 recreateVideoIfNeeded();
             }, 50);
         });
-        
+
         // Also re-observe after Livewire updates
         document.addEventListener('livewire:update', function() {
             setTimeout(function() {
@@ -541,7 +583,7 @@
             }, 50);
         });
     }
-    
+
     // Additional check: periodically verify video exists (as fallback)
     // This ensures video persists even if something removes it
     setInterval(function() {
@@ -562,7 +604,7 @@
             }
         }
     }, 500); // Check every 500ms for faster recovery
-    
+
     // Also intercept any attempts to remove the video element (for full page reloads like logout)
     if (typeof MutationObserver !== 'undefined') {
         var removalObserver = new MutationObserver(function(mutations) {
@@ -578,7 +620,7 @@
                 });
             });
         });
-        
+
         // Observe the entire document for video removal
         function startRemovalObserver() {
             if (document.body) {
@@ -588,13 +630,13 @@
                 });
             }
         }
-        
+
         if (document.body) {
             startRemovalObserver();
         } else {
             document.addEventListener('DOMContentLoaded', startRemovalObserver);
         }
-        
+
         // Re-observe after page load (for full page reloads)
         window.addEventListener('load', function() {
             setTimeout(startRemovalObserver, 100);

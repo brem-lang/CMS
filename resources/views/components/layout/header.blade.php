@@ -73,7 +73,7 @@
                     <div class="col-lg-3 col-md-3 col-6">
                         <div class="header__logo">
                             <a href="{{ route('home') }}">
-                                <img src="{{ asset('img/logo.webp') }}" alt="" class="mt-n4 mb-n5"
+                                <img src="{{ asset('img/bradernewlogo.png') }}" alt="" class="mt-n4 mb-n5"
                                     style="max-width: 100%; height: auto;">
                             </a>
                         </div>
