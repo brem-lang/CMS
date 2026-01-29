@@ -72,7 +72,7 @@
     <!-- Hero Section End -->
 
     <!-- BUenas Section Begin -->
-    <section class="services spad" style="margin-top:-50px;">
+    {{-- <section class="services spad" style="margin-top:-50px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -109,11 +109,12 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <!-- BUenas Section End -->
 
     <!-- Product Section Begin -->
-    <section class="product spad" style="margin-top: -60px;">
+    {{-- style="margin-top: -60px --}}
+    <section class="product spad" style="margin-top: 60px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
