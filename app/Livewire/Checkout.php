@@ -88,7 +88,7 @@ class Checkout extends Component
             'town' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'postcode' => 'required|string|max:20',
-            'phone' => ['required', 'string', 'max:20', 'regex:/^[\d\s\-\+\(\)]+$/'],
+            'phone' => ['required', 'string', 'max:20', 'regex:/^(\+?63|0)?[9]\d{2}[\s\-\(\)]?\d{3}[\s\-\(\)]?\d{4}$|^0\d{1,3}[\s\-\(\)]?\d{3}[\s\-\(\)]?\d{4}$/'],
             'email' => 'required|email|max:255',
         ];
 
@@ -196,7 +196,7 @@ class Checkout extends Component
                 $lineItems,
                 route('checkout.success', ['order' => $order->id]),
                 route('checkout.failed', ['order' => $order->id]),
-                ['gcash', 'grab_pay', 'paymaya'], // Payment method types (shopeepay not supported in checkout sessions)
+                ['gcash', 'grab_pay', 'paymaya', 'card'], // Payment method types (shopeepay not supported in checkout sessions)
                 "Order #{$order->order_number}",
                 [
                     'order_id' => (string) $order->id,
