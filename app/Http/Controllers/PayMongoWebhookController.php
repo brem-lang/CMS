@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FailedPayment;
+use App\Models\FailedPaymentItem;
 use App\Models\Order;
 use App\Services\CartService;
 use Illuminate\Http\Request;
@@ -43,7 +45,7 @@ class PayMongoWebhookController extends Controller
             // Event type is at event['attributes']['type']
             // PayMongo webhook structure: { "data": { "type": "event", "attributes": { "type": "payment.paid", ... } } }
             $eventType = $event['attributes']['type'] ?? null;
-            
+
             // Extract payment method based on event type
             $paymentUsed = null;
             if ($eventType === 'checkout_session.payment.paid') {
@@ -80,6 +82,19 @@ class PayMongoWebhookController extends Controller
         }
     }
 
+    /**
+     * Handle payment.paid webhook event
+     *
+     * When payment succeeds:
+     * - Order is marked as paid (payment_status = 'paid', status = 'processing')
+     * - Cart IS cleared (items removed after successful payment)
+     * - Order record remains in database for tracking
+     *
+     * @param  array  $event
+     * @param  string  $eventType
+     * @param  string|null  $paymentUsed
+     * @return \Illuminate\Http\JsonResponse
+     */
     private function handlePaymentPaid($event, $eventType = 'payment.paid', $paymentUsed = null)
     {
         try {
@@ -152,6 +167,7 @@ class PayMongoWebhookController extends Controller
                 'order_number' => $order->order_number,
                 'current_status' => $order->status,
                 'current_payment_status' => $order->payment_status,
+                'payment_intent_id' => $paymentIntentId,
             ]);
 
             // Idempotency check: skip if already processed
@@ -174,13 +190,15 @@ class PayMongoWebhookController extends Controller
             $updateData = [
                 'payment_status' => 'paid',
                 'status' => 'processing',
+                'payment_intent_id' => $paymentIntentId,
             ];
-            
+            logger($paymentIntentId);
+
             // Only update payment_method if we have a valid value
             if ($paymentUsed) {
                 $updateData['payment_method'] = $paymentUsed;
             }
-            
+
             $order->update($updateData);
 
             Log::info('PayMongo Webhook: Order updated successfully', [
@@ -212,6 +230,20 @@ class PayMongoWebhookController extends Controller
         }
     }
 
+    /**
+     * Handle payment.failed webhook event
+     *
+     * When payment fails:
+     * - Order is DELETED from the 'orders' table
+     * - Order data is MIGRATED to the 'failed_payments' table
+     * - OrderItems are COPIED to 'failed_payment_items'
+     * - Cart is NOT cleared (items remain for retry)
+     * - User can retry checkout with the same cart items
+     *
+     * @param  array  $event
+     * @param  string  $eventType
+     * @return \Illuminate\Http\JsonResponse
+     */
     private function handlePaymentFailed($event, $eventType = 'payment.failed')
     {
         try {
@@ -266,7 +298,7 @@ class PayMongoWebhookController extends Controller
             }
 
             if (! $order) {
-                Log::warning('PayMongo Webhook: Order not found (failed)', [
+                Log::info('PayMongo Webhook: Order not found (failed) - may have already been deleted', [
                     'event_type' => $eventType,
                     'payment_intent_id' => $paymentIntentId,
                     'source_id' => $sourceId,
@@ -275,34 +307,120 @@ class PayMongoWebhookController extends Controller
                 ]);
 
                 // Return 200 OK to prevent PayMongo from retrying
-                return response()->json(['status' => 'order_not_found'], 200);
+                // Order may have already been deleted, which is fine
+                return response()->json(['status' => 'order_not_found_or_already_deleted'], 200);
             }
 
-            Log::info('PayMongo Webhook: Order found (failed)', [
-                'order_id' => $order->id,
-                'order_number' => $order->order_number,
+            // Eager load order items to ensure they are available for copying
+            $order->load('orderItems');
+
+            $orderId = $order->id;
+            $orderNumber = $order->order_number;
+
+            Log::info('PayMongo Webhook: Order found (failed) - migrating to failed_payments table', [
+                'order_id' => $orderId,
+                'order_number' => $orderNumber,
                 'current_payment_status' => $order->payment_status,
             ]);
 
-            // Idempotency check: skip if already marked as failed
-            if ($order->payment_status === 'failed') {
-                Log::info('PayMongo Webhook: Order already marked as failed, skipping', [
-                    'order_id' => $order->id,
-                    'order_number' => $order->order_number,
-                ]);
+            // Extract failure reason from PayMongo payload
+            $failureReason = $payment['attributes']['failed_message'] ?? null;
+            $failedCode = $payment['attributes']['failed_code'] ?? null;
 
-                return response()->json(['status' => 'already_processed', 'order_id' => $order->id]);
+            // Update order with payment_intent_id from webhook if not already set
+            if ($paymentIntentId && ! $order->payment_intent_id) {
+                $order->update(['payment_intent_id' => $paymentIntentId]);
+                Log::info('PayMongo Webhook: Updated order with payment_intent_id from webhook', [
+                    'order_id' => $orderId,
+                    'payment_intent_id' => $paymentIntentId,
+                ]);
             }
 
-            $order->update([
-                'payment_status' => 'failed',
+            // Use payment_intent_id from webhook payload if order doesn't have it
+            $finalPaymentIntentId = $order->payment_intent_id ?? $paymentIntentId;
+
+            // Create FailedPayment record with all order data
+            $failedPayment = null;
+            try {
+                $failedPayment = FailedPayment::create([
+                    'order_number' => $order->order_number,
+                    'user_id' => $order->user_id,
+                    'email' => $order->email,
+                    'full_name' => $order->full_name,
+                    'phone' => $order->phone,
+                    'address' => $order->address,
+                    'town' => $order->town,
+                    'state' => $order->state,
+                    'postcode' => $order->postcode,
+                    'country' => $order->country,
+                    'order_notes' => $order->order_notes,
+                    'subtotal' => $order->subtotal,
+                    'total' => $order->total,
+                    'payment_method' => $order->payment_method,
+                    'payment_status' => 'failed',
+                    'payment_intent_id' => $finalPaymentIntentId,
+                    'payment_source_id' => $order->payment_source_id ?? $sourceId,
+                    'checkout_session_id' => $order->checkout_session_id ?? $checkoutSessionId,
+                    'status' => 'cancelled',
+                    'courier_id' => $order->courier_id,
+                    'items' => $order->items,
+                    'failed_at' => now(),
+                    'failure_reason' => $failureReason ? ($failedCode ? "{$failedCode}: {$failureReason}" : $failureReason) : null,
+                ]);
+
+                Log::info('PayMongo Webhook: FailedPayment record created', [
+                    'failed_payment_id' => $failedPayment->id,
+                    'order_number' => $orderNumber,
+                ]);
+
+                // Copy OrderItems to FailedPaymentItems
+                foreach ($order->orderItems as $orderItem) {
+                    FailedPaymentItem::create([
+                        'failed_payment_id' => $failedPayment->id,
+                        'product_id' => $orderItem->product_id,
+                        'quantity' => $orderItem->quantity,
+                        'price' => $orderItem->price,
+                        'subtotal' => $orderItem->subtotal,
+                    ]);
+                }
+
+                Log::info('PayMongo Webhook: OrderItems copied to FailedPaymentItems', [
+                    'failed_payment_id' => $failedPayment->id,
+                    'items_count' => $order->orderItems->count(),
+                ]);
+
+                // Now delete the original order (cascades to order_items and order_status_history)
+                $order->delete();
+
+                Log::info('PayMongo Webhook: Order migrated to failed_payments and deleted from orders', [
+                    'failed_payment_id' => $failedPayment->id,
+                    'order_id' => $orderId,
+                    'order_number' => $orderNumber,
+                ]);
+            } catch (\Exception $migrationException) {
+                Log::error('PayMongo Webhook: Failed to migrate order to failed_payments', [
+                    'order_id' => $orderId,
+                    'order_number' => $orderNumber,
+                    'error' => $migrationException->getMessage(),
+                    'trace' => $migrationException->getTraceAsString(),
+                ]);
+                throw $migrationException;
+            }
+
+            // IMPORTANT: Do NOT clear the cart when payment fails
+            // This allows the user to retry payment with the same items
+            // The cart will only be cleared when payment succeeds (in handlePaymentPaid)
+            Log::info('PayMongo Webhook: Cart preserved for failed payment - user can retry', [
+                'failed_payment_id' => $failedPayment ? $failedPayment->id : null,
+                'order_number' => $orderNumber,
             ]);
 
-            Log::info('PayMongo Webhook: Order marked as failed', [
-                'order_id' => $order->id,
+            return response()->json([
+                'status' => 'success',
+                'order_migrated' => true,
+                'failed_payment_id' => $failedPayment ? $failedPayment->id : null,
+                'order_id' => $orderId,
             ]);
-
-            return response()->json(['status' => 'success', 'order_id' => $order->id]);
         } catch (\Exception $e) {
             Log::error('PayMongo Webhook: Error handling payment.failed', [
                 'error' => $e->getMessage(),

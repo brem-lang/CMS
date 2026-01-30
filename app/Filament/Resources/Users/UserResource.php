@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users;
 
 use App\Filament\Resources\Users\Pages\ManageUsers;
 use App\Models\User;
+use App\NavigationGroup;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -15,6 +16,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
+use UnitEnum;
 
 class UserResource extends Resource
 {
@@ -23,6 +25,10 @@ class UserResource extends Resource
     protected static ?string $modelLabel = 'User Management';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Users;
+
+    protected static ?int $navigationSort = 6;
+
+    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::user->value;
 
     public static function form(Schema $schema): Schema
     {

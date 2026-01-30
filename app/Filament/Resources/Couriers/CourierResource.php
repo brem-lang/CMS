@@ -10,12 +10,14 @@ use App\Filament\Resources\Couriers\Schemas\CourierForm;
 use App\Filament\Resources\Couriers\Schemas\CourierInfolist;
 use App\Filament\Resources\Couriers\Tables\CouriersTable;
 use App\Models\Courier;
+use App\NavigationGroup;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 
 class CourierResource extends Resource
 {
@@ -26,6 +28,10 @@ class CourierResource extends Resource
     protected static ?string $pluralModelLabel = 'Couriers';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Truck;
+
+    protected static ?int $navigationSort = 3;
+
+    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::sales->value;
 
     public static function form(Schema $schema): Schema
     {
@@ -62,24 +68,28 @@ class CourierResource extends Resource
     public static function canViewAny(): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 
     public static function canCreate(): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() ?? false;
     }
 
     public static function canUpdate(Model $record): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() ?? false;
     }
 
     public static function canDelete(Model $record): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() ?? false;
     }
 }

@@ -10,12 +10,14 @@ use App\Filament\Resources\Products\Schemas\ProductForm;
 use App\Filament\Resources\Products\Schemas\ProductInfolist;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Models\Product;
+use App\NavigationGroup;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 
 class ProductResource extends Resource
 {
@@ -24,6 +26,10 @@ class ProductResource extends Resource
     protected static ?string $modelLabel = 'Merchandise';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::BuildingStorefront;
+
+    protected static ?int $navigationSort = 4;
+
+    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::products->value;
 
     public static function form(Schema $schema): Schema
     {
@@ -60,24 +66,28 @@ class ProductResource extends Resource
     public static function canViewAny(): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 
     public static function canCreate(): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 
     public static function canUpdate(Model $record): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 
     public static function canDelete(Model $record): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() ?? false;
     }
 }

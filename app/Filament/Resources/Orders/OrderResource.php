@@ -10,12 +10,14 @@ use App\Filament\Resources\Orders\Schemas\OrderForm;
 use App\Filament\Resources\Orders\Schemas\OrderInfolist;
 use App\Filament\Resources\Orders\Tables\OrdersTable;
 use App\Models\Order;
+use App\NavigationGroup;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 
 class OrderResource extends Resource
 {
@@ -26,6 +28,10 @@ class OrderResource extends Resource
     protected static ?string $pluralModelLabel = 'Orders';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingCart;
+
+    protected static ?int $navigationSort = 1;
+
+    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::sales->value;
 
     public static function form(Schema $schema): Schema
     {
@@ -62,24 +68,28 @@ class OrderResource extends Resource
     public static function canViewAny(): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 
     public static function canCreate(): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() ?? false;
     }
 
     public static function canUpdate(Model $record): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 
     public static function canDelete(Model $record): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() ?? false;
     }
 }

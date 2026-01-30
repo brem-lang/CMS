@@ -10,18 +10,24 @@ use App\Filament\Resources\Blogs\Schemas\BlogForm;
 use App\Filament\Resources\Blogs\Schemas\BlogInfolist;
 use App\Filament\Resources\Blogs\Tables\BlogsTable;
 use App\Models\Blog;
+use App\NavigationGroup;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 
 class BlogResource extends Resource
 {
     protected static ?string $model = Blog::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Bookmark;
+
+    protected static ?int $navigationSort = 5;
+
+    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::products->value;
 
     public static function form(Schema $schema): Schema
     {
@@ -58,24 +64,28 @@ class BlogResource extends Resource
     public static function canViewAny(): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 
     public static function canCreate(): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 
     public static function canUpdate(Model $record): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 
     public static function canDelete(Model $record): bool
     {
         $user = auth()->user();
+
         return $user?->isAdmin() || $user?->isModerator() ?? false;
     }
 }
