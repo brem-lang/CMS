@@ -114,6 +114,12 @@ class Checkout extends Component
         foreach ($this->cartItems as $cartItem) {
             $product = \App\Models\Product::find($cartItem->product_id);
 
+            if ($product->stock_quantity <= 0) {
+                session()->flash('error', 'One or more products in your cart are out of stock. Please update your cart.');
+
+                return;
+            }
+
             if (! $product || ! $product->status) {
                 session()->flash('error', 'One or more products in your cart are no longer available.');
 
@@ -219,7 +225,7 @@ class Checkout extends Component
             return redirect($checkoutSession['attributes']['checkout_url']);
         } catch (\Exception $e) {
             Log::error('Payment processing error: '.$e->getMessage());
-            
+
             // Delete the order and its related records if payment processing fails
             // OrderItems and OrderStatusHistory will be cascade deleted automatically
             if (isset($order) && $order->exists) {
@@ -230,7 +236,7 @@ class Checkout extends Component
                     Log::error('Failed to delete order after payment error: '.$deleteException->getMessage());
                 }
             }
-            
+
             session()->flash('error', 'Payment processing failed. Please try again.');
 
             return;

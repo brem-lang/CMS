@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\FailedPayment;
 use App\Models\FailedPaymentItem;
 use App\Models\Order;
+use App\Models\Product;
 use App\Services\CartService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PayMongoWebhookController extends Controller
@@ -207,6 +209,84 @@ class PayMongoWebhookController extends Controller
                 'new_payment_status' => $order->payment_status,
                 'payment_method' => $order->payment_method,
             ]);
+
+            // Deduct stock quantity from products based on order items
+            try {
+                // Load order items with products relationship
+                $order->load('orderItems.product');
+
+                DB::transaction(function () use ($order) {
+                    foreach ($order->orderItems as $orderItem) {
+                        $product = $orderItem->product;
+
+                        if (! $product) {
+                            Log::warning('PayMongo Webhook: Product not found for order item', [
+                                'order_id' => $order->id,
+                                'order_item_id' => $orderItem->id,
+                                'product_id' => $orderItem->product_id,
+                            ]);
+                            continue;
+                        }
+
+                        $quantityToDeduct = $orderItem->quantity;
+                        $currentStock = $product->stock_quantity ?? 0;
+
+                        // Check if sufficient stock exists
+                        if ($currentStock < $quantityToDeduct) {
+                            Log::warning('PayMongo Webhook: Insufficient stock for product', [
+                                'order_id' => $order->id,
+                                'order_item_id' => $orderItem->id,
+                                'product_id' => $product->id,
+                                'product_name' => $product->name,
+                                'current_stock' => $currentStock,
+                                'requested_quantity' => $quantityToDeduct,
+                            ]);
+                            // Still deduct what's available (or set to 0) - this is a payment success scenario
+                            $quantityToDeduct = max(0, $currentStock);
+                        }
+
+                        // Use decrement() for atomic stock reduction
+                        $rowsAffected = Product::where('id', $product->id)
+                            ->where('stock_quantity', '>=', $quantityToDeduct)
+                            ->decrement('stock_quantity', $quantityToDeduct);
+
+                        if ($rowsAffected > 0) {
+                            Log::info('PayMongo Webhook: Stock deducted successfully', [
+                                'order_id' => $order->id,
+                                'order_item_id' => $orderItem->id,
+                                'product_id' => $product->id,
+                                'product_name' => $product->name,
+                                'quantity_deducted' => $quantityToDeduct,
+                                'previous_stock' => $currentStock,
+                                'new_stock' => $currentStock - $quantityToDeduct,
+                            ]);
+                        } else {
+                            Log::warning('PayMongo Webhook: Stock deduction failed - insufficient stock or product not found', [
+                                'order_id' => $order->id,
+                                'order_item_id' => $orderItem->id,
+                                'product_id' => $product->id,
+                                'product_name' => $product->name,
+                                'requested_quantity' => $quantityToDeduct,
+                                'current_stock' => $currentStock,
+                            ]);
+                        }
+                    }
+                });
+
+                Log::info('PayMongo Webhook: Stock deduction completed for all order items', [
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'items_count' => $order->orderItems->count(),
+                ]);
+            } catch (\Exception $stockException) {
+                Log::error('PayMongo Webhook: Error deducting stock', [
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'error' => $stockException->getMessage(),
+                    'trace' => $stockException->getTraceAsString(),
+                ]);
+                // Don't throw - payment was successful, stock issue should be logged but not fail the webhook
+            }
 
             // Clear cart
             $cartService = app(CartService::class);
