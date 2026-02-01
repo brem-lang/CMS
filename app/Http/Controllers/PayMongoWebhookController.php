@@ -549,13 +549,24 @@ class PayMongoWebhookController extends Controller
         }
 
         $timestamp = $signatureParts['t'] ?? null;
-        // PayMongo uses 'te' for the signature hash
-        $providedSignature = $signatureParts['te'] ?? null;
+        // PayMongo uses 'te' for signature hash, but live webhooks may use 'li'
+        // Check 'te' first, fallback to 'li' if 'te' is empty
+        $providedSignature = null;
+        $signatureField = null;
+
+        if (!empty($signatureParts['te'])) {
+            $providedSignature = $signatureParts['te'];
+            $signatureField = 'te';
+        } elseif (!empty($signatureParts['li'])) {
+            $providedSignature = $signatureParts['li'];
+            $signatureField = 'li';
+        }
 
         if (! $timestamp || ! $providedSignature) {
             Log::error('PayMongo Webhook: Invalid signature format', [
                 'signature_header' => $signatureHeader,
                 'parsed_parts' => $signatureParts,
+                'signature_field_used' => $signatureField,
             ]);
 
             return false;
@@ -590,6 +601,7 @@ class PayMongoWebhookController extends Controller
                 'expected' => $expectedSignature,
                 'provided' => $providedSignature,
                 'timestamp' => $timestamp,
+                'signature_field_used' => $signatureField,
             ]);
         }
 
