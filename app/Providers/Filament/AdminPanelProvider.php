@@ -64,6 +64,7 @@ class AdminPanelProvider extends PanelProvider
             ->spa()
             ->profile()
             ->maxContentWidth(Width::Full)
-            ->brandLogo(fn () => view('filament.logo'));
+            ->brandLogo(fn () => view('filament.logo'))
+            ->favicon(url('img/brader_favicon.png'));
     }
 }
