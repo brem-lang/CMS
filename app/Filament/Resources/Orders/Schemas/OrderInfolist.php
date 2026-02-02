@@ -24,7 +24,7 @@ class OrderInfolist
                             ->default('Guest'),
                         TextEntry::make('created_at')
                             ->label('Order Date')
-                            ->dateTime(),
+                            ->dateTime(timezone: 'Asia/Manila'),
                     ])
                     ->columns(3),
                 Section::make('Customer Information')

@@ -122,7 +122,7 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Order Date')
-                    ->dateTime()
+                    ->dateTime(timezone: 'Asia/Manila')
                     ->sortable(),
             ])
             ->filters([

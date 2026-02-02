@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Orders\Pages;
 
 use App\Filament\Resources\Orders\OrderResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,10 +13,7 @@ class ListOrders extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make()
-                ->icon('heroicon-o-plus'),
-        ];
+        return [];
     }
 
     public function getTabs(): array
