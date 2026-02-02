@@ -12,6 +12,7 @@ class Product extends Model
 
     protected $casts = [
         'status' => 'boolean',
+        'additional_images' => 'array',
     ];
 
     public function addedBy(): BelongsTo
@@ -26,5 +27,16 @@ class Product extends Model
         }
 
         return asset('bootstrap/img/product/product-1.jpg'); // fallback image
+    }
+
+    public function getAdditionalImagesUrlsAttribute(): array
+    {
+        if (empty($this->additional_images) || !is_array($this->additional_images)) {
+            return [];
+        }
+
+        return array_map(function ($image) {
+            return Storage::disk('public')->url($image);
+        }, $this->additional_images);
     }
 }

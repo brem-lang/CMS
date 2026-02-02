@@ -40,6 +40,15 @@ class ProductForm
                             ->directory('products')
                             ->image()
                             ->maxSize(5120),
+                        FileUpload::make('additional_images')
+                            ->label('Additional Images')
+                            ->disk('public')
+                            ->directory('products/additional')
+                            ->image()
+                            ->multiple()
+                            ->maxSize(5120)
+                            ->maxFiles(10)
+                            ->helperText('Optional: Upload multiple additional images for this product'),
                         Toggle::make('status')
                             ->label('Active')
                             ->onIcon(Heroicon::Check)
