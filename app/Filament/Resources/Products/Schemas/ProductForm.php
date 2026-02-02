@@ -39,7 +39,7 @@ class ProductForm
                             ->disk('public')
                             ->directory('products')
                             ->image()
-                            ->maxSize(1024),
+                            ->maxSize(5120),
                         Toggle::make('status')
                             ->label('Active')
                             ->onIcon(Heroicon::Check)
