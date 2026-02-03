@@ -31,7 +31,7 @@ class Product extends Model
 
     public function getAdditionalImagesUrlsAttribute(): array
     {
-        if (empty($this->additional_images) || !is_array($this->additional_images)) {
+        if (empty($this->additional_images) || ! is_array($this->additional_images)) {
             return [];
         }
 

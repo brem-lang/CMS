@@ -12,15 +12,39 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-12">
-                        <div class="product__details__pic__item" style="text-align: center; position: relative;">
-                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid"
-                                style="max-width: 100%; height: auto; margin: 0 auto; {{ ($product->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}">
-                            @if(($product->stock_quantity ?? 0) == 0)
-                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(220, 53, 69, 0.9); color: white; padding: 15px 30px; border-radius: 5px; font-weight: bold; font-size: 18px; text-transform: uppercase; z-index: 10;">
-                                    Out of Stock
+                    <div class="col-lg-3 col-md-3">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">
+                                    <div class="product__thumb__pic set-bg" data-setbg="{{ $product->image_url }}">
+                                    </div>
+                                </a>
+                            </li>
+                            @foreach ($product->additional_images ?? [] as $image)
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#tabs-{{ $loop->index + 2 }}"
+                                        role="tab">
+                                        <div class="product__thumb__pic set-bg" data-setbg="{{ Storage::url($image) }}">
+                                        </div>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <div class="col-lg-6 col-md-9">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                                <div class="product__details__pic__item">
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
                                 </div>
-                            @endif
+                            </div>
+                            @foreach ($product->additional_images ?? [] as $image)
+                                <div class="tab-pane" id="tabs-{{ $loop->index + 2 }}" role="tabpanel">
+                                    <div class="product__details__pic__item">
+                                        <img src="{{ Storage::url($image) }}" alt="{{ $product->name }}">
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -43,7 +67,7 @@
                             <h3>₱{{ number_format($product->price, 2) }}</h3>
                             <p>{{ $product->description }}</p>
                             <div class="product__details__cart__option">
-                                @if(($product->stock_quantity ?? 0) == 0)
+                                @if (($product->stock_quantity ?? 0) == 0)
                                     <div class="quantity" style="opacity: 0.5; pointer-events: none;">
                                         <div
                                             style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
@@ -55,7 +79,9 @@
                                                 style="background: #f5f5f5; border: none; border-left: 1px solid #e5e5e5; padding: 10px 15px; cursor: not-allowed; font-size: 14px; font-weight: 700; color: #999999;">+</button>
                                         </div>
                                     </div>
-                                    <a href="#" class="primary-btn" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;" onclick="return false;">add to cart</a>
+                                    <a href="#" class="primary-btn"
+                                        style="opacity: 0.5; cursor: not-allowed; pointer-events: none;"
+                                        onclick="return false;">add to cart</a>
                                 @else
                                     <div class="quantity">
                                         <div
@@ -72,14 +98,15 @@
                                                 onmouseout="this.style.background='#f5f5f5'">+</button>
                                         </div>
                                     </div>
-                                    <a href="#" wire:click.prevent="addToCart" class="primary-btn">add to cart</a>
+                                    <a href="#" wire:click.prevent="addToCart" class="primary-btn">add to
+                                        cart</a>
                                 @endif
                             </div>
                             <div class="product__details__last__option">
                                 <ul>
                                     <li><span>SKU:</span> {{ $product->id }}</li>
-                                    <li><span>Stock:</span> 
-                                        @if(($product->stock_quantity ?? 0) == 0)
+                                    <li><span>Stock:</span>
+                                        @if (($product->stock_quantity ?? 0) == 0)
                                             <span style="color: #dc3545; font-weight: bold;">Out of Stock</span>
                                         @else
                                             {{ $product->stock_quantity }} available
@@ -133,9 +160,10 @@
                                                 <li><span>Product ID:</span> {{ $product->id }}</li>
                                                 <li><span>Name:</span> {{ $product->name }}</li>
                                                 <li><span>Price:</span> ₱{{ number_format($product->price, 2) }}</li>
-                                                <li><span>Stock:</span> 
-                                                    @if(($product->stock_quantity ?? 0) == 0)
-                                                        <span style="color: #dc3545; font-weight: bold;">Out of Stock</span>
+                                                <li><span>Stock:</span>
+                                                    @if (($product->stock_quantity ?? 0) == 0)
+                                                        <span style="color: #dc3545; font-weight: bold;">Out of
+                                                            Stock</span>
                                                     @else
                                                         {{ $product->stock_quantity }}
                                                     @endif
