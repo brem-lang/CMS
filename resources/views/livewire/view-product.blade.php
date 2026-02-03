@@ -22,11 +22,11 @@
                             </li>
                             @foreach ($product->additional_images ?? [] as $image)
                                 <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#tabs-{{ $loop->index + 2 }}"
+                                    <span class="nav-link" style="cursor: not-allowed; opacity: 0.6; pointer-events: none;"
                                         role="tab">
                                         <div class="product__thumb__pic set-bg" data-setbg="{{ Storage::url($image) }}">
                                         </div>
-                                    </a>
+                                    </span>
                                 </li>
                             @endforeach
                         </ul>
@@ -34,8 +34,14 @@
                     <div class="col-lg-6 col-md-9">
                         <div class="tab-content">
                             <div class="tab-pane active" id="tabs-1" role="tabpanel">
-                                <div class="product__details__pic__item">
+                                <div class="product__details__pic__item" style="position: relative;">
                                     <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
+                                    @if (($product->stock_quantity ?? 0) == 0)
+                                        <div
+                                            style="position: absolute; top: 20px; right: 20px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 12px 20px; border-radius: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                                            Out of Stock
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                             @foreach ($product->additional_images ?? [] as $image)
