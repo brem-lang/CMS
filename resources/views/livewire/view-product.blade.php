@@ -22,11 +22,19 @@
                             </li>
                             @foreach ($product->additional_images ?? [] as $image)
                                 <li class="nav-item">
-                                    <span class="nav-link" style="cursor: not-allowed; opacity: 0.6; pointer-events: none;"
-                                        role="tab">
-                                        <div class="product__thumb__pic set-bg" data-setbg="{{ Storage::url($image) }}">
-                                        </div>
-                                    </span>
+                                    @if (($product->stock_quantity ?? 0) == 0)
+                                        <span class="nav-link" style="cursor: not-allowed; opacity: 0.6; pointer-events: none;"
+                                            role="tab">
+                                            <div class="product__thumb__pic set-bg" data-setbg="{{ Storage::url($image) }}">
+                                            </div>
+                                        </span>
+                                    @else
+                                        <a class="nav-link" data-toggle="tab" href="#tabs-{{ $loop->index + 2 }}"
+                                            role="tab">
+                                            <div class="product__thumb__pic set-bg" data-setbg="{{ Storage::url($image) }}">
+                                            </div>
+                                        </a>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>
