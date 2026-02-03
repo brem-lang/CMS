@@ -24,15 +24,16 @@
                                     Shop now
                                     <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
                                 </a>
-                                <div class="hero__social d-block d-md-none" style="margin-top: 55px;">
+                                <div class="hero__social d-block d-md-none" style="margin-top: 120px;">
                                     <div class="row align-items-center">
                                         <div class="col-lg-6">
                                             <div class="services__image">
                                                 <img src="{{ asset('img/buenas_logo_white.png') }}" alt="Services"
-                                                    class="img-fluid" style="margin-top:-57px;">
+                                                    class="img-fluid"
+                                                    style="margin-top:-57px;width:190px; height:100%;">
                                             </div>
                                         </div>
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-6" style="margin-top:-15px;">
                                             <div class="services__content">
                                                 <h5 class="text-white text-justify">
                                                     Please play <strong>responsibly</strong>.
@@ -42,7 +43,7 @@
                                                 <a href="https://bit.ly/CristBriand-buenasph" target="_blank"
                                                     rel="noopener noreferrer"
                                                     class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
-                                                    style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;font-size:13px;"
+                                                    style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;font-size:13px;margin-top:-15px;"
                                                     onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
                                                     onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
 
