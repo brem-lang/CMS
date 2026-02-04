@@ -38,6 +38,7 @@
                                 <thead>
                                     <tr>
                                         <th>Product</th>
+                                        <th>Size/Color</th>
                                         <th>Quantity</th>
                                         <th>Total</th>
                                         <th></th>
@@ -53,17 +54,22 @@
                                                 </div>
                                                 <div class="product__cart__item__text">
                                                     <h6>{{ $item->product->name }}</h6>
-                                                    @if ($item->selected_size ?? null)
-                                                        <p style="font-size: 12px; color: #999; margin: 2px 0;">Size: {{ $item->selected_size }}</p>
-                                                    @endif
-                                                    @if ($item->selected_color ?? null)
-                                                        <div style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
-                                                            <span style="font-size: 12px; color: #999;">Color:</span>
-                                                            <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: #{{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
-                                                        </div>
-                                                    @endif
                                                     <h5>₱{{ number_format($item->product->price, 2) }}</h5>
                                                 </div>
+                                            </td>
+                                            <td class="quantity__item">
+                                                @if ($item->selected_size ?? null)
+                                                    <p style="font-size: 12px; color: #999; margin: 2px 0;">Size:
+                                                        {{ $item->selected_size }}</p>
+                                                @endif
+                                                @if ($item->selected_color ?? null)
+                                                    <div
+                                                        style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
+                                                        <span style="font-size: 12px; color: #999;">Color:</span>
+                                                        <span
+                                                            style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: #{{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
+                                                    </div>
+                                                @endif
                                             </td>
                                             <td class="quantity__item">
                                                 <div class="quantity">
@@ -85,7 +91,8 @@
                                                 </div>
                                             </td>
                                             <td class="cart__price">
-                                                ₱{{ number_format($item->quantity * $item->product->price, 2) }}</td>
+                                                ₱{{ number_format($item->quantity * $item->product->price, 2) }}
+                                            </td>
                                             <td class="cart__close">
                                                 <button type="button"
                                                     onclick="openRemoveModal(event, {{ $item->product_id }}, '{{ addslashes($item->product->name) }}', '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"

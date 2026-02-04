@@ -118,6 +118,26 @@ class OrderInfolist
                                     ->label('Product')
                                     ->weight('bold')
                                     ->placeholder('Product not found'),
+                                TextEntry::make('selected_size')
+                                    ->formatStateUsing(fn ($state) => $state ?? '-')
+                                    ->weight('bold')
+                                    ->label('Size'),
+                                TextEntry::make('selected_color')
+                                    ->label('Color')
+                                    ->html() // Allows the <span> to render as a circle
+                                    ->formatStateUsing(fn ($state) => $state ? '
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="
+                display: inline-block; 
+                width: 20px; 
+                height: 20px; 
+                border-radius: 50%; 
+                background-color: #'.$state.'; 
+                border: 1px solid #e5e5e5;
+                flex-shrink: 0;
+            "></span>
+        </div>' : '-')
+                                    ->extraAttributes(['class' => 'text-left']),
                                 TextEntry::make('quantity')
                                     ->label('Quantity')
                                     ->numeric(),
@@ -129,9 +149,10 @@ class OrderInfolist
                                     ->money('PHP')
                                     ->weight('bold'),
                             ])
-                            ->columns(4)
+                            ->columns(6)
                             ->columnSpanFull(),
                     ])
+                    ->columnSpanFull()
                     ->collapsible(),
             ]);
     }

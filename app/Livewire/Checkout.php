@@ -137,6 +137,8 @@ class Checkout extends Component
                 'quantity' => $quantity,
                 'price' => $verifiedPrice,
                 'subtotal' => $itemSubtotal,
+                'selected_size' => $cartItem->selected_size ?? null,
+                'selected_color' => $cartItem->selected_color ?? null,
             ];
 
             $verifiedSubtotal += $itemSubtotal;
@@ -169,6 +171,8 @@ class Checkout extends Component
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item['product_id'],
+                'selected_size' => $item['selected_size'],
+                'selected_color' => $item['selected_color'],
                 'quantity' => $item['quantity'],
                 'price' => $item['price'],
                 'subtotal' => $item['subtotal'],
