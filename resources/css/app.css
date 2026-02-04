@@ -9,7 +9,7 @@
     .shop__sidebar {
         padding-right: 0;
     }
-    
+
     /* Adjust product image height for mobile 2-column layout */
     .product__item__pic {
         height: 200px !important;
@@ -30,12 +30,37 @@
     #priceFilterCollapse {
         display: block !important;
     }
-    
+
     #priceFilterIcon {
         display: none !important;
     }
-    
+
     .shop__sidebar__accordion .card-heading {
         cursor: default !important;
     }
+}
+
+.color-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    outline: 2px solid #e5e7eb; /* light gray for all */
+    outline-offset: 2px;
+
+    transition: outline-color 0.2s ease;
+}
+
+.color-swatch input {
+    display: none;
+}
+
+/* SELECTED */
+.color-swatch:has(input:checked) {
+    outline-color: #000; /* black ring */
 }

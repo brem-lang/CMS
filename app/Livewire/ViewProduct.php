@@ -66,8 +66,6 @@ class ViewProduct extends Component
 
     public function addToCart()
     {
-
-        dd($this->selectedSize, $this->selectedColor);
         // Check if product is out of stock
         if (($this->product->stock_quantity ?? 0) <= 0) {
             $this->dispatch('cartUpdated', message: 'This product is currently out of stock.', type: 'error');
@@ -83,16 +81,20 @@ class ViewProduct extends Component
         }
 
         // Validate required options if enabled
-        if ($this->product->has_size_options && empty($this->selectedSize)) {
-            $this->dispatch('cartUpdated', message: 'Please select a size option.', type: 'error');
+        if ($this->product->has_size_options && !empty($this->product->size_options)) {
+            if (empty($this->selectedSize)) {
+                $this->dispatch('cartUpdated', message: 'Please select a size option.', type: 'error');
 
-            return;
+                return;
+            }
         }
 
-        if ($this->product->has_color_options && empty($this->selectedColor)) {
-            $this->dispatch('cartUpdated', message: 'Please select a color option.', type: 'error');
+        if ($this->product->has_color_options && !empty($this->product->color_options)) {
+            if (empty($this->selectedColor)) {
+                $this->dispatch('cartUpdated', message: 'Please select a color option.', type: 'error');
 
-            return;
+                return;
+            }
         }
 
         app(CartService::class)->addToCart($this->product->id, $this->quantity);

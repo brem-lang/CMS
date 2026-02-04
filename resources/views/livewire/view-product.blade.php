@@ -136,7 +136,7 @@
                                                     $colorOptions = is_array($decoded) ? $decoded : [];
                                                 }
                                             @endphp
-                                            @foreach ($colorOptions as $index => $colorOption)
+                                            {{-- @foreach ($colorOptions as $index => $colorOption)
                                                 @php
                                                     // Extract color name from the data structure
                                                     if (is_array($colorOption)) {
@@ -154,7 +154,28 @@
                                                             name="color-{{ $product->id }}">
                                                     </label>
                                                 @endif
+                                            @endforeach --}}
+                                            @foreach ($colorOptions as $index => $colorOption)
+                                                @php
+                                                    $colorName = is_array($colorOption)
+                                                        ? $colorOption['name'] ?? ''
+                                                        : $colorOption;
+                                                    $isActive = $selectedColor === $colorName;
+                                                @endphp
+
+                                                @if (!empty($colorName))
+                                                    <label for="sp-{{ $index }}" class="color-swatch {{ $isActive ? 'active' : '' }}"
+                                                        style="background: #{{ $colorName }}; position: relative;">
+                                                        <input type="radio" id="sp-{{ $index }}"
+                                                            wire:model="selectedColor" value="{{ $colorName }}"
+                                                            name="color-{{ $product->id }}">
+                                                        @if ($isActive)
+                                                            <i class="fa fa-check" style="position: absolute; color: #e53637; font-size: 14px; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;"></i>
+                                                        @endif
+                                                    </label>
+                                                @endif
                                             @endforeach
+
                                         </div>
                                     @endif
                                 </div>
