@@ -115,20 +115,42 @@
                     <div class="checkout__order">
                         <h4 class="order__title">Order Items</h4>
                         <div class="checkout__order__products"
-                            style="display: grid; grid-template-columns: 1fr 0.8fr 0.8fr; gap: 10px; padding: 10px 0; border-bottom: 2px solid #e5e5e5; font-weight: 600; color: #111111;">
+                            style="display: grid; grid-template-columns: 1fr 1fr 0.8fr 0.8fr; gap: 10px; padding: 10px 0; border-bottom: 2px solid #e5e5e5; font-weight: 600; color: #111111;">
                             <span>Product</span>
+                            <span>Size/Color</span>
                             <span style="text-align: center;">Quantity</span>
                             <span style="text-align: right;">Subtotal</span>
                         </div>
                         <ul class="checkout__total__products" style="list-style: none; padding: 0; margin: 0;">
                             @foreach ($order->orderItems as $item)
                                 <li
-                                    style="display: grid; grid-template-columns: 1fr 0.8fr 0.8fr; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; align-items: center;">
-                                    <div>
-                                        <span
-                                            style="font-size: 14px; color: #666; font-weight: 600;">{{ $item->product->name }}</span>
-                                        <p style="font-size: 12px; color: #999; margin: 5px 0 0 0;">
-                                            ₱{{ number_format($item->price, 2) }} each</p>
+                                    style="display: grid; grid-template-columns: 1fr 1fr 0.8fr 0.8fr; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; align-items: center;">
+                                    <span
+                                        style="text-align: left; font-size: 14px; color: #666;">{{ $item->product->name }}</span>
+                                    <div style="text-align: left;">
+                                        @if ($item->selected_size ?? null)
+                                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">
+                                                Size: {{ $item->selected_size }}
+                                            </div>
+                                        @endif
+
+                                        @if ($item->selected_color ?? null)
+                                            <div
+                                                style="display: flex; align-items: center; gap: 6px; line-height: 1;">
+                                                <span style="font-size: 12px; color: #999;">Color:</span>
+                                                <span
+                                                    style="
+                display: inline-block; 
+                width: 14px; 
+                height: 14px; 
+                border-radius: 50%; 
+                background: #{{ $item->selected_color }}; 
+                border: 1px solid #e5e5e5;
+                flex-shrink: 0;
+            ">
+                                                </span>
+                                            </div>
+                                        @endif
                                     </div>
                                     <span
                                         style="text-align: center; font-size: 14px; color: #666;">x{{ $item->quantity }}</span>
