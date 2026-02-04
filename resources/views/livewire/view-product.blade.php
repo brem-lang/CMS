@@ -23,15 +23,18 @@
                             @foreach ($product->additional_images ?? [] as $image)
                                 <li class="nav-item">
                                     @if (($product->stock_quantity ?? 0) == 0)
-                                        <span class="nav-link" style="cursor: not-allowed; opacity: 0.6; pointer-events: none;"
+                                        <span class="nav-link"
+                                            style="cursor: not-allowed; opacity: 0.6; pointer-events: none;"
                                             role="tab">
-                                            <div class="product__thumb__pic set-bg" data-setbg="{{ Storage::url($image) }}">
+                                            <div class="product__thumb__pic set-bg"
+                                                data-setbg="{{ Storage::url($image) }}">
                                             </div>
                                         </span>
                                     @else
                                         <a class="nav-link" data-toggle="tab" href="#tabs-{{ $loop->index + 2 }}"
                                             role="tab">
-                                            <div class="product__thumb__pic set-bg" data-setbg="{{ Storage::url($image) }}">
+                                            <div class="product__thumb__pic set-bg"
+                                                data-setbg="{{ Storage::url($image) }}">
                                             </div>
                                         </a>
                                     @endif
@@ -79,7 +82,7 @@
                                 <span> - 5 Reviews</span>
                             </div>
                             <h3>₱{{ number_format($product->price, 2) }}</h3>
-                            <p>{{ $product->description }}</p>
+                            <p>{!! nl2br(e($product->description)) !!}</p>
                             <div class="product__details__cart__option">
                                 @if (($product->stock_quantity ?? 0) == 0)
                                     <div class="quantity" style="opacity: 0.5; pointer-events: none;">
