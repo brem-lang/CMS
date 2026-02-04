@@ -29,16 +29,16 @@ class CartSidebar extends Component
         $this->show = false;
     }
 
-    public function removeItem($productId)
+    public function removeItem($productId, $selectedSize = null, $selectedColor = null)
     {
-        app(CartService::class)->removeFromCart($productId);
+        app(CartService::class)->removeFromCart($productId, $selectedSize, $selectedColor);
         $this->dispatch('cartUpdated', message: 'Item removed from cart!');
         session()->flash('message', 'Item removed from cart!');
     }
 
-    public function updateQuantity($productId, $quantity)
+    public function updateQuantity($productId, $quantity, $selectedSize = null, $selectedColor = null)
     {
-        app(CartService::class)->updateQuantity($productId, $quantity);
+        app(CartService::class)->updateQuantity($productId, $quantity, $selectedSize, $selectedColor);
         $this->dispatch('cartUpdated', message: 'Cart updated successfully!');
     }
 

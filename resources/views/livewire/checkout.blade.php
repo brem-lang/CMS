@@ -166,8 +166,19 @@
                                         @forelse($cartItems as $index => $item)
                                             <li
                                                 style="display: grid; grid-template-columns: 1fr 0.8fr 0.8fr; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; align-items: center;">
-                                                <span
-                                                    style="font-size: 14px; color: #666;">{{ $item->product->name }}</span>
+                                                <div>
+                                                    <span
+                                                        style="font-size: 14px; color: #666; display: block;">{{ $item->product->name }}</span>
+                                                    @if ($item->selected_size ?? null)
+                                                        <span style="font-size: 12px; color: #999; display: block; margin-top: 2px;">Size: {{ $item->selected_size }}</span>
+                                                    @endif
+                                                    @if ($item->selected_color ?? null)
+                                                        <div style="display: flex; align-items: center; gap: 5px; margin-top: 2px;">
+                                                            <span style="font-size: 12px; color: #999;">Color:</span>
+                                                            <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: #{{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
+                                                        </div>
+                                                    @endif
+                                                </div>
                                                 <span
                                                     style="text-align: center; font-size: 14px; color: #666;">x{{ $item->quantity }}</span>
                                                 <span

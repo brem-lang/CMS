@@ -53,6 +53,15 @@
                                                 </div>
                                                 <div class="product__cart__item__text">
                                                     <h6>{{ $item->product->name }}</h6>
+                                                    @if ($item->selected_size ?? null)
+                                                        <p style="font-size: 12px; color: #999; margin: 2px 0;">Size: {{ $item->selected_size }}</p>
+                                                    @endif
+                                                    @if ($item->selected_color ?? null)
+                                                        <div style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
+                                                            <span style="font-size: 12px; color: #999;">Color:</span>
+                                                            <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: #{{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
+                                                        </div>
+                                                    @endif
                                                     <h5>₱{{ number_format($item->product->price, 2) }}</h5>
                                                 </div>
                                             </td>
@@ -61,14 +70,14 @@
                                                     <div
                                                         style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
                                                         <button
-                                                            wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity - 1 }})"
+                                                            wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity - 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
                                                             style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
                                                             onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
                                                             onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">−</button>
                                                         <input type="text" value="{{ $item->quantity }}" readonly
                                                             style="border: none; background: none; text-align: center; width: 50px; font-weight: 600; color: #111111;">
                                                         <button
-                                                            wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity + 1 }})"
+                                                            wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity + 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
                                                             style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
                                                             onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
                                                             onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">+</button>
@@ -79,7 +88,7 @@
                                                 ₱{{ number_format($item->quantity * $item->product->price, 2) }}</td>
                                             <td class="cart__close">
                                                 <button type="button"
-                                                    onclick="openRemoveModal(event, {{ $item->product_id }}, '{{ addslashes($item->product->name) }}')"
+                                                    onclick="openRemoveModal(event, {{ $item->product_id }}, '{{ addslashes($item->product->name) }}', '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
                                                     style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; transition: all 0.3s ease; padding: 5px 10px;"
                                                     onmouseover="this.style.color='#e53637'; this.style.transform='scale(1.3)'"
                                                     onmouseout="this.style.color='#999'; this.style.transform='scale(1)'">
@@ -189,11 +198,13 @@
     <script>
         let removeItemData = null;
 
-        function openRemoveModal(event, itemId, productName) {
+        function openRemoveModal(event, itemId, productName, selectedSize, selectedColor) {
             event.preventDefault();
             removeItemData = {
                 itemId: itemId,
-                productName: productName
+                productName: productName,
+                selectedSize: selectedSize || null,
+                selectedColor: selectedColor || null
             };
 
             document.getElementById('removeProductName').textContent = 'Product: ' + productName;
@@ -207,7 +218,7 @@
 
         function confirmRemoveItem() {
             if (removeItemData && window.Livewire) {
-                @this.removeItem(removeItemData.itemId);
+                @this.removeItem(removeItemData.itemId, removeItemData.selectedSize, removeItemData.selectedColor);
                 closeRemoveModal();
             }
         }

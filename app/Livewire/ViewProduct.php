@@ -97,7 +97,12 @@ class ViewProduct extends Component
             }
         }
 
-        app(CartService::class)->addToCart($this->product->id, $this->quantity);
+        app(CartService::class)->addToCart(
+            $this->product->id,
+            $this->quantity,
+            $this->selectedSize,
+            $this->selectedColor
+        );
         $this->dispatch('cartUpdated', message: 'Product added to cart successfully!');
         $this->quantity = 1;
         $this->selectedSize = null;
