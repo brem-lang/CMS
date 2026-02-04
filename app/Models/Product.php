@@ -13,6 +13,8 @@ class Product extends Model
     protected $casts = [
         'status' => 'boolean',
         'additional_images' => 'array',
+        'size_options' => 'array',
+        'color_options' => 'array',
     ];
 
     public function addedBy(): BelongsTo
