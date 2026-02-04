@@ -21,9 +21,22 @@ class ViewProduct extends Component
 
     public function mount($id)
     {
+        $this->loadProduct($id);
+    }
+
+    protected function loadProduct($id)
+    {
         $this->product = Product::where('id', $id)
             ->where('status', true)
             ->firstOrFail();
+
+        // Ensure arrays are properly cast
+        if ($this->product->size_options && is_string($this->product->size_options)) {
+            $this->product->size_options = json_decode($this->product->size_options, true) ?? [];
+        }
+        if ($this->product->color_options && is_string($this->product->color_options)) {
+            $this->product->color_options = json_decode($this->product->color_options, true) ?? [];
+        }
     }
 
     public function incrementQuantity()
@@ -41,23 +54,52 @@ class ViewProduct extends Component
         }
     }
 
+    public function selectSize($sizeName)
+    {
+        $this->selectedSize = $sizeName;
+    }
+
+    public function selectColor($colorName)
+    {
+        $this->selectedColor = $colorName;
+    }
+
     public function addToCart()
     {
+
+        dd($this->selectedSize, $this->selectedColor);
         // Check if product is out of stock
         if (($this->product->stock_quantity ?? 0) <= 0) {
             $this->dispatch('cartUpdated', message: 'This product is currently out of stock.', type: 'error');
+
             return;
         }
 
         // Check if requested quantity exceeds available stock
         if ($this->quantity > $this->product->stock_quantity) {
             $this->dispatch('cartUpdated', message: 'Requested quantity exceeds available stock.', type: 'error');
+
+            return;
+        }
+
+        // Validate required options if enabled
+        if ($this->product->has_size_options && empty($this->selectedSize)) {
+            $this->dispatch('cartUpdated', message: 'Please select a size option.', type: 'error');
+
+            return;
+        }
+
+        if ($this->product->has_color_options && empty($this->selectedColor)) {
+            $this->dispatch('cartUpdated', message: 'Please select a color option.', type: 'error');
+
             return;
         }
 
         app(CartService::class)->addToCart($this->product->id, $this->quantity);
         $this->dispatch('cartUpdated', message: 'Product added to cart successfully!');
         $this->quantity = 1;
+        $this->selectedSize = null;
+        $this->selectedColor = null;
     }
 
     public function render()

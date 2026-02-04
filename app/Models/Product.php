@@ -41,4 +41,45 @@ class Product extends Model
             return Storage::disk('public')->url($image);
         }, $this->additional_images);
     }
+
+    /**
+     * Get hex color code for a color name
+     */
+    public static function getColorHex(string $colorName): string
+    {
+        $colorMap = [
+            'red' => '#FF0000',
+            'blue' => '#0000FF',
+            'green' => '#008000',
+            'yellow' => '#FFFF00',
+            'black' => '#000000',
+            'white' => '#FFFFFF',
+            'gray' => '#808080',
+            'grey' => '#808080',
+            'orange' => '#FFA500',
+            'purple' => '#800080',
+            'pink' => '#FFC0CB',
+            'brown' => '#A52A2A',
+            'navy' => '#000080',
+            'maroon' => '#800000',
+            'teal' => '#008080',
+            'cyan' => '#00FFFF',
+            'magenta' => '#FF00FF',
+            'lime' => '#00FF00',
+            'olive' => '#808000',
+            'silver' => '#C0C0C0',
+            'gold' => '#FFD700',
+            'beige' => '#F5F5DC',
+            'tan' => '#D2B48C',
+            'coral' => '#FF7F50',
+            'salmon' => '#FA8072',
+            'turquoise' => '#40E0D0',
+            'violet' => '#EE82EE',
+            'indigo' => '#4B0082',
+            'khaki' => '#F0E68C',
+        ];
+
+        $colorNameLower = strtolower(trim($colorName));
+        return $colorMap[$colorNameLower] ?? '#CCCCCC'; // Default gray if color not found
+    }
 }

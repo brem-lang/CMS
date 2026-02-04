@@ -73,16 +73,93 @@
                     <div class="col-lg-8">
                         <div class="product__details__text">
                             <h4>{{ $product->name }}</h4>
-                            <div class="rating">
+                            {{-- <div class="rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star-o"></i>
                                 <span> - 5 Reviews</span>
-                            </div>
+                            </div> --}}
                             <h3>₱{{ number_format($product->price, 2) }}</h3>
                             <p>{!! nl2br(e($product->description)) !!}</p>
+
+                            @if (
+                                ($product->has_size_options && !empty($product->size_options)) ||
+                                    ($product->has_color_options && !empty($product->color_options)))
+                                <div class="product__details__option">
+                                    @if ($product->has_size_options && !empty($product->size_options))
+                                        <div class="product__details__option__size">
+                                            <span>Size:</span>
+                                            @php
+                                                // Ensure size_options is an array
+                                                $sizeOptions = is_array($product->size_options)
+                                                    ? $product->size_options
+                                                    : [];
+                                                // If it's a JSON string, decode it
+                                                if (is_string($product->size_options)) {
+                                                    $decoded = json_decode($product->size_options, true);
+                                                    $sizeOptions = is_array($decoded) ? $decoded : [];
+                                                }
+                                            @endphp
+                                            @foreach ($sizeOptions as $index => $sizeOption)
+                                                @php
+                                                    $sizeName = is_array($sizeOption)
+                                                        ? $sizeOption['name'] ?? ''
+                                                        : $sizeOption;
+                                                    $sizeId = 'size-' . $product->id . '-' . $index;
+                                                @endphp
+                                                @if (!empty($sizeName))
+                                                    <label for="{{ $sizeId }}"
+                                                        class="{{ $selectedSize === $sizeName ? 'active' : '' }}">
+                                                        {{ $sizeName }}
+                                                        <input type="radio" id="{{ $sizeId }}"
+                                                            wire:model="selectedSize" value="{{ $sizeName }}"
+                                                            name="size-{{ $product->id }}">
+                                                    </label>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    @if ($product->has_color_options && !empty($product->color_options))
+                                        <div class="product__details__option__color">
+                                            <span>Color:</span>
+                                            @php
+                                                // Ensure color_options is an array
+                                                $colorOptions = is_array($product->color_options)
+                                                    ? $product->color_options
+                                                    : [];
+                                                // If it's a JSON string, decode it
+                                                if (is_string($product->color_options)) {
+                                                    $decoded = json_decode($product->color_options, true);
+                                                    $colorOptions = is_array($decoded) ? $decoded : [];
+                                                }
+                                            @endphp
+                                            @foreach ($colorOptions as $index => $colorOption)
+                                                @php
+                                                    // Extract color name from the data structure
+                                                    if (is_array($colorOption)) {
+                                                        $colorName = $colorOption['name'] ?? '';
+                                                    } else {
+                                                        $colorName = $colorOption;
+                                                    }
+                                                @endphp
+                                                @if (!empty($colorName))
+                                                    <label for="sp-{{ $index }}"
+                                                        style="background: #{{ $colorName }}">
+                                                        <input type="radio" id="sp-{{ $index }}"
+                                                            wire:model="selectedColor"
+                                                            value="{{ $colorName }}"
+                                                            name="color-{{ $product->id }}">
+                                                    </label>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+
                             <div class="product__details__cart__option">
                                 @if (($product->stock_quantity ?? 0) == 0)
                                     <div class="quantity" style="opacity: 0.5; pointer-events: none;">

@@ -98,6 +98,7 @@ class ProductForm
                         Repeater::make('color_options')
                             ->label('Color Options')
                             ->visible(fn (Get $get) => $get('has_color_options'))
+                            ->hint(new \Illuminate\Support\HtmlString('<a href="https://coolors.co/colors/red" target="_blank" class="text-primary-600 hover:text-primary-700 underline">Click here to get a color palette</a>'))
                             ->schema([
                                 TextInput::make('name')
                                     ->label('Color Name')
