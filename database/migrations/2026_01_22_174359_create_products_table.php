@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->charset('utf8mb4')->collation('utf8mb4_unicode_ci');
             $table->foreignId('added_by')->constrained('users')->onDelete('cascade');
             $table->decimal('price', 10, 2);
             $table->integer('stock_quantity');
