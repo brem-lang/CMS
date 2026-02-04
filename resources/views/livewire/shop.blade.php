@@ -43,9 +43,10 @@
                             <div class="accordion" id="priceFilterAccordion">
                                 <div class="card">
                                     <div class="card-heading" data-toggle="collapse" data-target="#priceFilterCollapse"
-                                         aria-expanded="false" aria-controls="priceFilterCollapse"
-                                         style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                                        <h6 style="margin-bottom: 15px; font-weight: 600; margin-right: 10px;">Filter Price</h6>
+                                        aria-expanded="false" aria-controls="priceFilterCollapse"
+                                        style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                        <h6 style="margin-bottom: 15px; font-weight: 600; margin-right: 10px;">Filter
+                                            Price</h6>
                                         <i class="fa fa-chevron-down d-lg-none" id="priceFilterIcon"
                                             style="transition: transform 0.3s; margin-bottom: 15px; align-self: flex-start; margin-top: 2px;"></i>
                                     </div>
@@ -154,7 +155,7 @@
                                     </div>
                                     <div class="product__item__text">
                                         <h6>{{ $product->name }}</h6>
-                                        @if (($product->stock_quantity ?? 0) == 0)
+                                        {{-- @if (($product->stock_quantity ?? 0) == 0)
                                             <a href="#" class="add-cart"
                                                 style="opacity: 0.5; cursor: not-allowed; pointer-events: none;"
                                                 onclick="return false;">
@@ -172,7 +173,7 @@
                                             <i class="fa fa-star-o"></i>
                                             <i class="fa fa-star-o"></i>
                                             <i class="fa fa-star-o"></i>
-                                        </div>
+                                        </div> --}}
                                         <h5>₱{{ number_format($product->price, 2) }}</h5>
                                     </div>
                                 </div>
