@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
@@ -20,6 +21,11 @@ class Product extends Model
     public function addedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'added_by');
+    }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 
     public function getImageUrlAttribute(): string

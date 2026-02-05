@@ -62,56 +62,41 @@ class ProductForm
                             ->required(),
                     ])
                     ->columnSpan(1),
-                Section::make('Product Options')
-                    ->description('Configure size and color options for this product')
+                Section::make('Product Variants')
+                    ->description('Add specific variants with quantities (e.g., Black Medium: 10, White Large: 5)')
                     ->schema([
-                        Toggle::make('has_size_options')
-                            ->label('Enable Size Options')
-                            ->onIcon(Heroicon::Check)
-                            ->offIcon(Heroicon::XMark)
-                            ->inline(false)
-                            ->reactive()
-                            ->live()
-                            ->default(false)
-                            ->helperText('Allow customers to select different sizes for this product'),
-                        Repeater::make('size_options')
-                            ->label('Size Options')
-                            ->visible(fn (Get $get) => $get('has_size_options'))
+                        Repeater::make('variants')
+                            ->label('Variants')
+                            ->relationship('variants')
                             ->schema([
-                                TextInput::make('name')
-                                    ->label('Size Name')
+                                TextInput::make('color')
+                                    ->label('Color')
+                                    ->placeholder('e.g., Black, White, Red')
+                                    ->maxLength(255),
+                                TextInput::make('size')
+                                    ->label('Size')
+                                    ->placeholder('e.g., Small, Medium, Large')
+                                    ->maxLength(255),
+                                TextInput::make('quantity')
+                                    ->label('Quantity')
                                     ->required()
-                                    ->placeholder('e.g., Small, Medium, Large'),
+                                    ->numeric()
+                                    ->default(0)
+                                    ->minValue(0)
+                                    ->helperText('Stock quantity for this variant'),
                             ])
+                            ->columns(3)
                             ->defaultItems(0)
                             ->collapsible()
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null),
-                        Toggle::make('has_color_options')
-                            ->label('Enable Color Options')
-                            ->onIcon(Heroicon::Check)
-                            ->offIcon(Heroicon::XMark)
-                            ->inline(false)
-                            ->reactive()
-                            ->live()
-                            ->default(false)
-                            ->helperText('Allow customers to select different colors for this product'),
-                        Repeater::make('color_options')
-                            ->label('Color Options')
-                            ->visible(fn (Get $get) => $get('has_color_options'))
-                            ->hint(new \Illuminate\Support\HtmlString('<a href="https://coolors.co/colors/red" target="_blank" class="text-primary-600 hover:text-primary-700 underline">Click here to get a color palette</a>'))
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label('Color Name')
-                                    ->required()
-                                    ->placeholder('e.g., Red, Blue, Green'),
-                            ])
-                            ->defaultItems(0)
-                            ->collapsible()
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null),
+                            ->itemLabel(fn (array $state): ?string => 
+                                trim(($state['color'] ?? '') . ' ' . ($state['size'] ?? '')) . 
+                                ($state['quantity'] ? ' (' . $state['quantity'] . ')' : '')
+                            )
+                            ->addActionLabel('Add Variant')
+                            ->helperText('Add different color and size combinations with their respective quantities. Leave color or size empty if not applicable.'),
                     ])
                     ->columns(1)
-                    ->columnStart(3)
-                    ->columnSpan(1),
+                    ->columnSpanFull(),
             ])
             ->columns(3);
     }
