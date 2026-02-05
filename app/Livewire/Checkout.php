@@ -200,7 +200,7 @@ class Checkout extends Component
                 $lineItems,
                 route('checkout.success', ['order' => $order->id]),
                 route('checkout.failed', ['order' => $order->id]),
-                ['gcash', 'grab_pay', 'paymaya', 'card'], // Payment method types (shopeepay not supported in checkout sessions)
+                ['gcash', 'grab_pay', 'paymaya'], // Payment method types (shopeepay not supported in checkout sessions)
                 "Order #{$order->order_number}",
                 [
                     'order_id' => (string) $order->id,
