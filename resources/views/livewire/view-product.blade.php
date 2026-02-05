@@ -164,13 +164,15 @@
                                                 @endphp
 
                                                 @if (!empty($colorName))
-                                                    <label for="sp-{{ $index }}" class="color-swatch {{ $isActive ? 'active' : '' }}"
+                                                    <label for="sp-{{ $index }}"
+                                                        class="color-swatch {{ $isActive ? 'active' : '' }}"
                                                         style="background: #{{ $colorName }}; position: relative;">
                                                         <input type="radio" id="sp-{{ $index }}"
                                                             wire:model="selectedColor" value="{{ $colorName }}"
                                                             name="color-{{ $product->id }}">
                                                         @if ($isActive)
-                                                            <i class="fa fa-check" style="position: absolute; color: #e53637; font-size: 14px; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;"></i>
+                                                            <i class="fa fa-check"
+                                                                style="position: absolute; color: #e53637; font-size: 14px; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;"></i>
                                                         @endif
                                                     </label>
                                                 @endif
@@ -294,4 +296,33 @@
             </div>
         </div>
     </section>
+
+    <style>
+        .color-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            outline: 2px solid #e5e7eb;
+            /* light gray for all */
+            outline-offset: 2px;
+
+            transition: outline-color 0.2s ease;
+        }
+
+        .color-swatch input {
+            display: none;
+        }
+
+        /* SELECTED */
+        .color-swatch:has(input:checked) {
+            outline-color: #000;
+            /* black ring */
+        }
+    </style>
 </div>

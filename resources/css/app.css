@@ -39,28 +39,3 @@
         cursor: default !important;
     }
 }
-
-.color-swatch {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    outline: 2px solid #e5e7eb; /* light gray for all */
-    outline-offset: 2px;
-
-    transition: outline-color 0.2s ease;
-}
-
-.color-swatch input {
-    display: none;
-}
-
-/* SELECTED */
-.color-swatch:has(input:checked) {
-    outline-color: #000; /* black ring */
-}
