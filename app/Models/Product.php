@@ -13,7 +13,6 @@ class Product extends Model
 
     protected $casts = [
         'status' => 'boolean',
-        'additional_images' => 'array',
         'size_options' => 'array',
         'color_options' => 'array',
     ];
@@ -28,24 +27,18 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    /**
+     * Get the default image URL from variants (first variant's image)
+     */
     public function getImageUrlAttribute(): string
     {
-        if ($this->image) {
-            return Storage::disk('public')->url($this->image);
+        $firstVariant = $this->variants()->whereNotNull('color_image')->first();
+        
+        if ($firstVariant && $firstVariant->color_image_url) {
+            return $firstVariant->color_image_url;
         }
 
         return asset('bootstrap/img/product/product-1.jpg'); // fallback image
-    }
-
-    public function getAdditionalImagesUrlsAttribute(): array
-    {
-        if (empty($this->additional_images) || ! is_array($this->additional_images)) {
-            return [];
-        }
-
-        return array_map(function ($image) {
-            return Storage::disk('public')->url($image);
-        }, $this->additional_images);
     }
 
     /**

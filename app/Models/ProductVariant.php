@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class ProductVariant extends Model
 {
@@ -11,6 +12,7 @@ class ProductVariant extends Model
         'product_id',
         'size',
         'color',
+        'color_image',
         'quantity',
     ];
 
@@ -30,5 +32,17 @@ class ProductVariant extends Model
     {
         $parts = array_filter([$this->color, $this->size]);
         return implode(' ', $parts) ?: 'Default';
+    }
+
+    /**
+     * Get the color image URL
+     */
+    public function getColorImageUrlAttribute(): ?string
+    {
+        if ($this->color_image) {
+            return Storage::disk('public')->url($this->color_image);
+        }
+
+        return null;
     }
 }

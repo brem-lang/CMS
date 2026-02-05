@@ -30,29 +30,6 @@ class ProductForm
                             ->required()
                             ->numeric()
                             ->prefix('₱'),
-                        TextInput::make('stock_quantity')
-                            ->required()
-                            ->numeric(),
-                    ])
-                    ->columns(2)
-                    ->columnSpan(2),
-                Section::make()
-                    ->schema([
-                        FileUpload::make('image')
-                            ->required()
-                            ->disk('public')
-                            ->directory('products')
-                            ->image()
-                            ->maxSize(5120),
-                        FileUpload::make('additional_images')
-                            ->label('Additional Images')
-                            ->disk('public')
-                            ->directory('products/additional')
-                            ->image()
-                            ->multiple()
-                            ->maxSize(5120)
-                            ->maxFiles(10)
-                            ->helperText('Optional: Upload multiple additional images for this product'),
                         Toggle::make('status')
                             ->label('Active')
                             ->onIcon(Heroicon::Check)
@@ -60,40 +37,71 @@ class ProductForm
                             ->inline(false)
                             ->default(true)
                             ->required(),
+                        TextInput::make('stock_quantity')
+                            ->required()
+                            ->numeric(),
                     ])
-                    ->columnSpan(1),
+                    ->columns(2),
                 Section::make('Product Variants')
-                    ->description('Add specific variants with quantities (e.g., Black Medium: 10, White Large: 5)')
+                    ->description('Add color families with multiple size and quantity combinations')
                     ->schema([
-                        Repeater::make('variants')
-                            ->label('Variants')
-                            ->relationship('variants')
+                        Repeater::make('color_variants')
+                            ->label('Color Variants')
                             ->schema([
-                                TextInput::make('color')
-                                    ->label('Color')
-                                    ->placeholder('e.g., Black, White, Red')
-                                    ->maxLength(255),
-                                TextInput::make('size')
-                                    ->label('Size')
-                                    ->placeholder('e.g., Small, Medium, Large')
-                                    ->maxLength(255),
-                                TextInput::make('quantity')
-                                    ->label('Quantity')
+                                FileUpload::make('color_image')
+                                    ->label('Product Image')
+                                    ->disk('public')
+                                    ->directory('products/variants/colors')
+                                    ->image()
+                                    ->maxSize(2048)
+                                    ->imageEditor()
+                                    ->visibility('public')
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg', 'image/webp'])
                                     ->required()
-                                    ->numeric()
-                                    ->default(0)
-                                    ->minValue(0)
-                                    ->helperText('Stock quantity for this variant'),
+                                    ->helperText('Upload the product image for this color variant')
+                                    ->columnSpanFull(),
+                                TextInput::make('color')
+                                    ->label('Color Family')
+                                    ->placeholder('e.g., Black, White, Red')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
+                                Repeater::make('sizes')
+                                    ->label('Sizes & Quantities')
+                                    ->schema([
+                                        TextInput::make('size')
+                                            ->label('Size')
+                                            ->placeholder('e.g., XS, S, M, L, XL, XXL')
+                                            ->required()
+                                            ->maxLength(255),
+                                        TextInput::make('quantity')
+                                            ->label('Quantity')
+                                            ->required()
+                                            ->numeric()
+                                            ->default(0)
+                                            ->minValue(0)
+                                            ->helperText('Stock quantity for this size'),
+                                    ])
+                                    ->columns(2)
+                                    ->defaultItems(0)
+                                    ->addActionLabel('Add Size')
+                                    ->itemLabel(fn (array $state): ?string => 
+                                        ($state['size'] ?? '') . 
+                                        ($state['quantity'] ? ' (' . $state['quantity'] . ')' : '')
+                                    )
+                                    ->collapsible()
+                                    ->columnSpanFull(),
                             ])
-                            ->columns(3)
                             ->defaultItems(0)
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => 
-                                trim(($state['color'] ?? '') . ' ' . ($state['size'] ?? '')) . 
-                                ($state['quantity'] ? ' (' . $state['quantity'] . ')' : '')
+                                ($state['color'] ?? 'Color Variant') . 
+                                (isset($state['sizes']) && count($state['sizes']) > 0 
+                                    ? ' (' . count($state['sizes']) . ' sizes)' 
+                                    : '')
                             )
-                            ->addActionLabel('Add Variant')
-                            ->helperText('Add different color and size combinations with their respective quantities. Leave color or size empty if not applicable.'),
+                            ->addActionLabel('Add Color Variant')
+                            ->helperText('Upload the product image first, then provide the color family and add multiple sizes with their quantities.'),
                     ])
                     ->columns(1)
                     ->columnSpanFull(),

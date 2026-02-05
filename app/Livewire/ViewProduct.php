@@ -26,7 +26,8 @@ class ViewProduct extends Component
 
     protected function loadProduct($id)
     {
-        $this->product = Product::where('id', $id)
+        $this->product = Product::with('variants')
+            ->where('id', $id)
             ->where('status', true)
             ->firstOrFail();
 
@@ -41,7 +42,7 @@ class ViewProduct extends Component
 
     public function incrementQuantity()
     {
-        $maxQuantity = $this->product->stock_quantity ?? 0;
+        $maxQuantity = $this->getAvailableQuantity();
         if ($this->quantity < $maxQuantity) {
             $this->quantity++;
         }
@@ -57,30 +58,186 @@ class ViewProduct extends Component
     public function selectSize($sizeName)
     {
         $this->selectedSize = $sizeName;
+        $this->updateQuantityBasedOnVariant();
     }
 
     public function selectColor($colorName)
     {
         $this->selectedColor = $colorName;
+        // Reset size selection when color changes
+        $this->selectedSize = null;
+        $this->updateQuantityBasedOnVariant();
+    }
+
+    public function selectVariant($color, $size)
+    {
+        $this->selectedColor = $color ?: null;
+        $this->selectedSize = $size ?: null;
+        $this->updateQuantityBasedOnVariant();
+    }
+
+    protected function updateQuantityBasedOnVariant()
+    {
+        $availableQuantity = $this->getAvailableQuantity();
+        if ($this->quantity > $availableQuantity) {
+            $this->quantity = max(1, $availableQuantity);
+        }
+    }
+
+    public function getAvailableQuantity()
+    {
+        // If product has variants, check variant stock
+        if ($this->product->variants && $this->product->variants->count() > 0) {
+            // Require both size and color to be selected for variants
+            if (empty($this->selectedSize) || empty($this->selectedColor)) {
+                return 0;
+            }
+
+            $variant = $this->product->variants->first(function ($variant) {
+                return $variant->size === $this->selectedSize && 
+                       $variant->color === $this->selectedColor;
+            });
+
+            if ($variant) {
+                return $variant->quantity ?? 0;
+            }
+
+            // If no exact match, return 0
+            return 0;
+        }
+
+        // Fallback to product stock_quantity
+        return $this->product->stock_quantity ?? 0;
+    }
+
+    public function getSelectedVariant()
+    {
+        if (!$this->product->variants || $this->product->variants->count() === 0) {
+            return null;
+        }
+
+        return $this->product->variants->first(function ($variant) {
+            $sizeMatch = ($variant->size === $this->selectedSize) || 
+                        (empty($variant->size) && empty($this->selectedSize));
+            $colorMatch = ($variant->color === $this->selectedColor) || 
+                         (empty($variant->color) && empty($this->selectedColor));
+            return $sizeMatch && $colorMatch;
+        });
+    }
+
+    /**
+     * Get the image URL for the selected color variant
+     */
+    public function getDisplayImageUrl()
+    {
+        // If a color is selected, show the color variant image
+        if ($this->selectedColor && $this->product->variants && $this->product->variants->count() > 0) {
+            $colorVariant = $this->product->variants->first(function ($variant) {
+                return $variant->color === $this->selectedColor && !empty($variant->color_image);
+            });
+
+            if ($colorVariant && $colorVariant->color_image_url) {
+                return $colorVariant->color_image_url;
+            }
+        }
+
+        // Fallback to product main image
+        return $this->product->image_url;
+    }
+
+    /**
+     * Get total quantity for a specific size (sum of all colors for that size)
+     */
+    public function getSizeQuantity($sizeName)
+    {
+        if (!$this->product->variants || $this->product->variants->count() === 0) {
+            return null;
+        }
+
+        return $this->product->variants
+            ->where('size', $sizeName)
+            ->sum('quantity');
+    }
+
+    /**
+     * Get total quantity for a specific color (sum of all sizes for that color)
+     */
+    public function getColorQuantity($colorName)
+    {
+        if (!$this->product->variants || $this->product->variants->count() === 0) {
+            return null;
+        }
+
+        return $this->product->variants
+            ->where('color', $colorName)
+            ->sum('quantity');
+    }
+
+    /**
+     * Get quantity for a specific size-color combination
+     */
+    public function getVariantQuantity($sizeName, $colorName)
+    {
+        if (!$this->product->variants || $this->product->variants->count() === 0) {
+            return null;
+        }
+
+        if (empty($sizeName) || empty($colorName)) {
+            return null;
+        }
+
+        $variant = $this->product->variants->first(function ($variant) use ($sizeName, $colorName) {
+            return $variant->size === $sizeName && $variant->color === $colorName;
+        });
+
+        // Return null if variant doesn't exist, quantity if it does
+        return $variant ? $variant->quantity : null;
+    }
+
+    /**
+     * Check if a size-color combination is available
+     */
+    public function isVariantAvailable($sizeName, $colorName)
+    {
+        return $this->getVariantQuantity($sizeName, $colorName) > 0;
     }
 
     public function addToCart()
     {
-        // Check if product is out of stock
-        if (($this->product->stock_quantity ?? 0) <= 0) {
-            $this->dispatch('cartUpdated', message: 'This product is currently out of stock.', type: 'error');
+        $availableQuantity = $this->getAvailableQuantity();
+
+        // Check if product/variant is out of stock
+        if ($availableQuantity <= 0) {
+            $this->dispatch('cartUpdated', message: 'This product variant is currently out of stock.', type: 'error');
 
             return;
         }
 
         // Check if requested quantity exceeds available stock
-        if ($this->quantity > $this->product->stock_quantity) {
+        if ($this->quantity > $availableQuantity) {
             $this->dispatch('cartUpdated', message: 'Requested quantity exceeds available stock.', type: 'error');
 
             return;
         }
 
-        // Validate required options if enabled
+        // If product has variants, require variant selection
+        if ($this->product->variants && $this->product->variants->count() > 0) {
+            if (empty($this->selectedSize) || empty($this->selectedColor)) {
+                $this->dispatch('cartUpdated', message: 'Please select both a color and a size.', type: 'error');
+
+                return;
+            }
+
+            // Check if selected variant exists and has stock
+            $variant = $this->getSelectedVariant();
+            if (!$variant) {
+                $this->dispatch('cartUpdated', message: 'This size is not available for the selected color.', type: 'error');
+
+                return;
+            }
+        }
+
+        // Validate required options if enabled (for products without variants)
         if ($this->product->has_size_options && !empty($this->product->size_options)) {
             if (empty($this->selectedSize)) {
                 $this->dispatch('cartUpdated', message: 'Please select a size option.', type: 'error');
