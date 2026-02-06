@@ -19,6 +19,7 @@ class ProductForm
         return $schema
             ->components([
                 Section::make()
+                    ->columnSpanFull()
                     ->schema([
                         TextInput::make('name')
                             ->columnSpanFull()
@@ -80,7 +81,8 @@ class ProductForm
                             ->visible(fn ($get) => !$get('has_variants'))
                             ->columnSpanFull(),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->columnSpanFull(),
                 Section::make('Product Variants')
                     ->description('Add color families with multiple size and quantity combinations')
                     ->visible(fn ($get) => $get('has_variants'))
@@ -146,6 +148,6 @@ class ProductForm
                     ->columns(1)
                     ->columnSpanFull(),
             ])
-            ->columns(3);
+            ->columns(1);
     }
 }
