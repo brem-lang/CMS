@@ -8,29 +8,30 @@ use Illuminate\Support\Facades\Log;
 class PayMongoService
 {
     protected $secretKey;
+
     protected $apiUrl;
-    
+
     public function __construct()
     {
         $this->secretKey = config('services.paymongo.secret_key');
         $this->apiUrl = config('services.paymongo.api_url');
     }
-    
+
     /**
      * Get HTTP client with SSL configuration
      */
     protected function httpClient()
     {
         $client = Http::withBasicAuth($this->secretKey, '');
-        
+
         // For local development, disable SSL verification if needed
         if (app()->environment('local')) {
             $client = $client->withoutVerifying();
         }
-        
+
         return $client;
     }
-    
+
     /**
      * Create a payment intent
      */
@@ -39,9 +40,9 @@ class PayMongoService
         // Flatten metadata - PayMongo doesn't accept nested metadata
         $flatMetadata = [];
         foreach ($metadata as $key => $value) {
-            $flatMetadata[$key] = is_array($value) ? json_encode($value) : (string)$value;
+            $flatMetadata[$key] = is_array($value) ? json_encode($value) : (string) $value;
         }
-        
+
         $response = $this->httpClient()
             ->post("{$this->apiUrl}/payment_intents", [
                 'data' => [
@@ -59,14 +60,14 @@ class PayMongoService
                     ],
                 ],
             ]);
-            
+
         if ($response->successful()) {
             return $response->json()['data'];
         }
-        
-        throw new \Exception('Failed to create payment intent: ' . $response->body());
+
+        throw new \Exception('Failed to create payment intent: '.$response->body());
     }
-    
+
     /**
      * Create a payment method
      */
@@ -81,14 +82,14 @@ class PayMongoService
                     ],
                 ],
             ]);
-            
+
         if ($response->successful()) {
             return $response->json()['data'];
         }
-        
-        throw new \Exception('Failed to create payment method: ' . $response->body());
+
+        throw new \Exception('Failed to create payment method: '.$response->body());
     }
-    
+
     /**
      * Attach payment method to payment intent
      */
@@ -104,14 +105,14 @@ class PayMongoService
                     ],
                 ],
             ]);
-            
+
         if ($response->successful()) {
             return $response->json()['data'];
         }
-        
-        throw new \Exception('Failed to attach payment method: ' . $response->body());
+
+        throw new \Exception('Failed to attach payment method: '.$response->body());
     }
-    
+
     /**
      * Create a payment source for GCash/PayMaya
      */
@@ -126,9 +127,9 @@ class PayMongoService
             'maya' => 'grab_pay', // Maya uses grab_pay source type in PayMongo
             'shopeepay' => 'grab_pay', // ShopeePay uses grab_pay source type in PayMongo
         ];
-        
+
         $sourceType = $sourceTypeMap[$type] ?? $type;
-        
+
         $response = $this->httpClient()
             ->post("{$this->apiUrl}/sources", [
                 'data' => [
@@ -140,14 +141,14 @@ class PayMongoService
                     ],
                 ],
             ]);
-            
+
         if ($response->successful()) {
             return $response->json()['data'];
         }
-        
-        throw new \Exception('Failed to create source: ' . $response->body());
+
+        throw new \Exception('Failed to create source: '.$response->body());
     }
-    
+
     /**
      * Retrieve payment intent
      */
@@ -155,14 +156,14 @@ class PayMongoService
     {
         $response = $this->httpClient()
             ->get("{$this->apiUrl}/payment_intents/{$paymentIntentId}");
-            
+
         if ($response->successful()) {
             return $response->json()['data'];
         }
-        
+
         return null;
     }
-    
+
     /**
      * Retrieve source
      */
@@ -170,23 +171,23 @@ class PayMongoService
     {
         $response = $this->httpClient()
             ->get("{$this->apiUrl}/sources/{$sourceId}");
-            
+
         if ($response->successful()) {
             return $response->json()['data'];
         }
-        
+
         return null;
     }
 
     /**
      * Create a checkout session
-     * 
-     * @param array $lineItems Array of line items with name, quantity, amount, currency
-     * @param string $successUrl URL to redirect after successful payment
-     * @param string $cancelUrl URL to redirect after cancelled payment
-     * @param array $paymentMethodTypes Array of payment method types (e.g., ['gcash', 'grab_pay', 'paymaya', 'shopeepay'])
-     * @param string $description Optional description for the checkout session
-     * @param array $metadata Optional metadata
+     *
+     * @param  array  $lineItems  Array of line items with name, quantity, amount, currency
+     * @param  string  $successUrl  URL to redirect after successful payment
+     * @param  string  $cancelUrl  URL to redirect after cancelled payment
+     * @param  array  $paymentMethodTypes  Array of payment method types (e.g., ['gcash', 'grab_pay', 'paymaya', 'shopeepay'])
+     * @param  string  $description  Optional description for the checkout session
+     * @param  array  $metadata  Optional metadata
      * @return array Checkout session data
      */
     public function createCheckoutSession($lineItems, $successUrl, $cancelUrl, $paymentMethodTypes = ['gcash', 'grab_pay', 'paymaya'], $description = null, $metadata = [], $customerInfo = [])
@@ -194,18 +195,30 @@ class PayMongoService
         // Flatten metadata - PayMongo doesn't accept nested metadata
         $flatMetadata = [];
         foreach ($metadata as $key => $value) {
-            $flatMetadata[$key] = is_array($value) ? json_encode($value) : (string)$value;
+            $flatMetadata[$key] = is_array($value) ? json_encode($value) : (string) $value;
         }
 
         // Prepare line items - ensure amounts are in centavos
         $preparedLineItems = [];
         foreach ($lineItems as $item) {
-            $preparedLineItems[] = [
+            $preparedItem = [
                 'name' => $item['name'],
                 'quantity' => $item['quantity'],
-                'amount' => isset($item['amount']) ? (int)($item['amount'] * 100) : (int)($item['price'] * 100 * $item['quantity']), // Convert to centavos
+                'amount' => isset($item['amount']) ? (int) ($item['amount'] * 100) : (int) ($item['price'] * 100 * $item['quantity']), // Convert to centavos
                 'currency' => $item['currency'] ?? 'PHP',
             ];
+
+            // Include description if provided (e.g., size and color information)
+            if (isset($item['description']) && ! empty($item['description'])) {
+                $preparedItem['description'] = $item['description'];
+            }
+
+            // Include images if provided
+            if (isset($item['images']) && is_array($item['images']) && ! empty($item['images'])) {
+                $preparedItem['images'] = $item['images'];
+            }
+
+            $preparedLineItems[] = $preparedItem;
         }
 
         $attributes = [
@@ -219,27 +232,27 @@ class PayMongoService
             $attributes['description'] = $description;
         }
 
-        if (!empty($flatMetadata)) {
+        if (! empty($flatMetadata)) {
             $attributes['metadata'] = $flatMetadata;
         }
 
         // Add customer information (billing) if provided
-        if (!empty($customerInfo)) {
+        if (! empty($customerInfo)) {
             $billing = [];
-            
-            if (isset($customerInfo['name']) && !empty($customerInfo['name'])) {
+
+            if (isset($customerInfo['name']) && ! empty($customerInfo['name'])) {
                 $billing['name'] = $customerInfo['name'];
             }
-            
-            if (isset($customerInfo['email']) && !empty($customerInfo['email'])) {
+
+            if (isset($customerInfo['email']) && ! empty($customerInfo['email'])) {
                 $billing['email'] = $customerInfo['email'];
             }
-            
-            if (isset($customerInfo['phone']) && !empty($customerInfo['phone'])) {
+
+            if (isset($customerInfo['phone']) && ! empty($customerInfo['phone'])) {
                 $billing['phone'] = $customerInfo['phone'];
             }
-            
-            if (!empty($billing)) {
+
+            if (! empty($billing)) {
                 $attributes['billing'] = $billing;
             }
         }
@@ -250,24 +263,24 @@ class PayMongoService
                     'attributes' => $attributes,
                 ],
             ]);
-            
+
         if ($response->successful()) {
             return $response->json()['data'];
         }
-        
+
         // Parse error response for better error messages
-        $errorMessage = 'Failed to create checkout session: ' . $response->body();
+        $errorMessage = 'Failed to create checkout session: '.$response->body();
         $errors = $response->json('errors');
-        
-        if (!empty($errors)) {
+
+        if (! empty($errors)) {
             foreach ($errors as $error) {
                 // Check for payment method configuration errors
-                if (($error['code'] ?? null) === 'invalid_request_body' && 
+                if (($error['code'] ?? null) === 'invalid_request_body' &&
                     str_contains($error['detail'] ?? '', 'Payment method is not configured')) {
                     $configuredMethods = implode(', ', config('services.paymongo.payment_methods', ['N/A']));
                     $attemptedMethods = implode(', ', $paymentMethodTypes);
                     $errorMessage = "Payment method configuration error: {$error['detail']}. Configured: [{$configuredMethods}], Attempted: [{$attemptedMethods}].";
-                    Log::error('PayMongo Checkout Session Error: ' . $errorMessage, [
+                    Log::error('PayMongo Checkout Session Error: '.$errorMessage, [
                         'response' => $response->json(),
                         'configured_methods' => config('services.paymongo.payment_methods'),
                         'attempted_methods' => $paymentMethodTypes,
@@ -275,34 +288,34 @@ class PayMongoService
                     break;
                 }
             }
-            
+
             // Log all errors for debugging
-            if (!str_contains($errorMessage, 'Payment method configuration error')) {
+            if (! str_contains($errorMessage, 'Payment method configuration error')) {
                 Log::error('PayMongo Checkout Session Error', [
                     'response' => $response->json(),
                     'attributes' => $attributes,
                 ]);
             }
         }
-        
+
         throw new \Exception($errorMessage);
     }
 
     /**
      * Retrieve checkout session
-     * 
-     * @param string $checkoutSessionId
+     *
+     * @param  string  $checkoutSessionId
      * @return array|null Checkout session data or null if not found
      */
     public function getCheckoutSession($checkoutSessionId)
     {
         $response = $this->httpClient()
             ->get("{$this->apiUrl}/checkout_sessions/{$checkoutSessionId}");
-            
+
         if ($response->successful()) {
             return $response->json()['data'];
         }
-        
+
         return null;
     }
 }

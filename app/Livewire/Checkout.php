@@ -131,6 +131,36 @@ class Checkout extends Component
             $quantity = $cartItem->quantity;
             $itemSubtotal = $verifiedPrice * $quantity;
 
+            // Get product image URL
+            // For products with variants: use variant image matching selected_color
+            // For products without variants: use product's main image
+            $imageUrl = null;
+            $selectedColor = $cartItem->selected_color ?? null;
+            
+            if ($product->variants()->exists() && $selectedColor) {
+                // Product has variants - find variant matching selected color
+                $variant = $product->variants()
+                    ->where('color', $selectedColor)
+                    ->whereNotNull('color_image')
+                    ->first();
+                
+                if ($variant && $variant->color_image_url) {
+                    $imageUrl = $variant->color_image_url;
+                }
+            }
+            
+            // If no variant image found, use product's main image
+            if (!$imageUrl) {
+                $imageUrl = $product->image_url;
+            }
+            
+            // Convert relative URL to absolute URL if needed (PayMongo requires full URLs)
+            // Storage::disk('public')->url() already returns full URLs, but this ensures compatibility
+            if ($imageUrl && !filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                // Handle both /storage/image.jpg and storage/image.jpg formats
+                $imageUrl = $imageUrl[0] === '/' ? url($imageUrl) : url('/' . ltrim($imageUrl, '/'));
+            }
+
             $verifiedCartItems[] = [
                 'product_id' => $product->id,
                 'product_name' => $product->name,
@@ -139,6 +169,7 @@ class Checkout extends Component
                 'subtotal' => $itemSubtotal,
                 'selected_size' => $cartItem->selected_size ?? null,
                 'selected_color' => $cartItem->selected_color ?? null,
+                'image_url' => $imageUrl,
             ];
 
             $verifiedSubtotal += $itemSubtotal;
@@ -187,7 +218,7 @@ class Checkout extends Component
             $paymentMethods = config('services.paymongo.payment_methods', ['gcash', 'card']);
 
             // Validate that at least one payment method is configured
-            if (empty($paymentMethods) || !is_array($paymentMethods)) {
+            if (empty($paymentMethods) || ! is_array($paymentMethods)) {
                 Log::error('No payment methods configured for PayMongo checkout');
                 session()->flash('error', 'Payment methods are not configured. Please contact support.');
 
@@ -200,18 +231,41 @@ class Checkout extends Component
                         Log::error('Failed to delete order after payment method configuration error: '.$deleteException->getMessage());
                     }
                 }
+
                 return;
             }
 
             // Prepare line items for checkout session using verified prices
             $lineItems = collect($verifiedCartItems)->map(function ($item) {
-                return [
-                    'name' => $item['product_name'],
+                // Build variant information (size and color) for display
+                $variantParts = [];
+                if (! empty($item['selected_size'])) {
+                    $variantParts[] = 'Size: '.$item['selected_size'];
+                }
+                if (! empty($item['selected_color'])) {
+                    $variantParts[] = 'Color: '.$item['selected_color'];
+                }
+                $variantInfo = ! empty($variantParts) ? ' ('.implode(', ', $variantParts).')' : '';
+
+                // Include size and color in product name for better visibility on checkout page
+                $productName = $item['product_name'].$variantInfo;
+
+                // Prepare line item data
+                $lineItem = [
+                    'name' => $productName,
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                     'amount' => $item['price'],
                     'currency' => 'PHP',
+                    'description' => ! empty($variantParts) ? implode(', ', $variantParts) : null, // Also include in description
                 ];
+
+                // Add product image if available (PayMongo supports single image per line item)
+                if (! empty($item['image_url'])) {
+                    $lineItem['images'] = [$item['image_url']];
+                }
+
+                return $lineItem;
             })->toArray();
 
             // Create checkout session
