@@ -186,7 +186,7 @@
                 width: 14px; 
                 height: 14px; 
                 border-radius: 50%; 
-                background: #{{ $item->selected_color }}; 
+                background: {{ $item->selected_color }}; 
                 border: 1px solid #e5e5e5;
                 flex-shrink: 0;
             ">

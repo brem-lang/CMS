@@ -67,7 +67,7 @@
                                                         style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
                                                         <span style="font-size: 12px; color: #999;">Color:</span>
                                                         <span
-                                                            style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: #{{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
+                                                            style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: {{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
                                                     </div>
                                                 @endif
                                             </td>

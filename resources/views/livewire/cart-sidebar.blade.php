@@ -28,12 +28,14 @@
                             <h6 style="margin: 0 0 5px 0; font-size: 14px; font-weight: 600; color: #111111;">
                                 {{ $item->product->name }}</h6>
                             @if ($item->selected_size ?? null)
-                                <p style="margin: 0; font-size: 12px; color: #999; margin-bottom: 2px;">Size: {{ $item->selected_size }}</p>
+                                <p style="margin: 0; font-size: 12px; color: #999; margin-bottom: 2px;">Size:
+                                    {{ $item->selected_size }}</p>
                             @endif
                             @if ($item->selected_color ?? null)
                                 <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
                                     <span style="font-size: 12px; color: #999;">Color:</span>
-                                    <span style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: #{{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
+                                    <span
+                                        style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: {{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
                                 </div>
                             @endif
                             <p style="margin: 0 0 10px 0; font-size: 14px; color: #e53637; font-weight: 700;">
@@ -41,7 +43,8 @@
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <div
                                     style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px;">
-                                    <button wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity - 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
+                                    <button
+                                        wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity - 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
                                         style="background: none; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px;">-</button>
                                     <span
                                         style="padding: 5px 15px; min-width: 40px; text-align: center; display: inline-block;">{{ $item->quantity }}</span>
@@ -49,7 +52,8 @@
                                         wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity + 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
                                         style="background: none; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px;">+</button>
                                 </div>
-                                <button wire:click="removeItem({{ $item->product_id }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
+                                <button
+                                    wire:click="removeItem({{ $item->product_id }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
                                     style="background: none; border: none; color: #e53637; cursor: pointer; font-size: 14px; margin-left: auto;">
                                     <i class="fa fa-trash"></i>
                                 </button>
