@@ -15,15 +15,28 @@ class CreateProduct extends CreateRecord
     {
         $data['added_by'] = auth()->user()->id;
 
-        // Extract color variants before creating the product
+        // Extract color variants and has_variants before creating the product
         $colorVariants = $data['color_variants'] ?? [];
-        unset($data['color_variants']);
+        $hasVariants = $data['has_variants'] ?? false;
+        unset($data['color_variants'], $data['has_variants']);
+
+        // Calculate total stock quantity from variants if variants are enabled
+        if ($hasVariants && !empty($colorVariants)) {
+            $totalStock = 0;
+            foreach ($colorVariants as $colorVariant) {
+                $sizes = $colorVariant['sizes'] ?? [];
+                foreach ($sizes as $sizeData) {
+                    $totalStock += (int)($sizeData['quantity'] ?? 0);
+                }
+            }
+            $data['stock_quantity'] = $totalStock;
+        }
 
         // Create the product
         $product = parent::handleRecordCreation($data);
 
-        // Create variants from color variants structure
-        if (!empty($colorVariants)) {
+        // Create variants from color variants structure only if has_variants is true
+        if ($hasVariants && !empty($colorVariants)) {
             foreach ($colorVariants as $colorVariant) {
                 $color = $colorVariant['color'] ?? null;
                 $colorImage = $colorVariant['color_image'] ?? null;

@@ -28,6 +28,9 @@ class EditProduct extends EditRecord
         $product = $this->record;
         $variants = $product->variants()->get();
         
+        // Set has_variants toggle based on whether product has variants
+        $data['has_variants'] = $variants->isNotEmpty();
+        
         $colorVariants = [];
         $groupedByColor = $variants->groupBy('color');
 
@@ -56,9 +59,22 @@ class EditProduct extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        // Extract color variants before updating
+        // Extract color variants and has_variants before updating
         $colorVariants = $data['color_variants'] ?? [];
-        unset($data['color_variants']);
+        $hasVariants = $data['has_variants'] ?? false;
+        unset($data['color_variants'], $data['has_variants']);
+
+        // Calculate total stock quantity from variants if variants are enabled
+        if ($hasVariants && !empty($colorVariants)) {
+            $totalStock = 0;
+            foreach ($colorVariants as $colorVariant) {
+                $sizes = $colorVariant['sizes'] ?? [];
+                foreach ($sizes as $sizeData) {
+                    $totalStock += (int)($sizeData['quantity'] ?? 0);
+                }
+            }
+            $data['stock_quantity'] = $totalStock;
+        }
 
         // Update the product
         $record = parent::handleRecordUpdate($record, $data);
@@ -66,8 +82,8 @@ class EditProduct extends EditRecord
         // Delete existing variants
         $record->variants()->delete();
 
-        // Create new variants from color variants structure
-        if (!empty($colorVariants)) {
+        // Create new variants from color variants structure only if has_variants is true
+        if ($hasVariants && !empty($colorVariants)) {
             foreach ($colorVariants as $colorVariant) {
                 $color = $colorVariant['color'] ?? null;
                 $colorImage = $colorVariant['color_image'] ?? null;

@@ -126,12 +126,14 @@ class ViewProduct extends Component
     }
 
     /**
-     * Get the image URL for the selected color variant
+     * Get the image URL for the selected color variant or product image
      */
     public function getDisplayImageUrl()
     {
-        // If a color is selected, show the color variant image
-        if ($this->selectedColor && $this->product->variants && $this->product->variants->count() > 0) {
+        $hasVariants = $this->product->variants && $this->product->variants->count() > 0;
+
+        // If product has variants and a color is selected, show the color variant image
+        if ($hasVariants && $this->selectedColor) {
             $colorVariant = $this->product->variants->first(function ($variant) {
                 return $variant->color === $this->selectedColor && !empty($variant->color_image);
             });
@@ -141,8 +143,45 @@ class ViewProduct extends Component
             }
         }
 
-        // Fallback to product main image
+        // If no variants, use product image
+        if (!$hasVariants && $this->product->product_image_url) {
+            return $this->product->product_image_url;
+        }
+
+        // Fallback to product main image (which handles variants or fallback)
         return $this->product->image_url;
+    }
+
+    /**
+     * Get all images for display (variants or product images)
+     */
+    public function getAllDisplayImages()
+    {
+        $hasVariants = $this->product->variants && $this->product->variants->count() > 0;
+
+        if ($hasVariants) {
+            // Get all variant images grouped by color
+            return $this->product->variants->whereNotNull('color_image')
+                ->groupBy('color')
+                ->map(function ($variants) {
+                    return $variants->first()->color_image_url;
+                })
+                ->filter()
+                ->values()
+                ->toArray();
+        } else {
+            // Get product images (main + additional)
+            $images = [];
+            
+            if ($this->product->product_image_url) {
+                $images[] = $this->product->product_image_url;
+            }
+
+            $additionalImages = $this->product->additional_images_urls ?? [];
+            $images = array_merge($images, $additionalImages);
+
+            return array_filter($images);
+        }
     }
 
     /**

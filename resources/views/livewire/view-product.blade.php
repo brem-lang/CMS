@@ -18,42 +18,31 @@
                                 $hasVariants = $product->variants && $product->variants->count() > 0;
                                 $displayImageUrl = $this->getDisplayImageUrl();
                                 
-                                // Always show all variant images from all color families (one per color)
-                                // This ensures thumbnails remain visible regardless of color/size selection
-                                $allVariantImages = collect();
-                                if ($hasVariants) {
-                                    // Get first variant image from each color family - always show all colors
-                                    $allVariantImages = $product->variants->whereNotNull('color_image')
-                                        ->groupBy('color')
-                                        ->map(function($variants) {
-                                            return $variants->first()->color_image_url;
-                                        })
-                                        ->filter()
-                                        ->values();
-                                }
+                                // Get all images for display
+                                $allImages = $this->getAllDisplayImages();
                                 
                                 // Ensure the displayed image is first in the list
-                                $variantImages = collect();
-                                if ($displayImageUrl) {
+                                $displayImages = [];
+                                if ($displayImageUrl && !empty($allImages)) {
                                     // Start with the displayed image
-                                    $variantImages->push($displayImageUrl);
-                                    // Add all other variant images that are different
-                                    foreach ($allVariantImages as $imageUrl) {
+                                    $displayImages[] = $displayImageUrl;
+                                    // Add all other images that are different
+                                    foreach ($allImages as $imageUrl) {
                                         if ($imageUrl !== $displayImageUrl) {
-                                            $variantImages->push($imageUrl);
+                                            $displayImages[] = $imageUrl;
                                         }
                                     }
                                 } else {
-                                    $variantImages = $allVariantImages;
+                                    $displayImages = $allImages;
                                 }
                                 
                                 // Remove duplicates while preserving order
-                                $variantImages = $variantImages->unique()->values();
+                                $displayImages = array_values(array_unique($displayImages));
                             @endphp
-                            @foreach ($variantImages as $index => $variantImage)
+                            @foreach ($displayImages as $index => $image)
                                 <li class="nav-item">
                                     <a class="nav-link {{ $index === 0 ? 'active' : '' }}" data-toggle="tab" href="#tabs-{{ $index + 1 }}" role="tab">
-                                        <div class="product__thumb__pic set-bg" data-setbg="{{ $variantImage }}">
+                                        <div class="product__thumb__pic set-bg" data-setbg="{{ $image }}">
                                         </div>
                                     </a>
                                 </li>
@@ -66,37 +55,28 @@
                                 $hasVariants = $product->variants && $product->variants->count() > 0;
                                 $displayImageUrl = $this->getDisplayImageUrl();
                                 
-                                // Get all variant images for tab panes (same logic as thumbnails)
-                                $allVariantImages = collect();
-                                if ($hasVariants) {
-                                    $allVariantImages = $product->variants->whereNotNull('color_image')
-                                        ->groupBy('color')
-                                        ->map(function($variants) {
-                                            return $variants->first()->color_image_url;
-                                        })
-                                        ->filter()
-                                        ->values();
-                                }
+                                // Get all images for display (same logic as thumbnails)
+                                $allImages = $this->getAllDisplayImages();
                                 
                                 // Ensure the displayed image is first in the list
-                                $variantImages = collect();
-                                if ($displayImageUrl) {
+                                $displayImages = [];
+                                if ($displayImageUrl && !empty($allImages)) {
                                     // Start with the displayed image
-                                    $variantImages->push($displayImageUrl);
-                                    // Add all other variant images that are different
-                                    foreach ($allVariantImages as $imageUrl) {
+                                    $displayImages[] = $displayImageUrl;
+                                    // Add all other images that are different
+                                    foreach ($allImages as $imageUrl) {
                                         if ($imageUrl !== $displayImageUrl) {
-                                            $variantImages->push($imageUrl);
+                                            $displayImages[] = $imageUrl;
                                         }
                                     }
                                 } else {
-                                    $variantImages = $allVariantImages;
+                                    $displayImages = $allImages;
                                 }
                                 
                                 // Remove duplicates while preserving order
-                                $variantImages = $variantImages->unique()->values();
+                                $displayImages = array_values(array_unique($displayImages));
                             @endphp
-                            @foreach ($variantImages as $index => $variantImage)
+                            @foreach ($displayImages as $index => $image)
                                 <div class="tab-pane {{ $index === 0 ? 'active' : '' }}" id="tabs-{{ $index + 1 }}" role="tabpanel">
                                     <div class="product__details__pic__item" style="position: relative;">
                                         @php
@@ -108,7 +88,7 @@
                                                 $isOutOfStock = ($product->stock_quantity ?? 0) == 0;
                                             }
                                         @endphp
-                                        <img src="{{ $variantImage }}" alt="{{ $product->name }}" 
+                                        <img src="{{ $image }}" alt="{{ $product->name }}" 
                                              style="width: 100%; height: auto; transition: opacity 0.3s ease;">
                                         @if ($isOutOfStock && $index === 0)
                                             <div

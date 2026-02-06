@@ -15,6 +15,7 @@ class Product extends Model
         'status' => 'boolean',
         'size_options' => 'array',
         'color_options' => 'array',
+        'additional_images' => 'array',
     ];
 
     public function addedBy(): BelongsTo
@@ -28,17 +29,54 @@ class Product extends Model
     }
 
     /**
-     * Get the default image URL from variants (first variant's image)
+     * Get the default image URL
+     * Priority: Product image (if no variants) > Variant image > Fallback
      */
     public function getImageUrlAttribute(): string
     {
-        $firstVariant = $this->variants()->whereNotNull('color_image')->first();
+        // If product has variants, use variant image
+        $hasVariants = $this->variants()->exists();
         
-        if ($firstVariant && $firstVariant->color_image_url) {
-            return $firstVariant->color_image_url;
+        if ($hasVariants) {
+            $firstVariant = $this->variants()->whereNotNull('color_image')->first();
+            
+            if ($firstVariant && $firstVariant->color_image_url) {
+                return $firstVariant->color_image_url;
+            }
+        } else {
+            // If no variants, use product image
+            if ($this->image) {
+                return Storage::disk('public')->url($this->image);
+            }
         }
 
         return asset('bootstrap/img/product/product-1.jpg'); // fallback image
+    }
+
+    /**
+     * Get the product image URL (for products without variants)
+     */
+    public function getProductImageUrlAttribute(): ?string
+    {
+        if ($this->image) {
+            return Storage::disk('public')->url($this->image);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get additional images URLs (for products without variants)
+     */
+    public function getAdditionalImagesUrlsAttribute(): array
+    {
+        if (!$this->additional_images || !is_array($this->additional_images)) {
+            return [];
+        }
+
+        return array_map(function ($image) {
+            return Storage::disk('public')->url($image);
+        }, array_filter($this->additional_images));
     }
 
     /**
