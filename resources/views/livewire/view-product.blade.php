@@ -384,9 +384,14 @@
                                                 style="background: #f5f5f5; border: none; border-left: 1px solid #e5e5e5; padding: 10px 15px; cursor: not-allowed; font-size: 14px; font-weight: 700; color: #999999;">+</button>
                                         </div>
                                     </div>
-                                    <a href="#" class="primary-btn"
-                                        style="opacity: 0.5; cursor: not-allowed; pointer-events: none;"
-                                        onclick="return false;">add to cart</a>
+                                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px;">
+                                        <a href="#" class="primary-btn buy-now-btn-cart"
+                                            style="opacity: 0.5; cursor: not-allowed; pointer-events: none;"
+                                            onclick="return false;">add to cart</a>
+                                        <a href="#" class="primary-btn buy-now-btn"
+                                            style="opacity: 0.5; cursor: not-allowed; pointer-events: none; background-color: #e53637; border-color: #e53637;"
+                                            onclick="return false;">buy now</a>
+                                    </div>
                                 @else
                                     <div class="quantity">
                                         <div
@@ -403,8 +408,11 @@
                                                 onmouseout="this.style.background='#f5f5f5'">+</button>
                                         </div>
                                     </div>
-                                    <a href="#" wire:click.prevent="addToCart" class="primary-btn">add to
-                                        cart</a>
+                                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px;">
+                                        <a href="#" wire:click.prevent="addToCart" class="primary-btn buy-now-btn-cart">add to
+                                            cart</a>
+                                        <a href="#" wire:click.prevent="buyNow" class="primary-btn buy-now-btn">buy now</a>
+                                    </div>
                                 @endif
                             </div>
                             <div class="product__details__last__option">
@@ -619,6 +627,30 @@
 
         .color-palette-swatch:hover:after {
             border-color: #999;
+        }
+
+        /* Buy Now Button Hover Effects */
+        .buy-now-btn-cart {
+            transition: all 0.3s ease;
+        }
+
+        .buy-now-btn-cart:hover {
+            background-color: #111 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .buy-now-btn {
+            background-color: #e53637;
+            border-color: #e53637;
+            transition: all 0.3s ease;
+        }
+
+        .buy-now-btn:hover {
+            background-color: #c42d2e !important;
+            border-color: #c42d2e !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(229, 54, 55, 0.3);
         }
     </style>
 </div>

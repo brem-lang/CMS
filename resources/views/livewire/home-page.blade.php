@@ -155,13 +155,13 @@
                             <div class="product__item__text">
                                 <h6>{{ $product->name }}</h6>
                                 <!-- <a href="#" class="add-cart" wire:click.prevent="addToCart({{ $product->id }})">+ Add To Cart</a> -->
-                                <div class="rating">
+                                {{-- <div class="rating">
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
-                                </div>
+                                </div> --}}
                                 <h5>₱{{ number_format($product->price, 2) }}</h5>
                             </div>
                         </div>

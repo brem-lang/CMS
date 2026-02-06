@@ -308,6 +308,70 @@ class ViewProduct extends Component
         $this->selectedColor = null;
     }
 
+    public function buyNow()
+    {
+        $availableQuantity = $this->getAvailableQuantity();
+
+        // If product has variants, require variant selection
+        if ($this->product->variants && $this->product->variants->count() > 0) {
+            if (empty($this->selectedSize) || empty($this->selectedColor)) {
+                $this->dispatch('cartUpdated', message: 'Please select both a color and a size.', type: 'error');
+
+                return;
+            }
+
+            // Check if selected variant exists and has stock
+            $variant = $this->getSelectedVariant();
+            if (! $variant) {
+                $this->dispatch('cartUpdated', message: 'This size is not available for the selected color.', type: 'error');
+
+                return;
+            }
+        }
+
+        // Validate required options if enabled (for products without variants)
+        if ($this->product->has_size_options && ! empty($this->product->size_options)) {
+            if (empty($this->selectedSize)) {
+                $this->dispatch('cartUpdated', message: 'Please select a size option.', type: 'error');
+
+                return;
+            }
+        }
+
+        if ($this->product->has_color_options && ! empty($this->product->color_options)) {
+            if (empty($this->selectedColor)) {
+                $this->dispatch('cartUpdated', message: 'Please select a color option.', type: 'error');
+
+                return;
+            }
+        }
+
+        // Check if product/variant is out of stock
+        if ($availableQuantity <= 0) {
+            $this->dispatch('cartUpdated', message: 'This product variant is currently out of stock.', type: 'error');
+
+            return;
+        }
+
+        // Check if requested quantity exceeds available stock
+        if ($this->quantity > $availableQuantity) {
+            $this->dispatch('cartUpdated', message: 'Requested quantity exceeds available stock.', type: 'error');
+
+            return;
+        }
+
+        // Add to cart with product ID, quantity, and variant selections (size and color)
+        app(CartService::class)->addToCart(
+            $this->product->id,
+            $this->quantity,
+            $this->selectedSize, // Size variant selection
+            $this->selectedColor // Color variant selection
+        );
+
+        // Redirect to checkout after successful addition
+        return redirect()->route('checkout');
+    }
+
     public function render()
     {
         return view('livewire.view-product');
