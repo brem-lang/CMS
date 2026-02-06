@@ -11,16 +11,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" wire:ignore>
                     <div class="col-lg-3 col-md-3">
                         <ul class="nav nav-tabs" role="tablist">
                             @php
                                 $hasVariants = $product->variants && $product->variants->count() > 0;
                                 $displayImageUrl = $this->getDisplayImageUrl();
-                                
+
                                 // Get all images for display
                                 $allImages = $this->getAllDisplayImages();
-                                
+
                                 // Ensure the displayed image is first in the list
                                 $displayImages = [];
                                 if ($displayImageUrl && !empty($allImages)) {
@@ -35,13 +35,14 @@
                                 } else {
                                     $displayImages = $allImages;
                                 }
-                                
+
                                 // Remove duplicates while preserving order
                                 $displayImages = array_values(array_unique($displayImages));
                             @endphp
                             @foreach ($displayImages as $index => $image)
                                 <li class="nav-item">
-                                    <a class="nav-link {{ $index === 0 ? 'active' : '' }}" data-toggle="tab" href="#tabs-{{ $index + 1 }}" role="tab">
+                                    <a class="nav-link {{ $index === 0 ? 'active' : '' }}" data-toggle="tab"
+                                        href="#tabs-{{ $index + 1 }}" role="tab">
                                         <div class="product__thumb__pic set-bg" data-setbg="{{ $image }}">
                                         </div>
                                     </a>
@@ -54,10 +55,10 @@
                             @php
                                 $hasVariants = $product->variants && $product->variants->count() > 0;
                                 $displayImageUrl = $this->getDisplayImageUrl();
-                                
+
                                 // Get all images for display (same logic as thumbnails)
                                 $allImages = $this->getAllDisplayImages();
-                                
+
                                 // Ensure the displayed image is first in the list
                                 $displayImages = [];
                                 if ($displayImageUrl && !empty($allImages)) {
@@ -72,12 +73,13 @@
                                 } else {
                                     $displayImages = $allImages;
                                 }
-                                
+
                                 // Remove duplicates while preserving order
                                 $displayImages = array_values(array_unique($displayImages));
                             @endphp
                             @foreach ($displayImages as $index => $image)
-                                <div class="tab-pane {{ $index === 0 ? 'active' : '' }}" id="tabs-{{ $index + 1 }}" role="tabpanel">
+                                <div class="tab-pane {{ $index === 0 ? 'active' : '' }}" id="tabs-{{ $index + 1 }}"
+                                    role="tabpanel">
                                     <div class="product__details__pic__item" style="position: relative;">
                                         @php
                                             $isOutOfStock = false;
@@ -88,8 +90,8 @@
                                                 $isOutOfStock = ($product->stock_quantity ?? 0) == 0;
                                             }
                                         @endphp
-                                        <img src="{{ $image }}" alt="{{ $product->name }}" 
-                                             style="width: 100%; height: auto; transition: opacity 0.3s ease;">
+                                        <img src="{{ $image }}" alt="{{ $product->name }}"
+                                            style="width: 100%; height: auto; transition: opacity 0.3s ease;">
                                         @if ($isOutOfStock && $index === 0)
                                             <div
                                                 style="position: absolute; top: 20px; right: 20px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 12px 20px; border-radius: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
@@ -123,21 +125,29 @@
 
                             @php
                                 $hasVariants = $product->variants && $product->variants->count() > 0;
-                                
+
                                 // Get unique sizes and colors from variants if they exist
                                 $variantSizes = collect();
                                 $variantColors = collect();
-                                
+
                                 if ($hasVariants) {
-                                    $variantSizes = $product->variants->pluck('size')->filter(function($size) {
-                                        return !empty($size);
-                                    })->unique()->values();
-                                    
-                                    $variantColors = $product->variants->pluck('color')->filter(function($color) {
-                                        return !empty($color);
-                                    })->unique()->values();
+                                    $variantSizes = $product->variants
+                                        ->pluck('size')
+                                        ->filter(function ($size) {
+                                            return !empty($size);
+                                        })
+                                        ->unique()
+                                        ->values();
+
+                                    $variantColors = $product->variants
+                                        ->pluck('color')
+                                        ->filter(function ($color) {
+                                            return !empty($color);
+                                        })
+                                        ->unique()
+                                        ->values();
                                 }
-                                
+
                                 // Get sizes from product options
                                 $productSizeOptions = [];
                                 if ($product->size_options) {
@@ -148,7 +158,7 @@
                                         $productSizeOptions = $product->size_options;
                                     }
                                 }
-                                
+
                                 // Get colors from product options
                                 $productColorOptions = [];
                                 if ($product->color_options) {
@@ -159,19 +169,19 @@
                                         $productColorOptions = $product->color_options;
                                     }
                                 }
-                                
+
                                 // Extract size names from product options
-                                $productSizes = array_map(function($option) {
-                                    return is_array($option) ? ($option['name'] ?? '') : $option;
+                                $productSizes = array_map(function ($option) {
+                                    return is_array($option) ? $option['name'] ?? '' : $option;
                                 }, $productSizeOptions);
                                 $productSizes = array_filter($productSizes);
-                                
+
                                 // Extract color names from product options
-                                $productColors = array_map(function($option) {
-                                    return is_array($option) ? ($option['name'] ?? '') : $option;
+                                $productColors = array_map(function ($option) {
+                                    return is_array($option) ? $option['name'] ?? '' : $option;
                                 }, $productColorOptions);
                                 $productColors = array_filter($productColors);
-                                
+
                                 // Use variant data if available, otherwise use product options
                                 $displaySizes = [];
                                 if ($hasVariants && $variantSizes->count() > 0) {
@@ -179,7 +189,7 @@
                                 } elseif (!empty($productSizes)) {
                                     $displaySizes = array_values($productSizes);
                                 }
-                                    
+
                                 $displayColors = [];
                                 if ($hasVariants && $variantColors->count() > 0) {
                                     $displayColors = $variantColors->toArray();
@@ -192,15 +202,18 @@
                                 // Group variants by color family if variants exist
                                 $colorFamilies = collect();
                                 if ($hasVariants) {
-                                    $colorFamilies = $product->variants->groupBy('color')->map(function($variants, $color) {
-                                        $firstVariant = $variants->first();
-                                        return [
-                                            'name' => $color,
-                                            'image' => $firstVariant->color_image_url ?? null,
-                                            'variants' => $variants,
-                                            'total_quantity' => $variants->sum('quantity'),
-                                        ];
-                                    })->values();
+                                    $colorFamilies = $product->variants
+                                        ->groupBy('color')
+                                        ->map(function ($variants, $color) {
+                                            $firstVariant = $variants->first();
+                                            return [
+                                                'name' => $color,
+                                                'image' => $firstVariant->color_image_url ?? null,
+                                                'variants' => $variants,
+                                                'total_quantity' => $variants->sum('quantity'),
+                                            ];
+                                        })
+                                        ->values();
                                 }
                             @endphp
 
@@ -214,14 +227,16 @@
                                                 @php
                                                     $sizeId = 'size-' . $product->id . '-' . $index;
                                                     $isSelected = $selectedSize === $sizeName;
-                                                    $variantQty = $selectedColor ? $this->getVariantQuantity($sizeName, $selectedColor) : null;
+                                                    $variantQty = $selectedColor
+                                                        ? $this->getVariantQuantity($sizeName, $selectedColor)
+                                                        : null;
                                                     $hasVariant = $variantQty !== null;
                                                     $isAvailable = !$selectedColor || ($hasVariant && $variantQty > 0);
                                                 @endphp
                                                 @if (!empty($sizeName))
                                                     <label for="{{ $sizeId }}"
                                                         class="{{ $isSelected ? 'active' : '' }}"
-                                                        style="cursor: pointer; opacity: {{ ($hasVariant && !$isAvailable) ? '0.6' : '1' }};">
+                                                        style="cursor: pointer; opacity: {{ $hasVariant && !$isAvailable ? '0.6' : '1' }};">
                                                         {{ strtoupper($sizeName) }}
                                                         <input type="radio" id="{{ $sizeId }}"
                                                             wire:click="selectSize('{{ $sizeName }}')"
@@ -257,9 +272,10 @@
                                                     name="color-{{ $product->id }}"
                                                     style="position: absolute; visibility: hidden;">
                                                 @if ($isSelected)
-                                                    <i class="fa fa-check" style="
+                                                    <i class="fa fa-check"
+                                                        style="
                                                         position: absolute;
-                                                        color: {{ ($colorHex === '#FFFFFF' || $colorHex === '#000000') ? '#e53637' : '#fff' }};
+                                                        color: {{ $colorHex === '#FFFFFF' || $colorHex === '#000000' ? '#e53637' : '#fff' }};
                                                         font-size: 12px;
                                                         font-weight: bold;
                                                         top: 50%;
@@ -278,21 +294,22 @@
                                             $selectedVariantQty = $this->getAvailableQuantity();
                                         @endphp
                                         @if ($selectedVariantQty > 0)
-                                            <div style="margin-top: 15px; padding: 10px; background-color: #f0f8ff; border-left: 3px solid #007bff; border-radius: 4px;">
-                                                <strong style="color: #007bff;">Available:</strong> 
-                                                <span style="color: #28a745; font-weight: 600;">{{ $selectedVariantQty }} units</span>
+                                            <div
+                                                style="margin-top: 15px; padding: 10px; background-color: #f0f8ff; border-left: 3px solid #007bff; border-radius: 4px;">
+                                                <strong style="color: #007bff;">Available:</strong>
+                                                <span
+                                                    style="color: #28a745; font-weight: 600;">{{ $selectedVariantQty }}
+                                                    units</span>
                                             </div>
                                         @else
-                                            <div style="margin-top: 15px; padding: 10px; background-color: #fff3cd; border-left: 3px solid #ffc107; border-radius: 4px;">
+                                            <div
+                                                style="margin-top: 15px; padding: 10px; background-color: #fff3cd; border-left: 3px solid #ffc107; border-radius: 4px;">
                                                 <strong style="color: #856404;">Out of Stock</strong>
                                             </div>
                                         @endif
                                     @endif
                                 </div>
-                            @elseif (
-                                ($product->has_size_options && !empty($displaySizes)) ||
-                                ($product->has_color_options && !empty($displayColors))
-                            )
+                            @elseif (($product->has_size_options && !empty($displaySizes)) || ($product->has_color_options && !empty($displayColors)))
                                 {{-- Fallback to original design if no variants --}}
                                 <div class="product__details__option">
                                     @if (!empty($displaySizes))
@@ -347,7 +364,9 @@
                             <div class="product__details__cart__option">
                                 @php
                                     $hasVariants = $product->variants && $product->variants->count() > 0;
-                                    $availableQty = $hasVariants ? $this->getAvailableQuantity() : ($product->stock_quantity ?? 0);
+                                    $availableQty = $hasVariants
+                                        ? $this->getAvailableQuantity()
+                                        : $product->stock_quantity ?? 0;
                                     $isOutOfStock = $availableQty <= 0;
                                     if ($hasVariants && !$selectedSize && !$selectedColor) {
                                         $isOutOfStock = false; // Don't disable if no variant selected yet
@@ -400,7 +419,8 @@
                                             @if ($availableQty <= 0)
                                                 <span style="color: #dc3545; font-weight: bold;">Out of Stock</span>
                                             @else
-                                                <span style="color: #28a745; font-weight: bold;">{{ $availableQty }} available</span>
+                                                <span style="color: #28a745; font-weight: bold;">{{ $availableQty }}
+                                                    available</span>
                                                 <span style="color: #666; font-size: 12px; margin-left: 5px;">
                                                     ({{ trim(($selectedColor ?? '') . ' ' . ($selectedSize ?? '')) }})
                                                 </span>
@@ -465,14 +485,16 @@
                                                 <li><span>Price:</span> ₱{{ number_format($product->price, 2) }}</li>
                                                 <li><span>Stock:</span>
                                                     @php
-                                                        $hasVariants = $product->variants && $product->variants->count() > 0;
+                                                        $hasVariants =
+                                                            $product->variants && $product->variants->count() > 0;
                                                     @endphp
                                                     @if ($hasVariants)
                                                         <span style="color: #666;">See variants table above</span>
                                                         @php
                                                             $totalVariantStock = $product->variants->sum('quantity');
                                                         @endphp
-                                                        <span style="color: #666; margin-left: 10px;">(Total: {{ $totalVariantStock }} units)</span>
+                                                        <span style="color: #666; margin-left: 10px;">(Total:
+                                                            {{ $totalVariantStock }} units)</span>
                                                     @else
                                                         @if (($product->stock_quantity ?? 0) == 0)
                                                             <span style="color: #dc3545; font-weight: bold;">Out of
@@ -483,22 +505,35 @@
                                                     @endif
                                                 </li>
                                                 @if ($hasVariants)
-                                                    <li style="margin-top: 15px;">
-                                                        <span style="font-weight: 600; display: block; margin-bottom: 10px;">Variants:</span>
-                                                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                                                    <li style="margin-top: 15px;margin-bottom: 25px;">
+                                                        <span
+                                                            style="font-weight: 600; display: block; margin-bottom: 10px;">Variants:</span>
+                                                        <table
+                                                            style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                                                             <thead>
                                                                 <tr style="background-color: #f5f5f5;">
-                                                                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Color</th>
-                                                                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Size</th>
-                                                                    <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Quantity</th>
+                                                                    <th
+                                                                        style="padding: 8px; text-align: left; border: 1px solid #ddd;">
+                                                                        Color</th>
+                                                                    <th
+                                                                        style="padding: 8px; text-align: left; border: 1px solid #ddd;">
+                                                                        Size</th>
+                                                                    <th
+                                                                        style="padding: 8px; text-align: center; border: 1px solid #ddd;">
+                                                                        Quantity</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
                                                                 @foreach ($product->variants as $variant)
                                                                     <tr>
-                                                                        <td style="padding: 8px; border: 1px solid #ddd;">{{ $variant->color ?: '—' }}</td>
-                                                                        <td style="padding: 8px; border: 1px solid #ddd;">{{ $variant->size ?: '—' }}</td>
-                                                                        <td style="padding: 8px; text-align: center; border: 1px solid #ddd; {{ ($variant->quantity ?? 0) <= 0 ? 'color: #dc3545;' : '' }}">
+                                                                        <td
+                                                                            style="padding: 8px; border: 1px solid #ddd;">
+                                                                            {{ $variant->color ?: '—' }}</td>
+                                                                        <td
+                                                                            style="padding: 8px; border: 1px solid #ddd;">
+                                                                            {{ $variant->size ?: '—' }}</td>
+                                                                        <td
+                                                                            style="padding: 8px; text-align: center; border: 1px solid #ddd; {{ ($variant->quantity ?? 0) <= 0 ? 'color: #dc3545;' : '' }}">
                                                                             {{ $variant->quantity ?? 0 }}
                                                                         </td>
                                                                     </tr>
