@@ -255,7 +255,37 @@ class PayMongoService
             return $response->json()['data'];
         }
         
-        throw new \Exception('Failed to create checkout session: ' . $response->body());
+        // Parse error response for better error messages
+        $errorMessage = 'Failed to create checkout session: ' . $response->body();
+        $errors = $response->json('errors');
+        
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                // Check for payment method configuration errors
+                if (($error['code'] ?? null) === 'invalid_request_body' && 
+                    str_contains($error['detail'] ?? '', 'Payment method is not configured')) {
+                    $configuredMethods = implode(', ', config('services.paymongo.payment_methods', ['N/A']));
+                    $attemptedMethods = implode(', ', $paymentMethodTypes);
+                    $errorMessage = "Payment method configuration error: {$error['detail']}. Configured: [{$configuredMethods}], Attempted: [{$attemptedMethods}].";
+                    Log::error('PayMongo Checkout Session Error: ' . $errorMessage, [
+                        'response' => $response->json(),
+                        'configured_methods' => config('services.paymongo.payment_methods'),
+                        'attempted_methods' => $paymentMethodTypes,
+                    ]);
+                    break;
+                }
+            }
+            
+            // Log all errors for debugging
+            if (!str_contains($errorMessage, 'Payment method configuration error')) {
+                Log::error('PayMongo Checkout Session Error', [
+                    'response' => $response->json(),
+                    'attributes' => $attributes,
+                ]);
+            }
+        }
+        
+        throw new \Exception($errorMessage);
     }
 
     /**

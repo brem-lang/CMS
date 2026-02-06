@@ -45,6 +45,7 @@ return [
         'public_key' => env('PAYMONGO_PUBLIC_KEY'),
         'webhook_secret' => env('PAYMONGO_WEBHOOK_SECRET'),
         'api_url' => env('PAYMONGO_API_URL', 'https://api.paymongo.com/v1'),
+        'payment_methods' => env('PAYMONGO_PAYMENT_METHODS', 'gcash,card') ? explode(',', env('PAYMONGO_PAYMENT_METHODS', 'gcash,card')) : ['gcash', 'card'],
     ],
 
     'google' => [

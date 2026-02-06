@@ -183,6 +183,26 @@ class Checkout extends Component
         try {
             $paymongoService = app(PayMongoService::class);
 
+            // Get configured payment methods from config
+            $paymentMethods = config('services.paymongo.payment_methods', ['gcash', 'card']);
+
+            // Validate that at least one payment method is configured
+            if (empty($paymentMethods) || !is_array($paymentMethods)) {
+                Log::error('No payment methods configured for PayMongo checkout');
+                session()->flash('error', 'Payment methods are not configured. Please contact support.');
+
+                // Delete the order if payment methods are not configured
+                if (isset($order) && $order->exists) {
+                    try {
+                        $order->delete();
+                        Log::info('Order #'.$order->order_number.' deleted due to missing payment method configuration');
+                    } catch (\Exception $deleteException) {
+                        Log::error('Failed to delete order after payment method configuration error: '.$deleteException->getMessage());
+                    }
+                }
+                return;
+            }
+
             // Prepare line items for checkout session using verified prices
             $lineItems = collect($verifiedCartItems)->map(function ($item) {
                 return [
@@ -195,12 +215,12 @@ class Checkout extends Component
             })->toArray();
 
             // Create checkout session
-            // Valid PayMongo checkout session payment method types: gcash, grab_pay, paymaya, card
+            // Valid PayMongo checkout session payment method types: gcash, grab_pay, paymaya, card, shopee_pay, qrph, etc.
             $checkoutSession = $paymongoService->createCheckoutSession(
                 $lineItems,
                 route('checkout.success', ['order' => $order->id]),
                 route('checkout.failed', ['order' => $order->id]),
-                ['gcash', 'grab_pay', 'paymaya'], // Payment method types (shopeepay not supported in checkout sessions)
+                $paymentMethods, // Use configured payment methods from config
                 "Order #{$order->order_number}",
                 [
                     'order_id' => (string) $order->id,
