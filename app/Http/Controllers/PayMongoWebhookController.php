@@ -212,8 +212,8 @@ class PayMongoWebhookController extends Controller
 
             // Deduct stock quantity from products based on order items
             try {
-                // Load order items with products relationship
-                $order->load('orderItems.product');
+                // Load order items with products and variants relationships
+                $order->load('orderItems.product.variants');
 
                 DB::transaction(function () use ($order) {
                     foreach ($order->orderItems as $orderItem) {
@@ -229,46 +229,139 @@ class PayMongoWebhookController extends Controller
                         }
 
                         $quantityToDeduct = $orderItem->quantity;
-                        $currentStock = $product->stock_quantity ?? 0;
+                        $selectedSize = $orderItem->selected_size;
+                        $selectedColor = $orderItem->selected_color;
 
-                        // Check if sufficient stock exists
-                        if ($currentStock < $quantityToDeduct) {
-                            Log::warning('PayMongo Webhook: Insufficient stock for product', [
-                                'order_id' => $order->id,
-                                'order_item_id' => $orderItem->id,
-                                'product_id' => $product->id,
-                                'product_name' => $product->name,
-                                'current_stock' => $currentStock,
-                                'requested_quantity' => $quantityToDeduct,
-                            ]);
-                            // Still deduct what's available (or set to 0) - this is a payment success scenario
-                            $quantityToDeduct = max(0, $currentStock);
-                        }
+                        // Check if product has variants
+                        $hasVariants = $product->variants()->exists();
 
-                        // Use decrement() for atomic stock reduction
-                        $rowsAffected = Product::where('id', $product->id)
-                            ->where('stock_quantity', '>=', $quantityToDeduct)
-                            ->decrement('stock_quantity', $quantityToDeduct);
+                        if ($hasVariants && ($selectedSize || $selectedColor)) {
+                            // Product has variants - deduct from specific variant
+                            $variant = $product->variants()
+                                ->where(function ($query) use ($selectedSize, $selectedColor) {
+                                    if ($selectedSize) {
+                                        $query->where('size', $selectedSize);
+                                    } else {
+                                        $query->whereNull('size');
+                                    }
+                                    if ($selectedColor) {
+                                        $query->where('color', $selectedColor);
+                                    } else {
+                                        $query->whereNull('color');
+                                    }
+                                })
+                                ->first();
 
-                        if ($rowsAffected > 0) {
-                            Log::info('PayMongo Webhook: Stock deducted successfully', [
-                                'order_id' => $order->id,
-                                'order_item_id' => $orderItem->id,
-                                'product_id' => $product->id,
-                                'product_name' => $product->name,
-                                'quantity_deducted' => $quantityToDeduct,
-                                'previous_stock' => $currentStock,
-                                'new_stock' => $currentStock - $quantityToDeduct,
-                            ]);
+                            if ($variant) {
+                                $variantCurrentStock = $variant->quantity ?? 0;
+
+                                // Check if sufficient variant stock exists
+                                if ($variantCurrentStock < $quantityToDeduct) {
+                                    Log::warning('PayMongo Webhook: Insufficient variant stock', [
+                                        'order_id' => $order->id,
+                                        'order_item_id' => $orderItem->id,
+                                        'product_id' => $product->id,
+                                        'variant_id' => $variant->id,
+                                        'size' => $selectedSize,
+                                        'color' => $selectedColor,
+                                        'current_variant_stock' => $variantCurrentStock,
+                                        'requested_quantity' => $quantityToDeduct,
+                                    ]);
+                                    // Still deduct what's available (or set to 0) - this is a payment success scenario
+                                    $quantityToDeduct = max(0, $variantCurrentStock);
+                                }
+
+                                // Deduct from variant quantity
+                                $variantRowsAffected = \App\Models\ProductVariant::where('id', $variant->id)
+                                    ->where('quantity', '>=', $quantityToDeduct)
+                                    ->decrement('quantity', $quantityToDeduct);
+
+                                if ($variantRowsAffected > 0) {
+                                    Log::info('PayMongo Webhook: Variant stock deducted successfully', [
+                                        'order_id' => $order->id,
+                                        'order_item_id' => $orderItem->id,
+                                        'product_id' => $product->id,
+                                        'variant_id' => $variant->id,
+                                        'size' => $selectedSize,
+                                        'color' => $selectedColor,
+                                        'quantity_deducted' => $quantityToDeduct,
+                                        'previous_variant_stock' => $variantCurrentStock,
+                                        'new_variant_stock' => $variantCurrentStock - $quantityToDeduct,
+                                    ]);
+
+                                    // Recalculate and update product's total stock_quantity (sum of all variants)
+                                    $totalStock = $product->variants()->sum('quantity');
+                                    $product->update(['stock_quantity' => $totalStock]);
+
+                                    Log::info('PayMongo Webhook: Product total stock updated', [
+                                        'order_id' => $order->id,
+                                        'product_id' => $product->id,
+                                        'new_total_stock' => $totalStock,
+                                    ]);
+                                } else {
+                                    Log::warning('PayMongo Webhook: Variant stock deduction failed - insufficient stock', [
+                                        'order_id' => $order->id,
+                                        'order_item_id' => $orderItem->id,
+                                        'product_id' => $product->id,
+                                        'variant_id' => $variant->id,
+                                        'size' => $selectedSize,
+                                        'color' => $selectedColor,
+                                        'requested_quantity' => $quantityToDeduct,
+                                        'current_variant_stock' => $variantCurrentStock,
+                                    ]);
+                                }
+                            } else {
+                                Log::warning('PayMongo Webhook: Variant not found for order item', [
+                                    'order_id' => $order->id,
+                                    'order_item_id' => $orderItem->id,
+                                    'product_id' => $product->id,
+                                    'size' => $selectedSize,
+                                    'color' => $selectedColor,
+                                ]);
+                            }
                         } else {
-                            Log::warning('PayMongo Webhook: Stock deduction failed - insufficient stock or product not found', [
-                                'order_id' => $order->id,
-                                'order_item_id' => $orderItem->id,
-                                'product_id' => $product->id,
-                                'product_name' => $product->name,
-                                'requested_quantity' => $quantityToDeduct,
-                                'current_stock' => $currentStock,
-                            ]);
+                            // No variants - deduct from product's stock_quantity (existing logic)
+                            $currentStock = $product->stock_quantity ?? 0;
+
+                            // Check if sufficient stock exists
+                            if ($currentStock < $quantityToDeduct) {
+                                Log::warning('PayMongo Webhook: Insufficient stock for product', [
+                                    'order_id' => $order->id,
+                                    'order_item_id' => $orderItem->id,
+                                    'product_id' => $product->id,
+                                    'product_name' => $product->name,
+                                    'current_stock' => $currentStock,
+                                    'requested_quantity' => $quantityToDeduct,
+                                ]);
+                                // Still deduct what's available (or set to 0) - this is a payment success scenario
+                                $quantityToDeduct = max(0, $currentStock);
+                            }
+
+                            // Use decrement() for atomic stock reduction
+                            $rowsAffected = Product::where('id', $product->id)
+                                ->where('stock_quantity', '>=', $quantityToDeduct)
+                                ->decrement('stock_quantity', $quantityToDeduct);
+
+                            if ($rowsAffected > 0) {
+                                Log::info('PayMongo Webhook: Stock deducted successfully', [
+                                    'order_id' => $order->id,
+                                    'order_item_id' => $orderItem->id,
+                                    'product_id' => $product->id,
+                                    'product_name' => $product->name,
+                                    'quantity_deducted' => $quantityToDeduct,
+                                    'previous_stock' => $currentStock,
+                                    'new_stock' => $currentStock - $quantityToDeduct,
+                                ]);
+                            } else {
+                                Log::warning('PayMongo Webhook: Stock deduction failed - insufficient stock or product not found', [
+                                    'order_id' => $order->id,
+                                    'order_item_id' => $orderItem->id,
+                                    'product_id' => $product->id,
+                                    'product_name' => $product->name,
+                                    'requested_quantity' => $quantityToDeduct,
+                                    'current_stock' => $currentStock,
+                                ]);
+                            }
                         }
                     }
                 });
@@ -513,9 +606,14 @@ class PayMongoWebhookController extends Controller
     /**
      * Verify PayMongo webhook signature
      *
-     * PayMongo signature format: t=timestamp,v1=signature
+     * PayMongo signature format: t=timestamp,te=signature (or li=signature for line items)
      * Signed payload: timestamp.raw_payload
      * Signature: HMAC SHA256 of signed payload using webhook secret
+     * 
+     * Security features:
+     * - Timestamp validation (5-minute window) prevents replay attacks
+     * - HMAC SHA256 ensures payload integrity
+     * - hash_equals() prevents timing attacks
      *
      * @param  string|null  $signatureHeader
      * @param  string  $payload
