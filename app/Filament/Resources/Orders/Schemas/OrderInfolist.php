@@ -132,7 +132,7 @@ class OrderInfolist
                 width: 20px; 
                 height: 20px; 
                 border-radius: 50%; 
-                background-color: #'.$state.'; 
+                background-color: '.$state.'; 
                 border: 1px solid #e5e5e5;
                 flex-shrink: 0;
             "></span>
