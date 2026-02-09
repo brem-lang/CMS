@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\Products;
+namespace App\Filament\Resources\DigitalProducts;
 
-use App\Filament\Resources\Products\Pages\CreateProduct;
-use App\Filament\Resources\Products\Pages\EditProduct;
-use App\Filament\Resources\Products\Pages\ListProducts;
-use App\Filament\Resources\Products\Pages\ViewProduct;
-use App\Filament\Resources\Products\Schemas\ProductForm;
-use App\Filament\Resources\Products\Schemas\ProductInfolist;
-use App\Filament\Resources\Products\Tables\ProductsTable;
-use App\Models\Product;
+use App\Filament\Resources\DigitalProducts\Pages\CreateDigitalProduct;
+use App\Filament\Resources\DigitalProducts\Pages\EditDigitalProduct;
+use App\Filament\Resources\DigitalProducts\Pages\ListDigitalProducts;
+use App\Filament\Resources\DigitalProducts\Pages\ViewDigitalProduct;
+use App\Filament\Resources\DigitalProducts\Schemas\DigitalProductForm;
+use App\Filament\Resources\DigitalProducts\Schemas\DigitalProductInfolist;
+use App\Filament\Resources\DigitalProducts\Tables\DigitalProductsTable;
+use App\Models\DigitalProduct;
 use App\NavigationGroup;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -19,31 +19,31 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
-class ProductResource extends Resource
+class DigitalProductResource extends Resource
 {
-    protected static ?string $model = Product::class;
+    protected static ?string $model = DigitalProduct::class;
 
-    protected static ?string $modelLabel = 'Merchandise';
+    protected static ?string $modelLabel = 'Digital Products';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::BuildingStorefront;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::DocumentArrowUp;
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     protected static string|UnitEnum|null $navigationGroup = NavigationGroup::products->value;
 
     public static function form(Schema $schema): Schema
     {
-        return ProductForm::configure($schema);
+        return DigitalProductForm::configure($schema);
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return ProductInfolist::configure($schema);
+        return DigitalProductInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return ProductsTable::configure($table);
+        return DigitalProductsTable::configure($table);
     }
 
     public static function getRelations(): array
@@ -56,10 +56,10 @@ class ProductResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListProducts::route('/'),
-            'create' => CreateProduct::route('/create'),
-            'view' => ViewProduct::route('/{record}'),
-            'edit' => EditProduct::route('/{record}/edit'),
+            'index' => ListDigitalProducts::route('/'),
+            'create' => CreateDigitalProduct::route('/create'),
+            'view' => ViewDigitalProduct::route('/{record}'),
+            'edit' => EditDigitalProduct::route('/{record}/edit'),
         ];
     }
 
