@@ -29,10 +29,10 @@
             <p>Order number: <span class="order-number">{{ $orderItem->order->order_number }}</span></p>
         @endif
 
-        <p>Click the button below to download your file. This link will expire in 30 days.</p>
-        <a href="{{ $downloadUrl }}" class="btn">Download</a>
+        <p>Click the link below. You will be asked to enter your Receipt ID to download your file. This link will expire in 30 days.</p>
+        <a href="{{ $downloadUrl }}" class="btn">Go to download page</a>
 
-        <p style="margin-top: 20px; font-size: 13px; color: #666;">If the button does not work, copy and paste this link into your browser:</p>
+        <p style="margin-top: 20px; font-size: 13px; color: #666;">If the button does not work, copy and paste this link into your browser, then enter your Receipt ID when prompted:</p>
         <p style="word-break: break-all; font-size: 12px;">{{ $downloadUrl }}</p>
     </div>
     <div class="footer">

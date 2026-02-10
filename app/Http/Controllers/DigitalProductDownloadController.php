@@ -40,10 +40,9 @@ class DigitalProductDownloadController extends Controller
     }
 
     /**
-     * Download a paid digital product via signed URL (order item).
-     * Requires order to be paid and order item to have digital_product_id.
+     * Show the download gate page (signed URL). User must enter receipt ID to proceed.
      */
-    public function downloadPaid(Request $request, OrderItem $orderItem): Response
+    public function showDownloadGate(OrderItem $orderItem)
     {
         $orderItem->load(['order', 'digitalProduct']);
 
@@ -55,12 +54,43 @@ class DigitalProductDownloadController extends Controller
             abort(403, 'This download is not available for the current order status.');
         }
 
-        if ($orderItem->receipt_id && $request->query('receipt_id') !== null && $request->query('receipt_id') !== $orderItem->receipt_id) {
-            abort(403, 'Invalid receipt.');
+        $product = $orderItem->digitalProduct;
+        if (! $product->is_active) {
+            abort(404, 'File not available.');
+        }
+
+        return view('digital-download-gate', [
+            'orderItem' => $orderItem,
+            'productTitle' => $product->title,
+        ]);
+    }
+
+    /**
+     * Verify receipt ID and stream the file. Rate limited to prevent abuse.
+     */
+    public function verifyAndDownload(Request $request, OrderItem $orderItem): Response
+    {
+        $orderItem->load(['order', 'digitalProduct']);
+
+        if ($orderItem->digital_product_id === null || ! $orderItem->digitalProduct) {
+            abort(404, 'Digital product not found for this order item.');
+        }
+
+        if ($orderItem->order->payment_status !== 'paid' || $orderItem->order->status !== 'processing') {
+            abort(403, 'This download is not available for the current order status.');
+        }
+
+        $receiptId = $request->validate(['receipt_id' => 'required|string|max:64'])['receipt_id'];
+        $receiptId = trim($receiptId);
+
+        if (! $orderItem->receipt_id || $receiptId !== $orderItem->receipt_id) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Invalid receipt ID. Please check the receipt number from your email.');
         }
 
         $product = $orderItem->digitalProduct;
-
         if (! $product->is_active || ! $product->file_path) {
             abort(404, 'File not available.');
         }

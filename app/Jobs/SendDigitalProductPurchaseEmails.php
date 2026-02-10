@@ -57,16 +57,13 @@ class SendDigitalProductPurchaseEmails implements ShouldQueue
                     $orderItem->save();
                 }
 
+                // Do not append any query params after this — it would break the signed URL signature
                 $downloadUrl = URL::temporarySignedRoute(
                     'digital-product.download.paid',
                     now()->addDays(30),
                     ['orderItem' => $orderItem->id],
                     absolute: true
                 );
-
-                if ($orderItem->receipt_id) {
-                    $downloadUrl .= (str_contains($downloadUrl, '?') ? '&' : '?') . 'receipt_id=' . urlencode($orderItem->receipt_id);
-                }
 
                 Mail::to($order->email)->send(new DigitalProductPurchaseMail(
                     $orderItem,
