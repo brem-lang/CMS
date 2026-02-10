@@ -25,7 +25,7 @@
                 <div class="col-lg-12">
                     <div class="blog__details__pic">
                         <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}" class="img-fluid"
-                            style="width: 100%; height: auto; border-radius: 5px;">
+                            style="width: 100%; height: auto; max-width: 100%; max-height: 500px; object-fit: contain; border-radius: 5px;">
                     </div>
                 </div>
                 <div class="col-lg-8">
