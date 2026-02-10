@@ -60,18 +60,31 @@ class Checkout extends Component
     public function loadCartItems()
     {
         $cartService = app(CartService::class);
-        $this->cartItems = $cartService->getCartItems();
+        $rawItems = $cartService->getCartItems();
 
-        $this->subtotal = $this->cartItems->sum(function ($item) {
-            if ($item->type === 'product' && $item->product) {
-                return $item->quantity * (float) $item->product->price;
+        $this->cartItems = $rawItems->map(function ($item) {
+            $normalized = (object) [
+                'type' => $item->type,
+                'product_id' => $item->product_id ?? null,
+                'digital_product_id' => $item->digital_product_id ?? null,
+                'quantity' => $item->quantity,
+                'selected_size' => $item->selected_size ?? null,
+                'selected_color' => $item->selected_color ?? null,
+                'product_name' => null,
+                'price' => 0,
+            ];
+            if ($item->type === 'product' && isset($item->product)) {
+                $normalized->product_name = $item->product->name;
+                $normalized->price = (float) $item->product->price;
             }
-            if ($item->type === 'digital' && $item->digitalProduct) {
-                return $item->quantity * (float) ($item->digitalProduct->price ?? 0);
+            if ($item->type === 'digital' && isset($item->digitalProduct)) {
+                $normalized->product_name = $item->digitalProduct->title;
+                $normalized->price = $item->digitalProduct->is_free ? 0 : (float) ($item->digitalProduct->price ?? 0);
             }
-            return 0;
+            return $normalized;
         });
 
+        $this->subtotal = $this->cartItems->sum(fn ($item) => $item->quantity * $item->price);
         $this->total = $this->subtotal;
     }
 

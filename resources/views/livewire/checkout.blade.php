@@ -168,31 +168,35 @@
                                             <li
                                                 style="display: grid; grid-template-columns: 1fr 1fr 0.8fr 0.8fr; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; align-items: center;">
                                                 <span style="text-align: left; font-size: 14px; color: #666;">
-                                                    @if ($item->type === 'product')
-                                                        {{ $item->product->name }}
-                                                    @else
-                                                        {{ $item->digitalProduct->title }}
+                                                    {{ $item->product_name }}
+                                                    @if ($item->type === 'digital')
                                                         <span style="font-size: 11px; color: #999;">(Digital)</span>
                                                     @endif
                                                 </span>
                                                 <div style="text-align: left;">
                                                     @if ($item->type === 'product')
                                                         @if ($item->selected_size ?? null)
-                                                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Size: {{ $item->selected_size }}</div>
+                                                            <div
+                                                                style="font-size: 12px; color: #999; margin-bottom: 4px;">
+                                                                Size: {{ $item->selected_size }}</div>
                                                         @endif
                                                         @if ($item->selected_color ?? null)
-                                                            <div style="display: flex; align-items: center; gap: 6px; line-height: 1;">
-                                                                <span style="font-size: 12px; color: #999;">Color:</span>
-                                                                <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: {{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
+                                                            <div
+                                                                style="display: flex; align-items: center; gap: 6px; line-height: 1;">
+                                                                <span
+                                                                    style="font-size: 12px; color: #999;">Color:</span>
+                                                                <span
+                                                                    style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: {{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
                                                             </div>
                                                         @endif
                                                     @else
-                                                        <span style="font-size: 12px; color: #999;">—</span>
+                                                        {{-- <span style="font-size: 12px; color: #999;">—</span> --}}
                                                     @endif
                                                 </div>
-                                                <span style="text-align: center; font-size: 14px; color: #666;">x{{ $item->quantity }}</span>
+                                                <span
+                                                    style="text-align: center; font-size: 14px; color: #666;">x{{ $item->quantity }}</span>
                                                 <span style="text-align: right; font-weight: 600; color: #e53637;">
-                                                    ₱{{ number_format($item->type === 'product' ? $item->quantity * $item->product->price : $item->quantity * (float) ($item->digitalProduct->price ?? 0), 2) }}
+                                                    ₱{{ number_format($item->quantity * $item->price, 2) }}
                                                 </span>
                                             </li>
                                         @empty
