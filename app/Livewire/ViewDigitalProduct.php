@@ -31,6 +31,17 @@ class ViewDigitalProduct extends Component
         }
     }
 
+    public function buyNow()
+    {
+        try {
+            app(CartService::class)->addDigitalProductToCart($this->product->id, 1);
+            $this->dispatch('cartUpdated');
+            return $this->redirect(route('checkout'), navigate: true);
+        } catch (\InvalidArgumentException $e) {
+            session()->flash('error', $e->getMessage());
+        }
+    }
+
     public function render()
     {
         return view('livewire.view-digital-product');

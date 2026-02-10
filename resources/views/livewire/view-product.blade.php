@@ -39,25 +39,26 @@
                         $imageCount = count($displayImages);
                         $hasManyImages = $imageCount > 4;
                     @endphp
-                    
+
                     {{-- Desktop: Side thumbnails --}}
                     <div class="col-lg-3 col-md-3 d-none d-md-block product-thumbnails-col">
-                        <ul class="nav nav-tabs {{ $hasManyImages ? 'nav-tabs-compact' : '' }}" role="tablist" id="product-image-thumbnails-desktop"
+                        <ul class="nav nav-tabs {{ $hasManyImages ? 'nav-tabs-compact' : '' }}" role="tablist"
+                            id="product-image-thumbnails-desktop"
                             style="{{ $hasManyImages ? 'max-height: 500px; overflow-y: auto; padding-right: 5px;' : '' }}">
                             @foreach ($displayImages as $index => $image)
                                 <li class="nav-item {{ $hasManyImages ? 'nav-item-compact' : '' }}">
                                     <a class="nav-link {{ $index === 0 ? 'active' : '' }}" data-toggle="tab"
                                         href="#tabs-{{ $index + 1 }}" role="tab">
-                                        <div class="product__thumb__pic set-bg {{ $hasManyImages ? 'thumb-compact' : '' }}" 
-                                             data-setbg="{{ $image }}"
-                                             style="{{ $hasManyImages ? 'height: 80px; margin-bottom: 10px;' : '' }}">
+                                        <div class="product__thumb__pic set-bg {{ $hasManyImages ? 'thumb-compact' : '' }}"
+                                            data-setbg="{{ $image }}"
+                                            style="{{ $hasManyImages ? 'height: 80px; margin-bottom: 10px;' : '' }}">
                                         </div>
                                     </a>
                                 </li>
                             @endforeach
                         </ul>
                     </div>
-                    
+
                     {{-- Desktop: Main gallery --}}
                     <div class="col-lg-6 col-md-9 d-none d-md-block product-gallery-col">
                         <div class="tab-content" id="product-image-gallery-desktop">
@@ -107,8 +108,8 @@
                         <div class="mobile-carousel-wrapper" id="mobile-carousel-wrapper">
                             @if (count($displayImages) > 0)
                                 @foreach ($displayImages as $index => $image)
-                                    <div class="mobile-carousel-slide {{ $index === 0 ? 'active' : '' }}" 
-                                         data-slide-index="{{ $index }}">
+                                    <div class="mobile-carousel-slide {{ $index === 0 ? 'active' : '' }}"
+                                        data-slide-index="{{ $index }}">
                                         <div class="mobile-image-container" style="position: relative;">
                                             @php
                                                 $variantTypePic = $product->variant_type ?? 'both';
@@ -124,9 +125,9 @@
                                                     $isOutOfStock = ($product->stock_quantity ?? 0) == 0;
                                                 }
                                             @endphp
-                                            <img src="{{ $image }}" alt="{{ $product->name }}" 
-                                                 class="mobile-carousel-image"
-                                                 loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                                            <img src="{{ $image }}" alt="{{ $product->name }}"
+                                                class="mobile-carousel-image"
+                                                loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
                                             @if ($isOutOfStock && $index === 0)
                                                 <div class="mobile-out-of-stock-badge">
                                                     Out of Stock
@@ -138,17 +139,18 @@
                             @else
                                 <div class="mobile-carousel-slide active">
                                     <div class="mobile-image-container">
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" 
-                                             class="mobile-carousel-image">
+                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
+                                            class="mobile-carousel-image">
                                     </div>
                                 </div>
                             @endif
                         </div>
-                        
+
                         {{-- Image counter --}}
                         @if (count($displayImages) > 1)
                             <div class="mobile-image-counter">
-                                <span id="current-image-index">1</span> / <span id="total-images">{{ count($displayImages) }}</span>
+                                <span id="current-image-index">1</span> / <span
+                                    id="total-images">{{ count($displayImages) }}</span>
                             </div>
                         @endif
 
@@ -156,8 +158,8 @@
                         @if (count($displayImages) > 1)
                             <div class="mobile-carousel-dots">
                                 @foreach ($displayImages as $index => $image)
-                                    <span class="carousel-dot {{ $index === 0 ? 'active' : '' }}" 
-                                          data-slide-to="{{ $index }}"></span>
+                                    <span class="carousel-dot {{ $index === 0 ? 'active' : '' }}"
+                                        data-slide-to="{{ $index }}"></span>
                                 @endforeach
                             </div>
                         @endif
@@ -166,8 +168,8 @@
                         @if (count($displayImages) > 1)
                             <div class="mobile-thumbnails-strip">
                                 @foreach ($displayImages as $index => $image)
-                                    <div class="mobile-thumbnail {{ $index === 0 ? 'active' : '' }}" 
-                                         data-slide-to="{{ $index }}">
+                                    <div class="mobile-thumbnail {{ $index === 0 ? 'active' : '' }}"
+                                        data-slide-to="{{ $index }}">
                                         <img src="{{ $image }}" alt="Thumbnail {{ $index + 1 }}">
                                     </div>
                                 @endforeach
@@ -506,8 +508,9 @@
                                     <div
                                         style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px;">
                                         <a href="#" wire:click.prevent="addToCart"
-                                            class="primary-btn buy-now-btn-cart">add to
-                                            cart</a>
+                                            class="primary-btn buy-now-btn-cart">
+                                            <i class="fa fa-shopping-cart" style="margin-right: 8px;"></i>Add to cart
+                                        </a>
                                         <a href="#" wire:click.prevent="buyNow"
                                             class="primary-btn buy-now-btn">buy now</a>
                                     </div>
@@ -870,7 +873,7 @@
             font-size: 12px;
             text-transform: uppercase;
             z-index: 10;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .mobile-image-counter {
@@ -1074,7 +1077,7 @@
                 if (imageCounter) imageCounter.textContent = index + 1;
 
                 currentSlide = index;
-                
+
                 // Auto-scroll thumbnails to show active one
                 setTimeout(() => {
                     const activeThumbnail = document.querySelector('.mobile-thumbnail.active');
@@ -1101,12 +1104,16 @@
             // Touch swipe handlers
             carouselWrapper.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
-            }, { passive: true });
+            }, {
+                passive: true
+            });
 
             carouselWrapper.addEventListener('touchend', (e) => {
                 touchEndX = e.changedTouches[0].screenX;
                 handleSwipe();
-            }, { passive: true });
+            }, {
+                passive: true
+            });
 
             function handleSwipe() {
                 const swipeThreshold = 50;

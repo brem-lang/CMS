@@ -1,96 +1,148 @@
 <div>
-    <section class="breadcrumb-option">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="breadcrumb__text">
-                        <h4>Digital Product</h4>
-                        <div class="breadcrumb__links">
+    <section class="shop-details">
+        <div class="product__details__pic">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="product__details__breadcrumb">
                             <a href="{{ route('home') }}">Home</a>
                             <a href="{{ route('digital-products') }}">Digital Products</a>
                             <span>{{ $product->title }}</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="blog-hero spad">
-        <div class="container">
-            <div class="row d-flex justify-content-center">
-                <div class="col-lg-9 text-center">
-                    <div class="blog__hero__text">
-                        <h2>{{ $product->title }}</h2>
-                        <ul>
-                            <li>{{ $product->file_type === 'pdf' ? 'PDF' : 'Audio' }}</li>
-                            @if ($product->is_free)
-                                <li><span class="text-success">Free</span></li>
+                <div class="row">
+                    <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
+                        <div class="product__details__pic__item">
+                            @if ($product->thumbnail_url)
+                                <img src="{{ $product->thumbnail_url }}" alt="{{ $product->title }}"
+                                    style="width: 100%; height: auto; max-height: 500px; object-fit: contain;">
                             @else
-                                <li>₱{{ number_format($product->price, 2) }}</li>
+                                <div class="d-flex align-items-center justify-content-center bg-light rounded"
+                                    style="min-height: 300px;">
+                                    <i class="fa fa-file-{{ $product->file_type === 'pdf' ? 'pdf' : 'audio' }}-o text-muted"
+                                        style="font-size: 80px;"></i>
+                                </div>
                             @endif
-                        </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+        <div class="product__details__content">
+            <div class="container">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="product__details__text">
+                            <h4>{{ $product->title }}</h4>
+                            <h3
+                                @if ($product->is_free) class="text-success" style="text-decoration: none;" @endif>
+                                @if ($product->is_free)
+                                    Free
+                                @else
+                                    ₱{{ number_format($product->price, 2) }}
+                                @endif
+                            </h3>
+                            <p>{!! nl2br(e($product->description)) !!}</p>
 
-    <section class="blog-details spad">
-        <div class="container">
-            <div class="row d-flex justify-content-center">
-                @if ($product->thumbnail_url)
-                    <div class="col-lg-12 mb-4">
-                        <div class="blog__details__pic">
-                            <img src="{{ $product->thumbnail_url }}" alt="{{ $product->title }}" class="img-fluid"
-                                style="max-height: 400px; object-fit: contain; border-radius: 8px;">
+                            @if (session('message'))
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <i class="fa fa-check-circle"></i> {{ session('message') }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            @endif
+                            @if (session('error'))
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            @endif
+
+                            <div
+                                style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; margin-top: 20px;">
+                                @if ($product->is_free)
+                                    <a href="{{ route('digital-product.download', $product->id) }}" target="_blank"
+                                        rel="noopener" class="primary-btn"
+                                        style="display: inline-block; text-decoration: none;">
+                                        <i class="fa fa-download" style="margin-right: 8px;"></i>Download Free
+                                        {{ $product->file_type === 'pdf' ? 'PDF' : 'Audio' }}
+                                    </a>
+                                @else
+                                    <a href="#" wire:click.prevent="addToCart"
+                                        class="primary-btn buy-now-btn-cart">
+                                        <i class="fa fa-shopping-cart" style="margin-right: 8px;"></i>Add to cart
+                                    </a>
+                                    <a href="#" wire:click.prevent="buyNow" class="primary-btn buy-now-btn">buy
+                                        now</a>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="product__details__last__option"
+                            style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; margin-top: 20px;">
+                            <ul>
+                                <li><span>Type:</span> {{ $product->file_type === 'pdf' ? 'PDF' : 'Audio' }}</li>
+                                <li><span>Price:</span>
+                                    @if ($product->is_free)
+                                        <span class="text-success">Free</span>
+                                    @else
+                                        ₱{{ number_format($product->price, 2) }}
+                                    @endif
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                @endif
-                <div class="col-lg-8">
-                    <div class="blog__details__content">
-                        @if (session('message'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="fa fa-check-circle"></i> {{ session('message') }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="product__details__tab">
+                            <ul class="nav nav-tabs flex-nowrap overflow-auto justify-content-center" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#digital-tab-desc"
+                                        role="tab">Description</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="digital-tab-desc" role="tabpanel">
+                                    <div class="product__details__tab__content">
+                                        <div class="product__details__tab__content__item">
+                                            <h5>Product Information</h5>
+                                            <p>{!! nl2br(e($product->description)) !!}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        @endif
-                        @if (session('error'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        @endif
-                        <div class="blog__details__text mb-4">
-                            {!! nl2br(e($product->description)) !!}
-                        </div>
-                        @if ($product->is_free)
-                            <a href="{{ route('digital-product.download', $product->id) }}" target="_blank" rel="noopener"
-                                class="btn border-0 rounded-pill py-3 px-4 text-white fw-semibold d-inline-flex align-items-center justify-content-center gap-2 text-decoration-none"
-                                style="font-size: 1rem; cursor: pointer; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); box-shadow: 0 3px 12px rgba(40, 167, 69, 0.4);">
-                                <i class="fa fa-download" aria-hidden="true"></i>
-                                <span>Download Free {{ $product->file_type === 'pdf' ? 'PDF' : 'Audio' }}</span>
-                            </a>
-                        @else
-                            <button type="button" wire:click="addToCart"
-                                class="btn border-0 rounded-pill py-3 px-4 text-white fw-semibold d-inline-flex align-items-center justify-content-center gap-2"
-                                style="font-size: 1rem; cursor: pointer; background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 3px 12px rgba(13, 110, 253, 0.4);">
-                                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                                <span>Add to cart</span>
-                            </button>
-                        @endif
-                        <div class="mt-3">
-                            <a href="{{ route('digital-products') }}" class="text-muted" style="font-size: 14px;">
-                                <i class="fa fa-arrow-left"></i> Back to Digital Products
-                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    <style>
+        .buy-now-btn-cart {
+            transition: all 0.3s ease;
+        }
+
+        .buy-now-btn-cart:hover {
+            background-color: #111 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .buy-now-btn {
+            background-color: #e53637;
+            border-color: #e53637;
+            transition: all 0.3s ease;
+        }
+
+        .buy-now-btn:hover {
+            background-color: #c42d2e !important;
+            border-color: #c42d2e !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(229, 54, 55, 0.3);
+        }
+    </style>
 </div>

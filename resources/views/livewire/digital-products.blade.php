@@ -55,48 +55,30 @@
                         @forelse($digitalProducts as $product)
                             <div class="col-6 col-lg-4" wire:key="digital-product-{{ $product->id }}">
                                 <div class="product__item">
-                                    <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
-                                        @if ($product->thumbnail_url) data-setbg="{{ $product->thumbnail_url }}"
-                                            style="background-image: url('{{ $product->thumbnail_url }}'); min-height: 220px; background-size: cover; background-position: center;"
-                                        @else
-                                            style="min-height: 220px; background: #f0f0f0; align-items: center; justify-content: center;" @endif
-                                        onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
-                                        onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
-                                        @if (!$product->thumbnail_url)
-                                            <span class="text-muted"><i class="fa fa-file-o fa-3x"></i></span>
-                                        @endif
-                                    </div>
+                                    <a href="{{ route('digital-product.view', $product->id) }}"
+                                        class="d-block text-decoration-none">
+                                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center position-relative"
+                                            @if ($product->thumbnail_url) data-setbg="{{ $product->thumbnail_url }}"
+                                                style="background-image: url('{{ $product->thumbnail_url }}'); min-height: 220px; background-size: cover; background-position: center; position: relative;"
+                                            @else
+                                                style="min-height: 220px; align-items: center; justify-content: center; position: relative;" @endif
+                                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary'); this.querySelector('.digital-quick-view').classList.remove('opacity-0');"
+                                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary'); this.querySelector('.digital-quick-view').classList.add('opacity-0');">
+                                            @if (!$product->thumbnail_url)
+                                                <span class="text-muted"><i class="fa fa-file-o fa-3x"></i></span>
+                                            @endif
+                                            <div class="digital-quick-view position-absolute opacity-0 d-none d-md-flex align-items-center justify-content-center w-100 h-100 transition-opacity"
+                                                style="top: 0; left: 0; background: rgba(0,0,0,0.2); border-radius: inherit;">
+                                                <span class="btn btn-light btn-sm shadow-sm rounded-pill px-3">Quick
+                                                    View</span>
+                                            </div>
+                                        </div>
+                                    </a>
                                     <div class="product__item__text">
-                                        <h6> {{ Str::limit(strip_tags($product->title), 20) }}</h6>
-                                        <p class="small text-muted mb-2" style="font-size: 0.85rem; line-height: 1.3;">
+                                        <h6>{{ Str::limit(strip_tags($product->title), 20) }}</h6>
+                                        <p class="small text-muted mb-0" style="font-size: 0.85rem; line-height: 1.3;">
                                             {{ Str::limit(strip_tags($product->description), 20) }}
                                         </p>
-                                        <div class="mt-2">
-                                            @php
-                                                $isPdf = $product->file_type === 'pdf';
-                                                $label = $product->is_free
-                                                    ? 'Download Free ' . ($isPdf ? 'PDF' : 'Audio')
-                                                    : 'Get ' . ($isPdf ? 'PDF' : 'Audio');
-                                                $icon = $isPdf ? 'fa-file-pdf-o' : 'fa-headphones';
-                                                $freeHref = route('digital-product.download', $product->id);
-                                                $paidHref = route('digital-product.view', $product->id);
-                                            @endphp
-                                            <a href="{{ $product->is_free ? $freeHref : $paidHref }}"
-                                                class="btn btn-digital-get w-100 border-0 rounded-pill py-2 px-3 text-white fw-semibold d-inline-flex align-items-center justify-content-center gap-2 text-decoration-none"
-                                                style="
-                                                    font-size: 0.9rem;
-                                                    cursor: pointer;
-                                                    background: {{ $product->is_free ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)' : 'linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%)' }};
-                                                    box-shadow: 0 3px 10px {{ $product->is_free ? 'rgba(40, 167, 69, 0.35)' : 'rgba(13, 110, 253, 0.35)' }};
-                                                    transition: transform 0.2s, box-shadow 0.2s;
-                                                "
-                                                @if ($product->is_free) target="_blank" rel="noopener" @endif
-                                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 18px {{ $product->is_free ? 'rgba(40, 167, 69, 0.45)' : 'rgba(13, 110, 253, 0.45)' }}';"
-                                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px {{ $product->is_free ? 'rgba(40, 167, 69, 0.35)' : 'rgba(13, 110, 253, 0.35)' }}';">
-                                                <i class="fa {{ $product->is_free ? 'fa-download' : $icon }}" aria-hidden="true"></i>
-                                                <span>{{ $label }}</span>
-                                            </a>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
