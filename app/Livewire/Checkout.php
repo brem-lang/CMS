@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\DigitalProduct;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\CartService;
@@ -62,7 +63,13 @@ class Checkout extends Component
         $this->cartItems = $cartService->getCartItems();
 
         $this->subtotal = $this->cartItems->sum(function ($item) {
-            return $item->quantity * $item->product->price;
+            if ($item->type === 'product' && $item->product) {
+                return $item->quantity * (float) $item->product->price;
+            }
+            if ($item->type === 'digital' && $item->digitalProduct) {
+                return $item->quantity * (float) ($item->digitalProduct->price ?? 0);
+            }
+            return 0;
         });
 
         $this->total = $this->subtotal;
@@ -107,74 +114,89 @@ class Checkout extends Component
             return;
         }
 
-        // Re-verify product prices from database to prevent price manipulation
+        // Re-verify prices from database (products and digital products)
         $verifiedCartItems = [];
         $verifiedSubtotal = 0;
 
         foreach ($this->cartItems as $cartItem) {
-            $product = \App\Models\Product::find($cartItem->product_id);
-
-            if ($product->stock_quantity <= 0) {
-                session()->flash('error', 'One or more products in your cart are out of stock. Please update your cart.');
-
-                return;
-            }
-
-            if (! $product || ! $product->status) {
-                session()->flash('error', 'One or more products in your cart are no longer available.');
-
-                return;
-            }
-
-            // Use verified price from database, not from cart
-            $verifiedPrice = $product->price;
-            $quantity = $cartItem->quantity;
-            $itemSubtotal = $verifiedPrice * $quantity;
-
-            // Get product image URL
-            // For products with variants: use variant image matching selected size/color
-            $imageUrl = null;
-            $selectedSize = $cartItem->selected_size ?? null;
-            $selectedColor = $cartItem->selected_color ?? null;
-
-            if ($product->variants()->exists() && ($selectedSize || $selectedColor)) {
-                $variantQuery = $product->variants()->whereRaw('JSON_LENGTH(COALESCE(images, "[]")) > 0');
-                if ($selectedSize !== null && $selectedSize !== '') {
-                    $variantQuery->where('size', $selectedSize);
+            if ($cartItem->type === 'product') {
+                $product = \App\Models\Product::find($cartItem->product_id ?? null);
+                if (! $product || ! $product->status) {
+                    session()->flash('error', 'One or more products in your cart are no longer available.');
+                    return;
                 }
-                if ($selectedColor !== null && $selectedColor !== '') {
-                    $variantQuery->where('color', $selectedColor);
+                if (($product->stock_quantity ?? 0) < $cartItem->quantity) {
+                    session()->flash('error', 'One or more products in your cart are out of stock. Please update your cart.');
+                    return;
                 }
-                $variant = $variantQuery->first();
-                if ($variant && $variant->color_image_url) {
-                    $imageUrl = $variant->color_image_url;
+                $verifiedPrice = $product->price;
+                $quantity = $cartItem->quantity;
+                $itemSubtotal = $verifiedPrice * $quantity;
+                $imageUrl = null;
+                $selectedSize = $cartItem->selected_size ?? null;
+                $selectedColor = $cartItem->selected_color ?? null;
+                if ($product->variants()->exists() && ($selectedSize || $selectedColor)) {
+                    $variantQuery = $product->variants()->whereRaw('JSON_LENGTH(COALESCE(images, "[]")) > 0');
+                    if ($selectedSize !== null && $selectedSize !== '') {
+                        $variantQuery->where('size', $selectedSize);
+                    }
+                    if ($selectedColor !== null && $selectedColor !== '') {
+                        $variantQuery->where('color', $selectedColor);
+                    }
+                    $variant = $variantQuery->first();
+                    if ($variant && $variant->color_image_url) {
+                        $imageUrl = $variant->color_image_url;
+                    }
                 }
-            }
-            
-            // If no variant image found, use product's main image
-            if (!$imageUrl) {
-                $imageUrl = $product->image_url;
-            }
-            
-            // Convert relative URL to absolute URL if needed (PayMongo requires full URLs)
-            // Storage::disk('public')->url() already returns full URLs, but this ensures compatibility
-            if ($imageUrl && !filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-                // Handle both /storage/image.jpg and storage/image.jpg formats
-                $imageUrl = $imageUrl[0] === '/' ? url($imageUrl) : url('/' . ltrim($imageUrl, '/'));
+                if (! $imageUrl) {
+                    $imageUrl = $product->image_url;
+                }
+                if ($imageUrl && ! filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                    $imageUrl = $imageUrl[0] === '/' ? url($imageUrl) : url('/'.ltrim($imageUrl, '/'));
+                }
+                $verifiedCartItems[] = [
+                    'item_type' => 'product',
+                    'product_id' => $product->id,
+                    'digital_product_id' => null,
+                    'product_name' => $product->name,
+                    'quantity' => $quantity,
+                    'price' => $verifiedPrice,
+                    'subtotal' => $itemSubtotal,
+                    'selected_size' => $selectedSize,
+                    'selected_color' => $selectedColor,
+                    'image_url' => $imageUrl,
+                ];
+                $verifiedSubtotal += $itemSubtotal;
+                continue;
             }
 
-            $verifiedCartItems[] = [
-                'product_id' => $product->id,
-                'product_name' => $product->name,
-                'quantity' => $quantity,
-                'price' => $verifiedPrice,
-                'subtotal' => $itemSubtotal,
-                'selected_size' => $cartItem->selected_size ?? null,
-                'selected_color' => $cartItem->selected_color ?? null,
-                'image_url' => $imageUrl,
-            ];
-
-            $verifiedSubtotal += $itemSubtotal;
+            if ($cartItem->type === 'digital') {
+                $digitalProduct = DigitalProduct::find($cartItem->digital_product_id ?? null);
+                if (! $digitalProduct || ! $digitalProduct->is_active) {
+                    session()->flash('error', 'One or more digital products in your cart are no longer available.');
+                    return;
+                }
+                $verifiedPrice = $digitalProduct->is_free ? 0 : (float) $digitalProduct->price;
+                $quantity = $cartItem->quantity;
+                $itemSubtotal = $verifiedPrice * $quantity;
+                $imageUrl = $digitalProduct->thumbnail_url ?? null;
+                if ($imageUrl && ! filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                    $imageUrl = $imageUrl[0] === '/' ? url($imageUrl) : url('/'.ltrim($imageUrl, '/'));
+                }
+                $verifiedCartItems[] = [
+                    'item_type' => 'digital',
+                    'product_id' => null,
+                    'digital_product_id' => $digitalProduct->id,
+                    'product_name' => $digitalProduct->title,
+                    'quantity' => $quantity,
+                    'price' => $verifiedPrice,
+                    'subtotal' => $itemSubtotal,
+                    'selected_size' => null,
+                    'selected_color' => null,
+                    'image_url' => $imageUrl,
+                ];
+                $verifiedSubtotal += $itemSubtotal;
+            }
         }
 
         // Sanitize user input to prevent XSS
@@ -199,17 +221,27 @@ class Checkout extends Component
         // Create order with sanitized and verified data
         $order = Order::create($sanitizedData);
 
-        // Create order items (pivot table records) with verified prices
+        // Create order items (products and digital products) with verified prices
         foreach ($verifiedCartItems as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item['product_id'],
+                'digital_product_id' => $item['digital_product_id'],
                 'selected_size' => $item['selected_size'],
                 'selected_color' => $item['selected_color'],
                 'quantity' => $item['quantity'],
                 'price' => $item['price'],
                 'subtotal' => $item['subtotal'],
             ]);
+        }
+
+        // If order total is 0 (e.g. only free digital products), mark paid and redirect to success
+        if ($verifiedSubtotal <= 0) {
+            $order->update(['payment_status' => 'paid', 'status' => 'processing']);
+            if (! Auth::check()) {
+                session()->put('pending_order_id', $order->id);
+            }
+            return redirect()->route('checkout.success', ['order' => $order->id]);
         }
 
         // Process payment using Checkout Session
@@ -237,38 +269,34 @@ class Checkout extends Component
                 return;
             }
 
-            // Prepare line items for checkout session using verified prices
-            $lineItems = collect($verifiedCartItems)->map(function ($item) {
-                // Build variant information (size and color) for display
-                $variantParts = [];
-                if (! empty($item['selected_size'])) {
-                    $variantParts[] = 'Size: '.$item['selected_size'];
-                }
-                if (! empty($item['selected_color'])) {
-                    $variantParts[] = 'Color: '.$item['selected_color'];
-                }
-                $variantInfo = ! empty($variantParts) ? ' ('.implode(', ', $variantParts).')' : '';
-
-                // Include size and color in product name for better visibility on checkout page
-                $productName = $item['product_name'].$variantInfo;
-
-                // Prepare line item data
-                $lineItem = [
-                    'name' => $productName,
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price'],
-                    'amount' => $item['price'],
-                    'currency' => 'PHP',
-                    'description' => ! empty($variantParts) ? implode(', ', $variantParts) : null, // Also include in description
-                ];
-
-                // Add product image if available (PayMongo supports single image per line item)
-                if (! empty($item['image_url'])) {
-                    $lineItem['images'] = [$item['image_url']];
-                }
-
-                return $lineItem;
-            })->toArray();
+            // Prepare line items for PayMongo (skip items with price 0, e.g. free digital products)
+            $lineItems = collect($verifiedCartItems)
+                ->filter(fn ($item) => (float) $item['price'] > 0)
+                ->map(function ($item) {
+                    $variantParts = [];
+                    if (! empty($item['selected_size'])) {
+                        $variantParts[] = 'Size: '.$item['selected_size'];
+                    }
+                    if (! empty($item['selected_color'])) {
+                        $variantParts[] = 'Color: '.$item['selected_color'];
+                    }
+                    $variantInfo = ! empty($variantParts) ? ' ('.implode(', ', $variantParts).')' : '';
+                    $productName = $item['product_name'].$variantInfo;
+                    $lineItem = [
+                        'name' => $productName,
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                        'amount' => $item['price'],
+                        'currency' => 'PHP',
+                        'description' => ! empty($variantParts) ? implode(', ', $variantParts) : null,
+                    ];
+                    if (! empty($item['image_url'])) {
+                        $lineItem['images'] = [$item['image_url']];
+                    }
+                    return $lineItem;
+                })
+                ->values()
+                ->toArray();
 
             // Create checkout session
             // Valid PayMongo checkout session payment method types: gcash, grab_pay, paymaya, card, shopee_pay, qrph, etc.

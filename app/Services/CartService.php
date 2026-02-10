@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Cart;
+use App\Models\CartDigitalProduct;
+use App\Models\DigitalProduct;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,40 +14,58 @@ class CartService
 {
     /**
      * Get cart items (from session for guests, database for authenticated)
+     * Returns unified collection: each item has type ('product'|'digital') and either product + product_id or digitalProduct + digital_product_id
      */
     public function getCartItems()
     {
+        $productItems = $this->getProductCartItems();
+        $digitalItems = $this->getDigitalCartItems();
+
+        return $productItems->concat($digitalItems);
+    }
+
+    /**
+     * Get product (physical) cart items with type set
+     */
+    protected function getProductCartItems()
+    {
         if (Auth::check()) {
-            return Cart::with('product')
+            $carts = Cart::with('product')
                 ->where('user_id', Auth::id())
                 ->where('status', 'pending')
                 ->get();
+            return $carts->map(function ($cart) {
+                $item = (object) [
+                    'type' => 'product',
+                    'id' => 'cart_' . $cart->id,
+                    'product_id' => $cart->product_id,
+                    'quantity' => $cart->quantity,
+                    'selected_size' => $cart->selected_size,
+                    'selected_color' => $cart->selected_color,
+                    'product' => $cart->product,
+                ];
+                return $item;
+            });
         }
-        
-        // Guest cart from session
+
         $cart = Session::get('guest_cart', []);
         $items = collect();
-        
         foreach ($cart as $key => $itemData) {
-            // Parse key format: productId_size_color or handle old format
             $parts = explode('_', $key, 3);
             $productId = $parts[0];
-            
-            // Handle both old format (productId => quantity) and new format (productId_size_color => array)
             if (is_array($itemData)) {
                 $quantity = $itemData['quantity'] ?? 1;
                 $selectedSize = $itemData['size'] ?? (isset($parts[1]) && $parts[1] !== 'null' ? $parts[1] : null);
                 $selectedColor = $itemData['color'] ?? (isset($parts[2]) && $parts[2] !== 'null' ? $parts[2] : null);
             } else {
-                // Old format - backward compatibility
                 $quantity = $itemData;
                 $selectedSize = isset($parts[1]) && $parts[1] !== 'null' ? $parts[1] : null;
                 $selectedColor = isset($parts[2]) && $parts[2] !== 'null' ? $parts[2] : null;
             }
-            
             $product = Product::find($productId);
             if ($product) {
-                $items->push((object)[
+                $items->push((object) [
+                    'type' => 'product',
                     'id' => 'session_' . $key,
                     'product_id' => $productId,
                     'quantity' => $quantity,
@@ -55,7 +75,44 @@ class CartService
                 ]);
             }
         }
-        
+        return $items;
+    }
+
+    /**
+     * Get digital product cart items with type set
+     */
+    protected function getDigitalCartItems()
+    {
+        if (Auth::check()) {
+            $rows = CartDigitalProduct::with('digitalProduct')
+                ->where('user_id', Auth::id())
+                ->where('status', 'pending')
+                ->get();
+            return $rows->map(function ($row) {
+                return (object) [
+                    'type' => 'digital',
+                    'id' => 'digital_' . $row->id,
+                    'digital_product_id' => $row->digital_product_id,
+                    'quantity' => $row->quantity,
+                    'digitalProduct' => $row->digitalProduct,
+                ];
+            });
+        }
+
+        $cart = Session::get('guest_cart_digital', []);
+        $items = collect();
+        foreach ($cart as $digitalProductId => $quantity) {
+            $digitalProduct = DigitalProduct::find($digitalProductId);
+            if ($digitalProduct) {
+                $items->push((object) [
+                    'type' => 'digital',
+                    'id' => 'session_digital_' . $digitalProductId,
+                    'digital_product_id' => (int) $digitalProductId,
+                    'quantity' => is_array($quantity) ? ($quantity['quantity'] ?? 1) : (int) $quantity,
+                    'digitalProduct' => $digitalProduct,
+                ]);
+            }
+        }
         return $items;
     }
     
@@ -172,6 +229,79 @@ class CartService
     {
         return $productId . '_' . ($selectedSize ?? 'null') . '_' . ($selectedColor ?? 'null');
     }
+
+    /**
+     * Add digital product to cart (paid only; free products are downloaded directly).
+     */
+    public function addDigitalProductToCart($digitalProductId, $quantity = 1)
+    {
+        $digitalProduct = DigitalProduct::where('id', $digitalProductId)->where('is_active', true)->first();
+        if (! $digitalProduct) {
+            throw new \InvalidArgumentException('Digital product not found or not active.');
+        }
+        if ($digitalProduct->is_free) {
+            throw new \InvalidArgumentException('Free digital products are available for direct download and cannot be added to cart.');
+        }
+
+        if (Auth::check()) {
+            $existing = CartDigitalProduct::where('user_id', Auth::id())
+                ->where('digital_product_id', $digitalProductId)
+                ->where('status', 'pending')
+                ->first();
+            if ($existing) {
+                $existing->increment('quantity', $quantity);
+                return;
+            }
+            CartDigitalProduct::create([
+                'user_id' => Auth::id(),
+                'digital_product_id' => $digitalProductId,
+                'quantity' => $quantity,
+                'status' => 'pending',
+            ]);
+        } else {
+            $cart = Session::get('guest_cart_digital', []);
+            $cart[$digitalProductId] = ($cart[$digitalProductId] ?? 0) + $quantity;
+            Session::put('guest_cart_digital', $cart);
+        }
+    }
+
+    /**
+     * Remove digital product from cart
+     */
+    public function removeDigitalProductFromCart($digitalProductId)
+    {
+        if (Auth::check()) {
+            CartDigitalProduct::where('user_id', Auth::id())
+                ->where('digital_product_id', $digitalProductId)
+                ->where('status', 'pending')
+                ->delete();
+        } else {
+            $cart = Session::get('guest_cart_digital', []);
+            unset($cart[$digitalProductId]);
+            Session::put('guest_cart_digital', $cart);
+        }
+    }
+
+    /**
+     * Update digital product quantity in cart
+     */
+    public function updateDigitalQuantity($digitalProductId, $quantity)
+    {
+        if ($quantity <= 0) {
+            $this->removeDigitalProductFromCart($digitalProductId);
+            return;
+        }
+        if (Auth::check()) {
+            CartDigitalProduct::where('user_id', Auth::id())
+                ->where('digital_product_id', $digitalProductId)
+                ->where('status', 'pending')
+                ->update(['quantity' => $quantity]);
+        } else {
+            $cart = Session::get('guest_cart_digital', []);
+            $cart[$digitalProductId] = $quantity;
+            Session::put('guest_cart_digital', $cart);
+        }
+    }
     
     /**
      * Remove item from cart
@@ -255,24 +385,27 @@ class CartService
      */
     public function getCartCount()
     {
+        $count = 0;
         if (Auth::check()) {
-            return Cart::where('user_id', Auth::id())
-                ->where('status', 'pending')
-                ->sum('quantity');
+            $count += Cart::where('user_id', Auth::id())->where('status', 'pending')->sum('quantity');
+            $count += CartDigitalProduct::where('user_id', Auth::id())->where('status', 'pending')->sum('quantity');
+            return $count;
         }
-        
         $cart = Session::get('guest_cart', []);
-        $total = 0;
         foreach ($cart as $itemData) {
             if (is_array($itemData)) {
-                $total += $itemData['quantity'] ?? 0;
+                $count += $itemData['quantity'] ?? 0;
             } else {
-                $total += $itemData; // Backward compatibility
+                $count += $itemData;
             }
         }
-        return $total;
+        $cartDigital = Session::get('guest_cart_digital', []);
+        foreach ($cartDigital as $qty) {
+            $count += is_array($qty) ? ($qty['quantity'] ?? 0) : (int) $qty;
+        }
+        return $count;
     }
-    
+
     /**
      * Calculate total amount to pay for all cart items
      */
@@ -280,13 +413,14 @@ class CartService
     {
         $cartItems = $this->getCartItems();
         $total = 0;
-        
         foreach ($cartItems as $item) {
-            if ($item->product && isset($item->product->price)) {
+            if ($item->type === 'product' && $item->product && isset($item->product->price)) {
                 $total += $item->quantity * $item->product->price;
             }
+            if ($item->type === 'digital' && $item->digitalProduct) {
+                $total += $item->quantity * (float) ($item->digitalProduct->price ?? 0);
+            }
         }
-        
         return $total;
     }
     
@@ -349,23 +483,40 @@ class CartService
                 ]);
             }
         }
-        
+
+        $guestCartDigital = Session::get('guest_cart_digital', []);
+        foreach ($guestCartDigital as $digitalProductId => $quantity) {
+            $qty = is_array($quantity) ? ($quantity['quantity'] ?? 1) : (int) $quantity;
+            $existing = CartDigitalProduct::where('user_id', $userId)
+                ->where('digital_product_id', $digitalProductId)
+                ->where('status', 'pending')
+                ->first();
+            if ($existing) {
+                $existing->increment('quantity', $qty);
+            } else {
+                CartDigitalProduct::create([
+                    'user_id' => $userId,
+                    'digital_product_id' => $digitalProductId,
+                    'quantity' => $qty,
+                    'status' => 'pending',
+                ]);
+            }
+        }
+        Session::forget('guest_cart_digital');
         Session::forget('guest_cart');
     }
-    
+
     /**
      * Clear cart after successful order
      */
     public function clearCart($userId = null)
     {
         if ($userId) {
-            // Delete cart items instead of updating status to avoid unique constraint violation
-            // Order items are already stored in order_items table, so we can safely delete cart items
-            Cart::where('user_id', $userId)
-                ->where('status', 'pending')
-                ->delete();
+            Cart::where('user_id', $userId)->where('status', 'pending')->delete();
+            CartDigitalProduct::where('user_id', $userId)->where('status', 'pending')->delete();
         } else {
             Session::forget('guest_cart');
+            Session::forget('guest_cart_digital');
         }
     }
 }

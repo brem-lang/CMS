@@ -46,67 +46,112 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($cartItems as $item)
-                                        <tr>
-                                            <td class="product__cart__item">
-                                                <div class="product__cart__item__pic">
-                                                    @php
-                                                        $itemImageUrl = $item->product->getVariantImageUrlForSelection($item->selected_size ?? null, $item->selected_color ?? null)
-                                                            ?? $item->product->image_url;
-                                                    @endphp
-                                                    <img src="{{ $itemImageUrl }}"
-                                                        alt="{{ $item->product->name }}">
-                                                </div>
-                                                <div class="product__cart__item__text">
-                                                    <h6>{{ $item->product->name }}</h6>
-                                                    <h5>₱{{ number_format($item->product->price, 2) }}</h5>
-                                                </div>
-                                            </td>
-                                            <td class="quantity__item">
-                                                @if ($item->selected_size ?? null)
-                                                    <p style="font-size: 12px; color: #999; margin: 2px 0;">Size:
-                                                        {{ $item->selected_size }}</p>
-                                                @endif
-                                                @if ($item->selected_color ?? null)
-                                                    <div
-                                                        style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
-                                                        <span style="font-size: 12px; color: #999;">Color:</span>
-                                                        <span
-                                                            style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: {{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
+                                        @if ($item->type === 'product')
+                                            <tr>
+                                                <td class="product__cart__item">
+                                                    <div class="product__cart__item__pic">
+                                                        @php
+                                                            $itemImageUrl = $item->product->getVariantImageUrlForSelection($item->selected_size ?? null, $item->selected_color ?? null)
+                                                                ?? $item->product->image_url;
+                                                        @endphp
+                                                        <img src="{{ $itemImageUrl }}"
+                                                            alt="{{ $item->product->name }}">
                                                     </div>
-                                                @endif
-                                            </td>
-                                            <td class="quantity__item">
-                                                <div class="quantity">
-                                                    <div
-                                                        style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
-                                                        <button
-                                                            wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity - 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
-                                                            style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
-                                                            onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
-                                                            onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">−</button>
-                                                        <input type="text" value="{{ $item->quantity }}" readonly
-                                                            style="border: none; background: none; text-align: center; width: 50px; font-weight: 600; color: #111111;">
-                                                        <button
-                                                            wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity + 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
-                                                            style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
-                                                            onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
-                                                            onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">+</button>
+                                                    <div class="product__cart__item__text">
+                                                        <h6>{{ $item->product->name }}</h6>
+                                                        <h5>₱{{ number_format($item->product->price, 2) }}</h5>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td class="cart__price">
-                                                ₱{{ number_format($item->quantity * $item->product->price, 2) }}
-                                            </td>
-                                            <td class="cart__close">
-                                                <button type="button"
-                                                    onclick="openRemoveModal(event, {{ $item->product_id }}, '{{ addslashes($item->product->name) }}', '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
-                                                    style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; transition: all 0.3s ease; padding: 5px 10px;"
-                                                    onmouseover="this.style.color='#e53637'; this.style.transform='scale(1.3)'"
-                                                    onmouseout="this.style.color='#999'; this.style.transform='scale(1)'">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td class="quantity__item">
+                                                    @if ($item->selected_size ?? null)
+                                                        <p style="font-size: 12px; color: #999; margin: 2px 0;">Size:
+                                                            {{ $item->selected_size }}</p>
+                                                    @endif
+                                                    @if ($item->selected_color ?? null)
+                                                        <div
+                                                            style="display: flex; align-items: center; gap: 5px; margin: 2px 0;">
+                                                            <span style="font-size: 12px; color: #999;">Color:</span>
+                                                            <span
+                                                                style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: {{ $item->selected_color }}; border: 1px solid #e5e5e5;"></span>
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                <td class="quantity__item">
+                                                    <div class="quantity">
+                                                        <div
+                                                            style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
+                                                            <button
+                                                                wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity - 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
+                                                                style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
+                                                                onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
+                                                                onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">−</button>
+                                                            <input type="text" value="{{ $item->quantity }}" readonly
+                                                                style="border: none; background: none; text-align: center; width: 50px; font-weight: 600; color: #111111;">
+                                                            <button
+                                                                wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity + 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
+                                                                style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111; transition: all 0.3s ease;"
+                                                                onmouseover="this.style.background='#e5e5e5'; this.style.transform='scale(1.1)'"
+                                                                onmouseout="this.style.background='#f5f5f5'; this.style.transform='scale(1)'">+</button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="cart__price">
+                                                    ₱{{ number_format($item->quantity * $item->product->price, 2) }}
+                                                </td>
+                                                <td class="cart__close">
+                                                    <button type="button"
+                                                        onclick="openRemoveModal(event, {{ $item->product_id }}, '{{ addslashes($item->product->name) }}', '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
+                                                        style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; transition: all 0.3s ease; padding: 5px 10px;"
+                                                        onmouseover="this.style.color='#e53637'; this.style.transform='scale(1.3)'"
+                                                        onmouseout="this.style.color='#999'; this.style.transform='scale(1)'">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td class="product__cart__item">
+                                                    <div class="product__cart__item__pic">
+                                                        @if ($item->digitalProduct->thumbnail_url ?? null)
+                                                            <img src="{{ $item->digitalProduct->thumbnail_url }}"
+                                                                alt="{{ $item->digitalProduct->title }}" style="object-fit: cover; width: 80px; height: 80px;">
+                                                        @else
+                                                            <div style="width: 80px; height: 80px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                                                <i class="fa fa-file-o" style="font-size: 24px; color: #999;"></i>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="product__cart__item__text">
+                                                        <h6>{{ $item->digitalProduct->title }}</h6>
+                                                        <h5>{{ $item->digitalProduct->is_free ? 'Free' : '₱' . number_format($item->digitalProduct->price, 2) }}</h5>
+                                                        <span style="font-size: 12px; color: #999;">Digital · {{ $item->digitalProduct->file_type === 'pdf' ? 'PDF' : 'Audio' }}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="quantity__item">—</td>
+                                                <td class="quantity__item">
+                                                    <div class="quantity">
+                                                        <div style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
+                                                            <button wire:click="updateDigitalQuantity({{ $item->digital_product_id }}, {{ $item->quantity - 1 }})"
+                                                                style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111;">−</button>
+                                                            <input type="text" value="{{ $item->quantity }}" readonly
+                                                                style="border: none; background: none; text-align: center; width: 50px; font-weight: 600; color: #111111;">
+                                                            <button wire:click="updateDigitalQuantity({{ $item->digital_product_id }}, {{ $item->quantity + 1 }})"
+                                                                style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111;">+</button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="cart__price">
+                                                    ₱{{ number_format($item->quantity * (float) ($item->digitalProduct->price ?? 0), 2) }}
+                                                </td>
+                                                <td class="cart__close">
+                                                    <button type="button"
+                                                        onclick="openRemoveModalDigital(event, {{ $item->digital_product_id }}, '{{ addslashes($item->digitalProduct->title) }}')"
+                                                        style="background: none; border: none; cursor: pointer; font-size: 18px; color: #999; padding: 5px 10px;">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 </tbody>
                             </table>
@@ -212,13 +257,24 @@
         function openRemoveModal(event, itemId, productName, selectedSize, selectedColor) {
             event.preventDefault();
             removeItemData = {
+                isDigital: false,
                 itemId: itemId,
                 productName: productName,
                 selectedSize: selectedSize || null,
                 selectedColor: selectedColor || null
             };
-
             document.getElementById('removeProductName').textContent = 'Product: ' + productName;
+            document.getElementById('removeConfirmationModal').style.display = 'flex';
+        }
+
+        function openRemoveModalDigital(event, digitalProductId, productName) {
+            event.preventDefault();
+            removeItemData = {
+                isDigital: true,
+                digitalProductId: digitalProductId,
+                productName: productName
+            };
+            document.getElementById('removeProductName').textContent = 'Digital: ' + productName;
             document.getElementById('removeConfirmationModal').style.display = 'flex';
         }
 
@@ -228,10 +284,13 @@
         }
 
         function confirmRemoveItem() {
-            if (removeItemData && window.Livewire) {
+            if (!removeItemData) return;
+            if (removeItemData.isDigital) {
+                @this.removeDigitalItem(removeItemData.digitalProductId);
+            } else {
                 @this.removeItem(removeItemData.itemId, removeItemData.selectedSize, removeItemData.selectedColor);
-                closeRemoveModal();
             }
+            closeRemoveModal();
         }
 
         // Close modal when clicking outside

@@ -210,13 +210,16 @@ class PayMongoWebhookController extends Controller
                 'payment_method' => $order->payment_method,
             ]);
 
-            // Deduct stock quantity from products based on order items
+            // Deduct stock quantity from products based on order items (skip digital product items)
             try {
-                // Load order items with products and variants relationships
                 $order->load('orderItems.product.variants');
 
                 DB::transaction(function () use ($order) {
                     foreach ($order->orderItems as $orderItem) {
+                        // Skip digital product items (no stock to deduct)
+                        if ($orderItem->digital_product_id !== null || $orderItem->product_id === null) {
+                            continue;
+                        }
                         $product = $orderItem->product;
 
                         if (! $product) {

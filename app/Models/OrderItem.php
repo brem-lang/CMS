@@ -23,4 +23,9 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function digitalProduct(): BelongsTo
+    {
+        return $this->belongsTo(DigitalProduct::class);
+    }
 }

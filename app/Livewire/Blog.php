@@ -27,7 +27,7 @@ class Blog extends Component
     {
         $blogs = BlogModel::where('status', true)
             ->orderBy('created_at', 'desc')
-            ->paginate(3);
+            ->paginate(9);
 
         return view('livewire.blog', [
             'blogs' => $blogs,
