@@ -11,7 +11,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" wire:ignore>
+                <div class="row">
                     <div class="col-lg-3 col-md-3">
                         <ul class="nav nav-tabs" role="tablist">
                             @php
@@ -82,10 +82,12 @@
                                     role="tabpanel">
                                     <div class="product__details__pic__item" style="position: relative;">
                                         @php
+                                            $variantTypePic = $product->variant_type ?? 'both';
+                                            $variantSelectedPic = ($variantTypePic === 'size' && $selectedSize) || ($variantTypePic === 'color' && $selectedColor) || ($variantTypePic === 'both' && ($selectedSize || $selectedColor));
                                             $isOutOfStock = false;
                                             if ($hasVariants) {
                                                 $availableQty = $this->getAvailableQuantity();
-                                                $isOutOfStock = $availableQty <= 0 && ($selectedSize || $selectedColor);
+                                                $isOutOfStock = $availableQty <= 0 && $variantSelectedPic;
                                             } else {
                                                 $isOutOfStock = ($product->stock_quantity ?? 0) == 0;
                                             }
@@ -199,6 +201,7 @@
                             @endphp
 
                             @php
+                                $variantType = $product->variant_type ?? 'both';
                                 // Group variants by color family if variants exist
                                 $colorFamilies = collect();
                                 if ($hasVariants) {
@@ -213,25 +216,29 @@
                                                 'total_quantity' => $variants->sum('quantity'),
                                             ];
                                         })
+                                        ->filter(fn ($f) => $f['name'] !== null && $f['name'] !== '')
                                         ->values();
                                 }
+                                $showSizeSection = ($variantType === 'size' || $variantType === 'both') && !empty($displaySizes);
+                                $showColorSection = ($variantType === 'color' || $variantType === 'both') && $colorFamilies->count() > 0;
+                                $variantSelected = !$hasVariants || ($variantType === 'size' && $selectedSize) || ($variantType === 'color' && $selectedColor) || ($variantType === 'both' && $selectedSize && $selectedColor);
                             @endphp
 
-                            @if ($hasVariants && $colorFamilies->count() > 0)
+                            @if ($hasVariants && ($showSizeSection || $showColorSection))
                                 <div class="product__details__option" style="margin: 30px 0;">
                                     {{-- Size Section --}}
-                                    @if (!empty($displaySizes))
+                                    @if ($showSizeSection)
                                         <div class="product__details__option__size" style="margin-bottom: 25px;">
                                             <span>Size:</span>
                                             @foreach ($displaySizes as $index => $sizeName)
                                                 @php
                                                     $sizeId = 'size-' . $product->id . '-' . $index;
                                                     $isSelected = $selectedSize === $sizeName;
-                                                    $variantQty = $selectedColor
+                                                    $variantQty = $selectedColor !== null && $selectedColor !== ''
                                                         ? $this->getVariantQuantity($sizeName, $selectedColor)
-                                                        : null;
+                                                        : ($variantType === 'size' ? $this->getVariantQuantity($sizeName, null) : null);
                                                     $hasVariant = $variantQty !== null;
-                                                    $isAvailable = !$selectedColor || ($hasVariant && $variantQty > 0);
+                                                    $isAvailable = ($variantType === 'size') || $selectedColor || ($hasVariant && $variantQty > 0);
                                                 @endphp
                                                 @if (!empty($sizeName))
                                                     <label for="{{ $sizeId }}"
@@ -250,6 +257,7 @@
                                     @endif
 
                                     {{-- Color Palette Section --}}
+                                    @if ($showColorSection)
                                     <div class="product__details__option__color" style="margin-bottom: 25px;">
                                         <span>Color:</span>
                                         @foreach ($colorFamilies as $index => $colorFamily)
@@ -287,9 +295,10 @@
                                             </label>
                                         @endforeach
                                     </div>
+                                    @endif
 
                                     {{-- Show selected variant quantity --}}
-                                    @if ($selectedSize && $selectedColor)
+                                    @if ($variantSelected)
                                         @php
                                             $selectedVariantQty = $this->getAvailableQuantity();
                                         @endphp
@@ -367,10 +376,9 @@
                                     $availableQty = $hasVariants
                                         ? $this->getAvailableQuantity()
                                         : $product->stock_quantity ?? 0;
-                                    $isOutOfStock = $availableQty <= 0;
-                                    if ($hasVariants && !$selectedSize && !$selectedColor) {
-                                        $isOutOfStock = false; // Don't disable if no variant selected yet
-                                    }
+                                    $variantTypeCart = $product->variant_type ?? 'both';
+                                    $variantSelectedCart = !$hasVariants || ($variantTypeCart === 'size' && $selectedSize) || ($variantTypeCart === 'color' && $selectedColor) || ($variantTypeCart === 'both' && $selectedSize && $selectedColor);
+                                    $isOutOfStock = ($hasVariants && !$variantSelectedCart) || $availableQty <= 0;
                                 @endphp
                                 @if ($isOutOfStock)
                                     <div class="quantity" style="opacity: 0.5; pointer-events: none;">
@@ -423,7 +431,11 @@
                                             $availableQty = $this->getAvailableQuantity();
                                             $hasVariants = $product->variants && $product->variants->count() > 0;
                                         @endphp
-                                        @if ($hasVariants && ($selectedSize || $selectedColor))
+                                        @php
+                                            $variantTypeStock = $product->variant_type ?? 'both';
+                                            $variantSelectedStock = ($variantTypeStock === 'size' && $selectedSize) || ($variantTypeStock === 'color' && $selectedColor) || ($variantTypeStock === 'both' && $selectedSize && $selectedColor);
+                                        @endphp
+                                        @if ($hasVariants && $variantSelectedStock)
                                             @if ($availableQty <= 0)
                                                 <span style="color: #dc3545; font-weight: bold;">Out of Stock</span>
                                             @else

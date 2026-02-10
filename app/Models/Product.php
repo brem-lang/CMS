@@ -16,6 +16,7 @@ class Product extends Model
         'size_options' => 'array',
         'color_options' => 'array',
         'additional_images' => 'array',
+        'variant_type' => 'string',
     ];
 
     public function addedBy(): BelongsTo
@@ -38,8 +39,7 @@ class Product extends Model
         $hasVariants = $this->variants()->exists();
         
         if ($hasVariants) {
-            $firstVariant = $this->variants()->whereNotNull('color_image')->first();
-            
+            $firstVariant = $this->variants()->get()->first(fn ($v) => ! empty($v->images));
             if ($firstVariant && $firstVariant->color_image_url) {
                 return $firstVariant->color_image_url;
             }
@@ -77,6 +77,25 @@ class Product extends Model
         return array_map(function ($image) {
             return Storage::disk('public')->url($image);
         }, array_filter($this->additional_images));
+    }
+
+    /**
+     * Get the variant image URL for cart/order display (matches selected size/color; supports size-only, color-only, both)
+     */
+    public function getVariantImageUrlForSelection(?string $selectedSize, ?string $selectedColor): ?string
+    {
+        if (! $this->variants()->exists()) {
+            return null;
+        }
+        $q = $this->variants()->whereNotNull('images');
+        if ($selectedSize !== null && $selectedSize !== '') {
+            $q->where('size', $selectedSize);
+        }
+        if ($selectedColor !== null && $selectedColor !== '') {
+            $q->where('color', $selectedColor);
+        }
+        $variant = $q->first();
+        return $variant ? $variant->color_image_url : null;
     }
 
     /**

@@ -88,8 +88,15 @@ class ViewProduct extends Component
     {
         // If product has variants, check variant stock
         if ($this->product->variants && $this->product->variants->count() > 0) {
-            // Require both size and color to be selected for variants
-            if (empty($this->selectedSize) || empty($this->selectedColor)) {
+            $variantType = $this->product->variant_type ?? 'both';
+
+            if ($variantType === 'size' && empty($this->selectedSize)) {
+                return 0;
+            }
+            if ($variantType === 'color' && empty($this->selectedColor)) {
+                return 0;
+            }
+            if ($variantType === 'both' && (empty($this->selectedSize) || empty($this->selectedColor))) {
                 return 0;
             }
 
@@ -102,7 +109,6 @@ class ViewProduct extends Component
                 return $variant->quantity ?? 0;
             }
 
-            // If no exact match, return 0
             return 0;
         }
 
@@ -127,29 +133,23 @@ class ViewProduct extends Component
     }
 
     /**
-     * Get the image URL for the selected color variant or product image
+     * Get the image URL for the selected variant or product image (supports size-only, color-only, both)
      */
     public function getDisplayImageUrl()
     {
         $hasVariants = $this->product->variants && $this->product->variants->count() > 0;
 
-        // If product has variants and a color is selected, show the color variant image
-        if ($hasVariants && $this->selectedColor) {
-            $colorVariant = $this->product->variants->first(function ($variant) {
-                return $variant->color === $this->selectedColor && ! empty($variant->color_image);
-            });
-
-            if ($colorVariant && $colorVariant->color_image_url) {
-                return $colorVariant->color_image_url;
+        if ($hasVariants) {
+            $selectedVariant = $this->getSelectedVariant();
+            if ($selectedVariant && ! empty($selectedVariant->images) && $selectedVariant->color_image_url) {
+                return $selectedVariant->color_image_url;
             }
         }
 
-        // If no variants, use product image
         if (! $hasVariants && $this->product->product_image_url) {
             return $this->product->product_image_url;
         }
 
-        // Fallback to product main image (which handles variants or fallback)
         return $this->product->image_url;
     }
 
@@ -161,28 +161,32 @@ class ViewProduct extends Component
         $hasVariants = $this->product->variants && $this->product->variants->count() > 0;
 
         if ($hasVariants) {
-            // Get all variant images grouped by color
-            return $this->product->variants->whereNotNull('color_image')
-                ->groupBy('color')
+            $selectedVariant = $this->getSelectedVariant();
+            if ($selectedVariant && ! empty($selectedVariant->images)) {
+                return $selectedVariant->images_urls;
+            }
+            $variantType = $this->product->variant_type ?? 'both';
+            $groupKey = ($variantType === 'size') ? 'size' : 'color';
+            return $this->product->variants->filter(fn ($v) => ! empty($v->images))
+                ->groupBy($groupKey)
                 ->map(function ($variants) {
-                    return $variants->first()->color_image_url;
+                    $first = $variants->first();
+                    return $first && $first->color_image_url ? [$first->color_image_url] : [];
                 })
                 ->filter()
                 ->values()
+                ->flatten()
+                ->unique()
+                ->values()
                 ->toArray();
-        } else {
-            // Get product images (main + additional)
-            $images = [];
-
-            if ($this->product->product_image_url) {
-                $images[] = $this->product->product_image_url;
-            }
-
-            $additionalImages = $this->product->additional_images_urls ?? [];
-            $images = array_merge($images, $additionalImages);
-
-            return array_filter($images);
         }
+
+        $images = [];
+        if ($this->product->product_image_url) {
+            $images[] = $this->product->product_image_url;
+        }
+        $additionalImages = $this->product->additional_images_urls ?? [];
+        return array_values(array_filter(array_merge($images, $additionalImages)));
     }
 
     /**
@@ -214,7 +218,7 @@ class ViewProduct extends Component
     }
 
     /**
-     * Get quantity for a specific size-color combination
+     * Get quantity for a specific size/color combination (supports size-only, color-only, or both)
      */
     public function getVariantQuantity($sizeName, $colorName)
     {
@@ -222,15 +226,23 @@ class ViewProduct extends Component
             return null;
         }
 
-        if (empty($sizeName) || empty($colorName)) {
+        $variantType = $this->product->variant_type ?? 'both';
+        if ($variantType === 'size' && (empty($sizeName) && $sizeName !== '0')) {
+            return null;
+        }
+        if ($variantType === 'color' && (empty($colorName) && $colorName !== '0')) {
+            return null;
+        }
+        if ($variantType === 'both' && (empty($sizeName) || empty($colorName))) {
             return null;
         }
 
         $variant = $this->product->variants->first(function ($variant) use ($sizeName, $colorName) {
-            return $variant->size === $sizeName && $variant->color === $colorName;
+            $sizeMatch = ($variant->size === $sizeName) || ($sizeName === null && empty($variant->size));
+            $colorMatch = ($variant->color === $colorName) || ($colorName === null && empty($variant->color));
+            return $sizeMatch && $colorMatch;
         });
 
-        // Return null if variant doesn't exist, quantity if it does
         return $variant ? $variant->quantity : null;
     }
 
@@ -246,19 +258,22 @@ class ViewProduct extends Component
     {
         $availableQuantity = $this->getAvailableQuantity();
 
-        // If product has variants, require variant selection
+        // If product has variants, require variant selection based on variant type
         if ($this->product->variants && $this->product->variants->count() > 0) {
-            if (empty($this->selectedSize) || empty($this->selectedColor)) {
-                $this->dispatch('cartUpdated', message: 'Please select both a color and a size.', type: 'error');
-
+            $variantType = $this->product->variant_type ?? 'both';
+            $needsSize = ($variantType === 'size' || $variantType === 'both') && empty($this->selectedSize);
+            $needsColor = ($variantType === 'color' || $variantType === 'both') && empty($this->selectedColor);
+            if ($needsSize || $needsColor) {
+                $msg = $variantType === 'size' ? 'Please select a size.'
+                    : ($variantType === 'color' ? 'Please select a color.'
+                        : 'Please select both a color and a size.');
+                $this->dispatch('cartUpdated', message: $msg, type: 'error');
                 return;
             }
 
-            // Check if selected variant exists and has stock
             $variant = $this->getSelectedVariant();
             if (! $variant) {
-                $this->dispatch('cartUpdated', message: 'This size is not available for the selected color.', type: 'error');
-
+                $this->dispatch('cartUpdated', message: 'This variant is not available.', type: 'error');
                 return;
             }
         }
@@ -312,19 +327,22 @@ class ViewProduct extends Component
     {
         $availableQuantity = $this->getAvailableQuantity();
 
-        // If product has variants, require variant selection
+        // If product has variants, require variant selection based on variant type
         if ($this->product->variants && $this->product->variants->count() > 0) {
-            if (empty($this->selectedSize) || empty($this->selectedColor)) {
-                $this->dispatch('cartUpdated', message: 'Please select both a color and a size.', type: 'error');
-
+            $variantType = $this->product->variant_type ?? 'both';
+            $needsSize = ($variantType === 'size' || $variantType === 'both') && empty($this->selectedSize);
+            $needsColor = ($variantType === 'color' || $variantType === 'both') && empty($this->selectedColor);
+            if ($needsSize || $needsColor) {
+                $msg = $variantType === 'size' ? 'Please select a size.'
+                    : ($variantType === 'color' ? 'Please select a color.'
+                        : 'Please select both a color and a size.');
+                $this->dispatch('cartUpdated', message: $msg, type: 'error');
                 return;
             }
 
-            // Check if selected variant exists and has stock
             $variant = $this->getSelectedVariant();
             if (! $variant) {
-                $this->dispatch('cartUpdated', message: 'This size is not available for the selected color.', type: 'error');
-
+                $this->dispatch('cartUpdated', message: 'This variant is not available.', type: 'error');
                 return;
             }
         }

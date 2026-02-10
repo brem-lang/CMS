@@ -24,83 +24,132 @@ class EditProduct extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Group variants by color for the form
         $product = $this->record;
         $variants = $product->variants()->get();
-        
-        // Set has_variants toggle based on whether product has variants
+
         $data['has_variants'] = $variants->isNotEmpty();
-        
-        $colorVariants = [];
-        $groupedByColor = $variants->groupBy('color');
+        $data['variant_type'] = $product->variant_type ?? 'both';
 
-        foreach ($groupedByColor as $color => $colorGroup) {
-            $firstVariant = $colorGroup->first();
-            $sizes = [];
-
-            foreach ($colorGroup as $variant) {
-                $sizes[] = [
-                    'size' => $variant->size,
-                    'quantity' => $variant->quantity,
-                ];
-            }
-
-            $colorVariants[] = [
-                'color' => $color,
-                'color_image' => $firstVariant->color_image,
-                'sizes' => $sizes,
-            ];
+        if ($variants->isEmpty()) {
+            $data['size_variants'] = [];
+            $data['color_only_variants'] = [];
+            $data['color_variants'] = [];
+            return $data;
         }
 
+        $variantType = $data['variant_type'];
+
+        if ($variantType === 'size') {
+            $data['size_variants'] = $variants->map(fn ($v) => [
+                'size' => $v->size,
+                'quantity' => $v->quantity,
+                'images' => $v->images ?? [],
+            ])->values()->all();
+            $data['color_only_variants'] = [];
+            $data['color_variants'] = [];
+            return $data;
+        }
+
+        if ($variantType === 'color') {
+            $data['color_only_variants'] = $variants->map(fn ($v) => [
+                'color' => $v->color,
+                'quantity' => $v->quantity,
+                'images' => $v->images ?? [],
+            ])->values()->all();
+            $data['size_variants'] = [];
+            $data['color_variants'] = [];
+            return $data;
+        }
+
+        $colorVariants = [];
+        foreach ($variants->groupBy('color') as $color => $colorGroup) {
+            $sizes = $colorGroup->map(fn ($v) => [
+                'size' => $v->size,
+                'quantity' => $v->quantity,
+                'images' => $v->images ?? [],
+            ])->values()->all();
+            $colorVariants[] = ['color' => $color, 'sizes' => $sizes];
+        }
         $data['color_variants'] = $colorVariants;
+        $data['size_variants'] = [];
+        $data['color_only_variants'] = [];
 
         return $data;
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        // Extract color variants and has_variants before updating
-        $colorVariants = $data['color_variants'] ?? [];
         $hasVariants = $data['has_variants'] ?? false;
-        unset($data['color_variants'], $data['has_variants']);
+        $variantType = $data['variant_type'] ?? 'both';
+        $sizeVariants = $data['size_variants'] ?? [];
+        $colorOnlyVariants = $data['color_only_variants'] ?? [];
+        $colorVariants = $data['color_variants'] ?? [];
 
-        // Calculate total stock quantity from variants if variants are enabled
-        if ($hasVariants && !empty($colorVariants)) {
-            $totalStock = 0;
-            foreach ($colorVariants as $colorVariant) {
-                $sizes = $colorVariant['sizes'] ?? [];
-                foreach ($sizes as $sizeData) {
-                    $totalStock += (int)($sizeData['quantity'] ?? 0);
-                }
-            }
-            $data['stock_quantity'] = $totalStock;
+        unset($data['color_variants'], $data['has_variants'], $data['variant_type'], $data['size_variants'], $data['color_only_variants']);
+
+        if ($hasVariants) {
+            $data['variant_type'] = $variantType;
+            $data['stock_quantity'] = CreateProduct::calculateVariantStock($variantType, $sizeVariants, $colorOnlyVariants, $colorVariants);
         }
 
-        // Update the product
         $record = parent::handleRecordUpdate($record, $data);
 
-        // Delete existing variants
         $record->variants()->delete();
 
-        // Create new variants from color variants structure only if has_variants is true
-        if ($hasVariants && !empty($colorVariants)) {
-            foreach ($colorVariants as $colorVariant) {
-                $color = $colorVariant['color'] ?? null;
-                $colorImage = $colorVariant['color_image'] ?? null;
-                $sizes = $colorVariant['sizes'] ?? [];
-
-                foreach ($sizes as $sizeData) {
-                    ProductVariant::create([
-                        'product_id' => $record->id,
-                        'color' => $color,
-                        'color_image' => is_array($colorImage) ? ($colorImage[0] ?? null) : $colorImage,
-                        'size' => $sizeData['size'] ?? null,
-                        'quantity' => $sizeData['quantity'] ?? 0,
-                    ]);
-                }
-            }
+        if ($hasVariants) {
+            $this->createVariantsFromForm($record->id, $variantType, $sizeVariants, $colorOnlyVariants, $colorVariants);
         }
 
         return $record;
+    }
+
+    private function normalizeImages(mixed $images): array
+    {
+        if (is_array($images)) {
+            return array_values(array_filter($images));
+        }
+        return $images ? [$images] : [];
+    }
+
+    private function createVariantsFromForm(int $productId, string $variantType, array $sizeVariants, array $colorOnlyVariants, array $colorVariants): void
+    {
+        if ($variantType === 'size') {
+            foreach ($sizeVariants as $row) {
+                ProductVariant::create([
+                    'product_id' => $productId,
+                    'size' => $row['size'] ?? null,
+                    'color' => null,
+                    'quantity' => (int)($row['quantity'] ?? 0),
+                    'images' => $this->normalizeImages($row['images'] ?? null),
+                ]);
+            }
+            return;
+        }
+
+        if ($variantType === 'color') {
+            foreach ($colorOnlyVariants as $row) {
+                ProductVariant::create([
+                    'product_id' => $productId,
+                    'size' => null,
+                    'color' => $row['color'] ?? null,
+                    'quantity' => (int)($row['quantity'] ?? 0),
+                    'images' => $this->normalizeImages($row['images'] ?? null),
+                ]);
+            }
+            return;
+        }
+
+        foreach ($colorVariants as $colorVariant) {
+            $color = $colorVariant['color'] ?? null;
+            foreach ($colorVariant['sizes'] ?? [] as $sizeData) {
+                ProductVariant::create([
+                    'product_id' => $productId,
+                    'size' => $sizeData['size'] ?? null,
+                    'color' => $color,
+                    'quantity' => (int)($sizeData['quantity'] ?? 0),
+                    'images' => $this->normalizeImages($sizeData['images'] ?? null),
+                ]);
+            }
+        }
     }
 }

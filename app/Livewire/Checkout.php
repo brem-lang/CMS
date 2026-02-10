@@ -132,18 +132,20 @@ class Checkout extends Component
             $itemSubtotal = $verifiedPrice * $quantity;
 
             // Get product image URL
-            // For products with variants: use variant image matching selected_color
-            // For products without variants: use product's main image
+            // For products with variants: use variant image matching selected size/color
             $imageUrl = null;
+            $selectedSize = $cartItem->selected_size ?? null;
             $selectedColor = $cartItem->selected_color ?? null;
-            
-            if ($product->variants()->exists() && $selectedColor) {
-                // Product has variants - find variant matching selected color
-                $variant = $product->variants()
-                    ->where('color', $selectedColor)
-                    ->whereNotNull('color_image')
-                    ->first();
-                
+
+            if ($product->variants()->exists() && ($selectedSize || $selectedColor)) {
+                $variantQuery = $product->variants()->whereRaw('JSON_LENGTH(COALESCE(images, "[]")) > 0');
+                if ($selectedSize !== null && $selectedSize !== '') {
+                    $variantQuery->where('size', $selectedSize);
+                }
+                if ($selectedColor !== null && $selectedColor !== '') {
+                    $variantQuery->where('color', $selectedColor);
+                }
+                $variant = $variantQuery->first();
                 if ($variant && $variant->color_image_url) {
                     $imageUrl = $variant->color_image_url;
                 }

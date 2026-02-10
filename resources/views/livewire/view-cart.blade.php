@@ -49,7 +49,11 @@
                                         <tr>
                                             <td class="product__cart__item">
                                                 <div class="product__cart__item__pic">
-                                                    <img src="{{ $item->product->image_url }}"
+                                                    @php
+                                                        $itemImageUrl = $item->product->getVariantImageUrlForSelection($item->selected_size ?? null, $item->selected_color ?? null)
+                                                            ?? $item->product->image_url;
+                                                    @endphp
+                                                    <img src="{{ $itemImageUrl }}"
                                                         alt="{{ $item->product->name }}">
                                                 </div>
                                                 <div class="product__cart__item__text">

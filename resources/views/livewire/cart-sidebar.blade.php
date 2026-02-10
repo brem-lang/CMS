@@ -21,7 +21,11 @@
                         style="display: flex; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0;">
                         <div class="cart-item-image"
                             style="width: 80px; height: 80px; margin-right: 15px; flex-shrink: 0;">
-                            <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}"
+                            @php
+                                $sidebarItemImage = $item->product->getVariantImageUrlForSelection($item->selected_size ?? null, $item->selected_color ?? null)
+                                    ?? $item->product->image_url;
+                            @endphp
+                            <img src="{{ $sidebarItemImage }}" alt="{{ $item->product->name }}"
                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
                         </div>
                         <div class="cart-item-details" style="flex: 1;">

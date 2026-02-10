@@ -12,12 +12,13 @@ class ProductVariant extends Model
         'product_id',
         'size',
         'color',
-        'color_image',
+        'images',
         'quantity',
     ];
 
     protected $casts = [
         'quantity' => 'integer',
+        'images' => 'array',
     ];
 
     public function product(): BelongsTo
@@ -35,14 +36,38 @@ class ProductVariant extends Model
     }
 
     /**
-     * Get the color image URL
+     * Get the primary (first) variant image URL
      */
     public function getColorImageUrlAttribute(): ?string
     {
-        if ($this->color_image) {
-            return Storage::disk('public')->url($this->color_image);
-        }
+        $first = $this->getFirstImagePath();
+        return $first ? Storage::disk('public')->url($first) : null;
+    }
 
-        return null;
+    /**
+     * Get the first image path from the images array
+     */
+    public function getFirstImagePath(): ?string
+    {
+        $images = $this->images;
+        if (! is_array($images) || empty($images)) {
+            return null;
+        }
+        return $images[array_key_first($images)] ?? null;
+    }
+
+    /**
+     * Get all variant image URLs
+     */
+    public function getImagesUrlsAttribute(): array
+    {
+        $images = $this->images;
+        if (! is_array($images) || empty($images)) {
+            return [];
+        }
+        return array_values(array_map(
+            fn ($path) => Storage::disk('public')->url($path),
+            array_filter($images)
+        ));
     }
 }

@@ -15,45 +15,96 @@ class CreateProduct extends CreateRecord
     {
         $data['added_by'] = auth()->user()->id;
 
-        // Extract color variants and has_variants before creating the product
-        $colorVariants = $data['color_variants'] ?? [];
         $hasVariants = $data['has_variants'] ?? false;
-        unset($data['color_variants'], $data['has_variants']);
+        $variantType = $data['variant_type'] ?? 'both';
+        $sizeVariants = $data['size_variants'] ?? [];
+        $colorOnlyVariants = $data['color_only_variants'] ?? [];
+        $colorVariants = $data['color_variants'] ?? [];
 
-        // Calculate total stock quantity from variants if variants are enabled
-        if ($hasVariants && !empty($colorVariants)) {
-            $totalStock = 0;
-            foreach ($colorVariants as $colorVariant) {
-                $sizes = $colorVariant['sizes'] ?? [];
-                foreach ($sizes as $sizeData) {
-                    $totalStock += (int)($sizeData['quantity'] ?? 0);
-                }
-            }
-            $data['stock_quantity'] = $totalStock;
+        unset($data['color_variants'], $data['has_variants'], $data['variant_type'], $data['size_variants'], $data['color_only_variants']);
+
+        if ($hasVariants) {
+            $data['variant_type'] = $variantType;
+            $data['stock_quantity'] = self::calculateVariantStock($variantType, $sizeVariants, $colorOnlyVariants, $colorVariants);
         }
 
-        // Create the product
         $product = parent::handleRecordCreation($data);
 
-        // Create variants from color variants structure only if has_variants is true
-        if ($hasVariants && !empty($colorVariants)) {
-            foreach ($colorVariants as $colorVariant) {
-                $color = $colorVariant['color'] ?? null;
-                $colorImage = $colorVariant['color_image'] ?? null;
-                $sizes = $colorVariant['sizes'] ?? [];
-
-                foreach ($sizes as $sizeData) {
-                    ProductVariant::create([
-                        'product_id' => $product->id,
-                        'color' => $color,
-                        'color_image' => is_array($colorImage) ? ($colorImage[0] ?? null) : $colorImage,
-                        'size' => $sizeData['size'] ?? null,
-                        'quantity' => $sizeData['quantity'] ?? 0,
-                    ]);
-                }
-            }
+        if ($hasVariants) {
+            $this->createVariantsFromForm($product->id, $variantType, $sizeVariants, $colorOnlyVariants, $colorVariants);
         }
 
         return $product;
+    }
+
+    public static function calculateVariantStock(string $variantType, array $sizeVariants, array $colorOnlyVariants, array $colorVariants): int
+    {
+        $total = 0;
+        if ($variantType === 'size') {
+            foreach ($sizeVariants as $row) {
+                $total += (int)($row['quantity'] ?? 0);
+            }
+        } elseif ($variantType === 'color') {
+            foreach ($colorOnlyVariants as $row) {
+                $total += (int)($row['quantity'] ?? 0);
+            }
+        } else {
+            foreach ($colorVariants as $colorVariant) {
+                foreach ($colorVariant['sizes'] ?? [] as $sizeData) {
+                    $total += (int)($sizeData['quantity'] ?? 0);
+                }
+            }
+        }
+        return $total;
+    }
+
+    private function normalizeImages(mixed $images): array
+    {
+        if (is_array($images)) {
+            return array_values(array_filter($images));
+        }
+        return $images ? [$images] : [];
+    }
+
+    private function createVariantsFromForm(int $productId, string $variantType, array $sizeVariants, array $colorOnlyVariants, array $colorVariants): void
+    {
+        if ($variantType === 'size') {
+            foreach ($sizeVariants as $row) {
+                ProductVariant::create([
+                    'product_id' => $productId,
+                    'size' => $row['size'] ?? null,
+                    'color' => null,
+                    'quantity' => (int)($row['quantity'] ?? 0),
+                    'images' => $this->normalizeImages($row['images'] ?? null),
+                ]);
+            }
+            return;
+        }
+
+        if ($variantType === 'color') {
+            foreach ($colorOnlyVariants as $row) {
+                ProductVariant::create([
+                    'product_id' => $productId,
+                    'size' => null,
+                    'color' => $row['color'] ?? null,
+                    'quantity' => (int)($row['quantity'] ?? 0),
+                    'images' => $this->normalizeImages($row['images'] ?? null),
+                ]);
+            }
+            return;
+        }
+
+        foreach ($colorVariants as $colorVariant) {
+            $color = $colorVariant['color'] ?? null;
+            foreach ($colorVariant['sizes'] ?? [] as $sizeData) {
+                ProductVariant::create([
+                    'product_id' => $productId,
+                    'size' => $sizeData['size'] ?? null,
+                    'color' => $color,
+                    'quantity' => (int)($sizeData['quantity'] ?? 0),
+                    'images' => $this->normalizeImages($sizeData['images'] ?? null),
+                ]);
+            }
+        }
     }
 }
