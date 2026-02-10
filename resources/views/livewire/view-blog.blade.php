@@ -93,4 +93,20 @@
         </div>
     </section>
     <!-- Blog Details Section End -->
+
+    <style>
+        .blog__details__text {
+            /* Increase this or remove it to allow more width */
+            max-width: 1200px;
+            margin: 0 auto;
+
+            /* Keep the text wrapping fix */
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+
+            /* Ensure the text isn't touching the literal edge of the screen */
+            padding: 0 15px;
+        }
+    </style>
 </div>
