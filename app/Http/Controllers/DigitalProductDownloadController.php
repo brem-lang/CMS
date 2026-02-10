@@ -50,7 +50,9 @@ class DigitalProductDownloadController extends Controller
             abort(404, 'Digital product not found for this order item.');
         }
 
-        if ($orderItem->order->payment_status !== 'paid' || $orderItem->order->status !== 'processing') {
+        $order = $orderItem->order;
+        $allowedStatuses = ['processing', 'delivered'];
+        if ($order->payment_status !== 'paid' || ! in_array($order->status, $allowedStatuses, true)) {
             abort(403, 'This download is not available for the current order status.');
         }
 
@@ -76,7 +78,9 @@ class DigitalProductDownloadController extends Controller
             abort(404, 'Digital product not found for this order item.');
         }
 
-        if ($orderItem->order->payment_status !== 'paid' || $orderItem->order->status !== 'processing') {
+        $order = $orderItem->order;
+        $allowedStatuses = ['processing', 'delivered'];
+        if ($order->payment_status !== 'paid' || ! in_array($order->status, $allowedStatuses, true)) {
             abort(403, 'This download is not available for the current order status.');
         }
 
