@@ -11,73 +11,56 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" wire:ignore>
-                    <div class="col-lg-3 col-md-3">
-                        <ul class="nav nav-tabs" role="tablist" id="product-image-thumbnails">
-                            @php
-                                $hasVariants = $product->variants && $product->variants->count() > 0;
-                                $displayImageUrl = $this->getDisplayImageUrl();
+                <div class="row product-image-container" wire:ignore>
+                    @php
+                        $hasVariants = $product->variants && $product->variants->count() > 0;
+                        $displayImageUrl = $this->getDisplayImageUrl();
 
-                                // Get all images for display - now includes ALL variant images
-                                $allImages = $this->getAllDisplayImages();
+                        // Get all images for display - now includes ALL variant images
+                        $allImages = $this->getAllDisplayImages();
 
-                                // Ensure the displayed image is first in the list
-                                $displayImages = [];
-                                if ($displayImageUrl && !empty($allImages)) {
-                                    // Start with the displayed image
-                                    $displayImages[] = $displayImageUrl;
-                                    // Add all other images that are different
-                                    foreach ($allImages as $imageUrl) {
-                                        if ($imageUrl !== $displayImageUrl) {
-                                            $displayImages[] = $imageUrl;
-                                        }
-                                    }
-                                } else {
-                                    $displayImages = $allImages;
+                        // Ensure the displayed image is first in the list
+                        $displayImages = [];
+                        if ($displayImageUrl && !empty($allImages)) {
+                            // Start with the displayed image
+                            $displayImages[] = $displayImageUrl;
+                            // Add all other images that are different
+                            foreach ($allImages as $imageUrl) {
+                                if ($imageUrl !== $displayImageUrl) {
+                                    $displayImages[] = $imageUrl;
                                 }
+                            }
+                        } else {
+                            $displayImages = $allImages;
+                        }
 
-                                // Remove duplicates while preserving order
-                                $displayImages = array_values(array_unique($displayImages));
-                            @endphp
+                        // Remove duplicates while preserving order
+                        $displayImages = array_values(array_unique($displayImages));
+                        $imageCount = count($displayImages);
+                        $hasManyImages = $imageCount > 4;
+                    @endphp
+                    
+                    {{-- Desktop: Side thumbnails --}}
+                    <div class="col-lg-3 col-md-3 d-none d-md-block product-thumbnails-col">
+                        <ul class="nav nav-tabs {{ $hasManyImages ? 'nav-tabs-compact' : '' }}" role="tablist" id="product-image-thumbnails-desktop"
+                            style="{{ $hasManyImages ? 'max-height: 500px; overflow-y: auto; padding-right: 5px;' : '' }}">
                             @foreach ($displayImages as $index => $image)
-                                <li class="nav-item">
+                                <li class="nav-item {{ $hasManyImages ? 'nav-item-compact' : '' }}">
                                     <a class="nav-link {{ $index === 0 ? 'active' : '' }}" data-toggle="tab"
                                         href="#tabs-{{ $index + 1 }}" role="tab">
-                                        <div class="product__thumb__pic set-bg" data-setbg="{{ $image }}">
+                                        <div class="product__thumb__pic set-bg {{ $hasManyImages ? 'thumb-compact' : '' }}" 
+                                             data-setbg="{{ $image }}"
+                                             style="{{ $hasManyImages ? 'height: 80px; margin-bottom: 10px;' : '' }}">
                                         </div>
                                     </a>
                                 </li>
                             @endforeach
                         </ul>
                     </div>
-                    <div class="col-lg-6 col-md-9">
-                        <div class="tab-content" id="product-image-gallery">
-                            @php
-                                $hasVariants = $product->variants && $product->variants->count() > 0;
-                                $displayImageUrl = $this->getDisplayImageUrl();
-
-                                // Get all images for display (same logic as thumbnails)
-                                // This now returns ALL images from ALL variants
-                                $allImages = $this->getAllDisplayImages();
-
-                                // Ensure the displayed image is first in the list
-                                $displayImages = [];
-                                if ($displayImageUrl && !empty($allImages)) {
-                                    // Start with the displayed image
-                                    $displayImages[] = $displayImageUrl;
-                                    // Add all other images that are different
-                                    foreach ($allImages as $imageUrl) {
-                                        if ($imageUrl !== $displayImageUrl) {
-                                            $displayImages[] = $imageUrl;
-                                        }
-                                    }
-                                } else {
-                                    $displayImages = $allImages;
-                                }
-
-                                // Remove duplicates while preserving order
-                                $displayImages = array_values(array_unique($displayImages));
-                            @endphp
+                    
+                    {{-- Desktop: Main gallery --}}
+                    <div class="col-lg-6 col-md-9 d-none d-md-block product-gallery-col">
+                        <div class="tab-content" id="product-image-gallery-desktop">
                             @if (count($displayImages) > 0)
                                 @foreach ($displayImages as $index => $image)
                                     <div class="tab-pane {{ $index === 0 ? 'active' : '' }}"
@@ -117,6 +100,79 @@
                                 </div>
                             @endif
                         </div>
+                    </div>
+
+                    {{-- Mobile: Swipeable carousel --}}
+                    <div class="col-12 d-block d-md-none mobile-image-carousel">
+                        <div class="mobile-carousel-wrapper" id="mobile-carousel-wrapper">
+                            @if (count($displayImages) > 0)
+                                @foreach ($displayImages as $index => $image)
+                                    <div class="mobile-carousel-slide {{ $index === 0 ? 'active' : '' }}" 
+                                         data-slide-index="{{ $index }}">
+                                        <div class="mobile-image-container" style="position: relative;">
+                                            @php
+                                                $variantTypePic = $product->variant_type ?? 'both';
+                                                $variantSelectedPic =
+                                                    ($variantTypePic === 'size' && $selectedSize) ||
+                                                    ($variantTypePic === 'color' && $selectedColor) ||
+                                                    ($variantTypePic === 'both' && ($selectedSize || $selectedColor));
+                                                $isOutOfStock = false;
+                                                if ($hasVariants) {
+                                                    $availableQty = $this->getAvailableQuantity();
+                                                    $isOutOfStock = $availableQty <= 0 && $variantSelectedPic;
+                                                } else {
+                                                    $isOutOfStock = ($product->stock_quantity ?? 0) == 0;
+                                                }
+                                            @endphp
+                                            <img src="{{ $image }}" alt="{{ $product->name }}" 
+                                                 class="mobile-carousel-image"
+                                                 loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                                            @if ($isOutOfStock && $index === 0)
+                                                <div class="mobile-out-of-stock-badge">
+                                                    Out of Stock
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="mobile-carousel-slide active">
+                                    <div class="mobile-image-container">
+                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" 
+                                             class="mobile-carousel-image">
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        {{-- Image counter --}}
+                        @if (count($displayImages) > 1)
+                            <div class="mobile-image-counter">
+                                <span id="current-image-index">1</span> / <span id="total-images">{{ count($displayImages) }}</span>
+                            </div>
+                        @endif
+
+                        {{-- Dots indicator --}}
+                        @if (count($displayImages) > 1)
+                            <div class="mobile-carousel-dots">
+                                @foreach ($displayImages as $index => $image)
+                                    <span class="carousel-dot {{ $index === 0 ? 'active' : '' }}" 
+                                          data-slide-to="{{ $index }}"></span>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        {{-- Bottom thumbnails strip --}}
+                        @if (count($displayImages) > 1)
+                            <div class="mobile-thumbnails-strip">
+                                @foreach ($displayImages as $index => $image)
+                                    <div class="mobile-thumbnail {{ $index === 0 ? 'active' : '' }}" 
+                                         data-slide-to="{{ $index }}">
+                                        <img src="{{ $image }}" alt="Thumbnail {{ $index + 1 }}">
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -701,6 +757,227 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(229, 54, 55, 0.3);
         }
+
+        /* Compact thumbnail styles for many images */
+        .nav-tabs-compact {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-tabs-compact .nav-item-compact {
+            margin-bottom: 0;
+        }
+
+        .nav-tabs-compact .nav-link {
+            padding: 5px;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tabs-compact .nav-link:hover {
+            border-color: #111;
+        }
+
+        .nav-tabs-compact .nav-link.active {
+            border-color: #111;
+            border-width: 2px;
+        }
+
+        .thumb-compact {
+            width: 100%;
+            height: 80px !important;
+            background-size: cover;
+            background-position: center;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* Custom scrollbar for thumbnail list */
+        .nav-tabs-compact::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .nav-tabs-compact::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .nav-tabs-compact::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        .nav-tabs-compact::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Mobile Carousel Styles */
+        .mobile-image-carousel {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .mobile-carousel-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            touch-action: pan-y pinch-zoom;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-carousel-slide {
+            display: none;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-carousel-slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .mobile-image-container {
+            width: 100%;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            max-height: 500px;
+        }
+
+        .mobile-carousel-image {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .mobile-out-of-stock-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(220, 53, 69, 0.95);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .mobile-image-counter {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .mobile-carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 15px 0;
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .carousel-dot.active {
+            background-color: white;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .mobile-thumbnails-strip {
+            display: flex;
+            gap: 8px;
+            padding: 10px 15px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            background: #f8f9fa;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .mobile-thumbnail {
+            flex: 0 0 auto;
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0.6;
+        }
+
+        .mobile-thumbnail.active {
+            border-color: #111;
+            opacity: 1;
+        }
+
+        .mobile-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Hide mobile carousel on desktop */
+        @media (min-width: 768px) {
+            .mobile-image-carousel {
+                display: none !important;
+            }
+        }
+
+        /* Desktop responsive adjustments */
+        @media (max-width: 991.98px) {
+            .product-image-container {
+                margin-bottom: 20px;
+            }
+
+            .product-thumbnails-col {
+                margin-top: 20px;
+                padding: 0 15px;
+            }
+
+            .product-gallery-col {
+                margin-bottom: 20px;
+            }
+
+            #product-image-gallery-desktop .product__details__pic__item img {
+                width: 100%;
+                height: auto;
+                max-height: 500px;
+                object-fit: contain;
+            }
+        }
     </style>
 
     <script>
@@ -758,5 +1035,96 @@
                 setTimeout(updateImageGallery, 200);
             }
         });
+
+        // Mobile Carousel Swipe Functionality
+        (function() {
+            const carouselWrapper = document.getElementById('mobile-carousel-wrapper');
+            if (!carouselWrapper) return;
+
+            let currentSlide = 0;
+            const slides = carouselWrapper.querySelectorAll('.mobile-carousel-slide');
+            const dots = document.querySelectorAll('.carousel-dot');
+            const thumbnails = document.querySelectorAll('.mobile-thumbnail');
+            const totalSlides = slides.length;
+            const imageCounter = document.getElementById('current-image-index');
+            const totalImages = document.getElementById('total-images');
+
+            if (totalSlides === 0) return;
+
+            // Touch/swipe variables
+            let touchStartX = 0;
+            let touchEndX = 0;
+            let isDragging = false;
+            let startX = 0;
+            let scrollLeft = 0;
+
+            function showSlide(index) {
+                if (index < 0) index = totalSlides - 1;
+                if (index >= totalSlides) index = 0;
+
+                // Hide all slides
+                slides.forEach(slide => slide.classList.remove('active'));
+                dots.forEach(dot => dot.classList.remove('active'));
+                thumbnails.forEach(thumb => thumb.classList.remove('active'));
+
+                // Show current slide
+                slides[index].classList.add('active');
+                if (dots[index]) dots[index].classList.add('active');
+                if (thumbnails[index]) thumbnails[index].classList.add('active');
+                if (imageCounter) imageCounter.textContent = index + 1;
+
+                currentSlide = index;
+                
+                // Auto-scroll thumbnails to show active one
+                setTimeout(() => {
+                    const activeThumbnail = document.querySelector('.mobile-thumbnail.active');
+                    if (activeThumbnail) {
+                        activeThumbnail.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'nearest',
+                            inline: 'center'
+                        });
+                    }
+                }, 100);
+            }
+
+            // Dot click handler
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => showSlide(index));
+            });
+
+            // Thumbnail click handler
+            thumbnails.forEach((thumb, index) => {
+                thumb.addEventListener('click', () => showSlide(index));
+            });
+
+            // Touch swipe handlers
+            carouselWrapper.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            carouselWrapper.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        // Swipe left - next slide
+                        showSlide(currentSlide + 1);
+                    } else {
+                        // Swipe right - previous slide
+                        showSlide(currentSlide - 1);
+                    }
+                }
+            }
+
+            // Initialize
+            showSlide(0);
+        })();
     </script>
 </div>
