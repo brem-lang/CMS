@@ -11,14 +11,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" wire:ignore>
                     <div class="col-lg-3 col-md-3">
-                        <ul class="nav nav-tabs" role="tablist">
+                        <ul class="nav nav-tabs" role="tablist" id="product-image-thumbnails">
                             @php
                                 $hasVariants = $product->variants && $product->variants->count() > 0;
                                 $displayImageUrl = $this->getDisplayImageUrl();
 
-                                // Get all images for display
+                                // Get all images for display - now includes ALL variant images
                                 $allImages = $this->getAllDisplayImages();
 
                                 // Ensure the displayed image is first in the list
@@ -51,12 +51,13 @@
                         </ul>
                     </div>
                     <div class="col-lg-6 col-md-9">
-                        <div class="tab-content">
+                        <div class="tab-content" id="product-image-gallery">
                             @php
                                 $hasVariants = $product->variants && $product->variants->count() > 0;
                                 $displayImageUrl = $this->getDisplayImageUrl();
 
                                 // Get all images for display (same logic as thumbnails)
+                                // This now returns ALL images from ALL variants
                                 $allImages = $this->getAllDisplayImages();
 
                                 // Ensure the displayed image is first in the list
@@ -77,32 +78,44 @@
                                 // Remove duplicates while preserving order
                                 $displayImages = array_values(array_unique($displayImages));
                             @endphp
-                            @foreach ($displayImages as $index => $image)
-                                <div class="tab-pane {{ $index === 0 ? 'active' : '' }}" id="tabs-{{ $index + 1 }}"
-                                    role="tabpanel">
-                                    <div class="product__details__pic__item" style="position: relative;">
-                                        @php
-                                            $variantTypePic = $product->variant_type ?? 'both';
-                                            $variantSelectedPic = ($variantTypePic === 'size' && $selectedSize) || ($variantTypePic === 'color' && $selectedColor) || ($variantTypePic === 'both' && ($selectedSize || $selectedColor));
-                                            $isOutOfStock = false;
-                                            if ($hasVariants) {
-                                                $availableQty = $this->getAvailableQuantity();
-                                                $isOutOfStock = $availableQty <= 0 && $variantSelectedPic;
-                                            } else {
-                                                $isOutOfStock = ($product->stock_quantity ?? 0) == 0;
-                                            }
-                                        @endphp
-                                        <img src="{{ $image }}" alt="{{ $product->name }}"
-                                            style="width: 100%; height: auto; transition: opacity 0.3s ease;">
-                                        @if ($isOutOfStock && $index === 0)
-                                            <div
-                                                style="position: absolute; top: 20px; right: 20px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 12px 20px; border-radius: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-                                                Out of Stock
-                                            </div>
-                                        @endif
+                            @if (count($displayImages) > 0)
+                                @foreach ($displayImages as $index => $image)
+                                    <div class="tab-pane {{ $index === 0 ? 'active' : '' }}"
+                                        id="tabs-{{ $index + 1 }}" role="tabpanel">
+                                        <div class="product__details__pic__item" style="position: relative;">
+                                            @php
+                                                $variantTypePic = $product->variant_type ?? 'both';
+                                                $variantSelectedPic =
+                                                    ($variantTypePic === 'size' && $selectedSize) ||
+                                                    ($variantTypePic === 'color' && $selectedColor) ||
+                                                    ($variantTypePic === 'both' && ($selectedSize || $selectedColor));
+                                                $isOutOfStock = false;
+                                                if ($hasVariants) {
+                                                    $availableQty = $this->getAvailableQuantity();
+                                                    $isOutOfStock = $availableQty <= 0 && $variantSelectedPic;
+                                                } else {
+                                                    $isOutOfStock = ($product->stock_quantity ?? 0) == 0;
+                                                }
+                                            @endphp
+                                            <img src="{{ $image }}" alt="{{ $product->name }}"
+                                                style="width: 100%; height: auto; transition: opacity 0.3s ease;">
+                                            @if ($isOutOfStock && $index === 0)
+                                                <div
+                                                    style="position: absolute; top: 20px; right: 20px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 12px 20px; border-radius: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                                                    Out of Stock
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                                    <div class="product__details__pic__item">
+                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
+                                            style="width: 100%; height: auto;">
                                     </div>
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -216,12 +229,19 @@
                                                 'total_quantity' => $variants->sum('quantity'),
                                             ];
                                         })
-                                        ->filter(fn ($f) => $f['name'] !== null && $f['name'] !== '')
+                                        ->filter(fn($f) => $f['name'] !== null && $f['name'] !== '')
                                         ->values();
                                 }
-                                $showSizeSection = ($variantType === 'size' || $variantType === 'both') && !empty($displaySizes);
-                                $showColorSection = ($variantType === 'color' || $variantType === 'both') && $colorFamilies->count() > 0;
-                                $variantSelected = !$hasVariants || ($variantType === 'size' && $selectedSize) || ($variantType === 'color' && $selectedColor) || ($variantType === 'both' && $selectedSize && $selectedColor);
+                                $showSizeSection =
+                                    ($variantType === 'size' || $variantType === 'both') && !empty($displaySizes);
+                                $showColorSection =
+                                    ($variantType === 'color' || $variantType === 'both') &&
+                                    $colorFamilies->count() > 0;
+                                $variantSelected =
+                                    !$hasVariants ||
+                                    ($variantType === 'size' && $selectedSize) ||
+                                    ($variantType === 'color' && $selectedColor) ||
+                                    ($variantType === 'both' && $selectedSize && $selectedColor);
                             @endphp
 
                             @if ($hasVariants && ($showSizeSection || $showColorSection))
@@ -234,11 +254,17 @@
                                                 @php
                                                     $sizeId = 'size-' . $product->id . '-' . $index;
                                                     $isSelected = $selectedSize === $sizeName;
-                                                    $variantQty = $selectedColor !== null && $selectedColor !== ''
-                                                        ? $this->getVariantQuantity($sizeName, $selectedColor)
-                                                        : ($variantType === 'size' ? $this->getVariantQuantity($sizeName, null) : null);
+                                                    $variantQty =
+                                                        $selectedColor !== null && $selectedColor !== ''
+                                                            ? $this->getVariantQuantity($sizeName, $selectedColor)
+                                                            : ($variantType === 'size'
+                                                                ? $this->getVariantQuantity($sizeName, null)
+                                                                : null);
                                                     $hasVariant = $variantQty !== null;
-                                                    $isAvailable = ($variantType === 'size') || $selectedColor || ($hasVariant && $variantQty > 0);
+                                                    $isAvailable =
+                                                        $variantType === 'size' ||
+                                                        $selectedColor ||
+                                                        ($hasVariant && $variantQty > 0);
                                                 @endphp
                                                 @if (!empty($sizeName))
                                                     <label for="{{ $sizeId }}"
@@ -258,30 +284,30 @@
 
                                     {{-- Color Palette Section --}}
                                     @if ($showColorSection)
-                                    <div class="product__details__option__color" style="margin-bottom: 25px;">
-                                        <span>Color:</span>
-                                        @foreach ($colorFamilies as $index => $colorFamily)
-                                            @php
-                                                $isSelected = $selectedColor === $colorFamily['name'];
-                                                $colorHex = \App\Models\Product::getColorHex($colorFamily['name']);
-                                                $isAvailable = $colorFamily['total_quantity'] > 0;
-                                            @endphp
-                                            <label for="color-{{ $index }}"
-                                                class="color-palette-swatch {{ $isSelected ? 'active' : '' }}"
-                                                wire:click="selectColor('{{ $colorFamily['name'] }}')"
-                                                style="
+                                        <div class="product__details__option__color" style="margin-bottom: 25px;">
+                                            <span>Color:</span>
+                                            @foreach ($colorFamilies as $index => $colorFamily)
+                                                @php
+                                                    $isSelected = $selectedColor === $colorFamily['name'];
+                                                    $colorHex = \App\Models\Product::getColorHex($colorFamily['name']);
+                                                    $isAvailable = $colorFamily['total_quantity'] > 0;
+                                                @endphp
+                                                <label for="color-{{ $index }}"
+                                                    class="color-palette-swatch {{ $isSelected ? 'active' : '' }}"
+                                                    wire:click="selectColor('{{ $colorFamily['name'] }}')"
+                                                    style="
                                                     background: {{ $colorHex }};
                                                     cursor: {{ $isAvailable ? 'pointer' : 'not-allowed' }};
                                                     opacity: {{ $isAvailable ? '1' : '0.5' }};
                                                 "
-                                                title="{{ $colorFamily['name'] }}">
-                                                <input type="radio" id="color-{{ $index }}"
-                                                    wire:model="selectedColor" value="{{ $colorFamily['name'] }}"
-                                                    name="color-{{ $product->id }}"
-                                                    style="position: absolute; visibility: hidden;">
-                                                @if ($isSelected)
-                                                    <i class="fa fa-check"
-                                                        style="
+                                                    title="{{ $colorFamily['name'] }}">
+                                                    <input type="radio" id="color-{{ $index }}"
+                                                        wire:model="selectedColor" value="{{ $colorFamily['name'] }}"
+                                                        name="color-{{ $product->id }}"
+                                                        style="position: absolute; visibility: hidden;">
+                                                    @if ($isSelected)
+                                                        <i class="fa fa-check"
+                                                            style="
                                                         position: absolute;
                                                         color: {{ $colorHex === '#FFFFFF' || $colorHex === '#000000' ? '#e53637' : '#fff' }};
                                                         font-size: 12px;
@@ -291,10 +317,10 @@
                                                         transform: translate(-50%, -50%);
                                                         z-index: 10;
                                                     "></i>
-                                                @endif
-                                            </label>
-                                        @endforeach
-                                    </div>
+                                                    @endif
+                                                </label>
+                                            @endforeach
+                                        </div>
                                     @endif
 
                                     {{-- Show selected variant quantity --}}
@@ -377,7 +403,11 @@
                                         ? $this->getAvailableQuantity()
                                         : $product->stock_quantity ?? 0;
                                     $variantTypeCart = $product->variant_type ?? 'both';
-                                    $variantSelectedCart = !$hasVariants || ($variantTypeCart === 'size' && $selectedSize) || ($variantTypeCart === 'color' && $selectedColor) || ($variantTypeCart === 'both' && $selectedSize && $selectedColor);
+                                    $variantSelectedCart =
+                                        !$hasVariants ||
+                                        ($variantTypeCart === 'size' && $selectedSize) ||
+                                        ($variantTypeCart === 'color' && $selectedColor) ||
+                                        ($variantTypeCart === 'both' && $selectedSize && $selectedColor);
                                     $isOutOfStock = ($hasVariants && !$variantSelectedCart) || $availableQty <= 0;
                                 @endphp
                                 @if ($isOutOfStock)
@@ -392,7 +422,8 @@
                                                 style="background: #f5f5f5; border: none; border-left: 1px solid #e5e5e5; padding: 10px 15px; cursor: not-allowed; font-size: 14px; font-weight: 700; color: #999999;">+</button>
                                         </div>
                                     </div>
-                                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px;">
+                                    <div
+                                        style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px;">
                                         <a href="#" class="primary-btn buy-now-btn-cart"
                                             style="opacity: 0.5; cursor: not-allowed; pointer-events: none;"
                                             onclick="return false;">add to cart</a>
@@ -416,10 +447,13 @@
                                                 onmouseout="this.style.background='#f5f5f5'">+</button>
                                         </div>
                                     </div>
-                                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px;">
-                                        <a href="#" wire:click.prevent="addToCart" class="primary-btn buy-now-btn-cart">add to
+                                    <div
+                                        style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px;">
+                                        <a href="#" wire:click.prevent="addToCart"
+                                            class="primary-btn buy-now-btn-cart">add to
                                             cart</a>
-                                        <a href="#" wire:click.prevent="buyNow" class="primary-btn buy-now-btn">buy now</a>
+                                        <a href="#" wire:click.prevent="buyNow"
+                                            class="primary-btn buy-now-btn">buy now</a>
                                     </div>
                                 @endif
                             </div>
@@ -433,7 +467,10 @@
                                         @endphp
                                         @php
                                             $variantTypeStock = $product->variant_type ?? 'both';
-                                            $variantSelectedStock = ($variantTypeStock === 'size' && $selectedSize) || ($variantTypeStock === 'color' && $selectedColor) || ($variantTypeStock === 'both' && $selectedSize && $selectedColor);
+                                            $variantSelectedStock =
+                                                ($variantTypeStock === 'size' && $selectedSize) ||
+                                                ($variantTypeStock === 'color' && $selectedColor) ||
+                                                ($variantTypeStock === 'both' && $selectedSize && $selectedColor);
                                         @endphp
                                         @if ($hasVariants && $variantSelectedStock)
                                             @if ($availableQty <= 0)
@@ -665,4 +702,61 @@
             box-shadow: 0 4px 8px rgba(229, 54, 55, 0.3);
         }
     </style>
+
+    <script>
+        // Update image gallery when variants are selected
+        document.addEventListener('livewire:init', () => {
+            // Listen for size/color selection changes
+            Livewire.on('variant-updated', () => {
+                updateImageGallery();
+            });
+
+            // Also listen for any Livewire updates
+            Livewire.hook('morph.updated', ({
+                el,
+                component
+            }) => {
+                // Check if this is our component
+                if (component && component.__instance && component.__instance.__livewire) {
+                    updateImageGallery();
+                }
+            });
+        });
+
+        // Function to update the image gallery
+        function updateImageGallery() {
+            // The gallery will be updated by Livewire, we just need to ensure Bootstrap tabs work
+            setTimeout(() => {
+                // Reinitialize Bootstrap tabs if needed
+                const thumbnails = document.querySelectorAll('#product-image-thumbnails .nav-link');
+                const gallery = document.querySelectorAll('#product-image-gallery .tab-pane');
+
+                if (thumbnails.length > 0 && gallery.length > 0) {
+                    // Ensure first tab is active
+                    thumbnails.forEach((thumb, index) => {
+                        if (index === 0) {
+                            thumb.classList.add('active');
+                        } else {
+                            thumb.classList.remove('active');
+                        }
+                    });
+
+                    gallery.forEach((pane, index) => {
+                        if (index === 0) {
+                            pane.classList.add('active');
+                        } else {
+                            pane.classList.remove('active');
+                        }
+                    });
+                }
+            }, 100);
+        }
+
+        // Update gallery when size/color inputs change
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('input[type="radio"][name^="size-"], input[type="radio"][name^="color-"]')) {
+                setTimeout(updateImageGallery, 200);
+            }
+        });
+    </script>
 </div>

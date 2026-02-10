@@ -155,38 +155,166 @@ class ViewProduct extends Component
 
     /**
      * Get all images for display (variants or product images)
+     * Returns ALL images from ALL variants, prioritizing selected variant images first
      */
     public function getAllDisplayImages()
     {
         $hasVariants = $this->product->variants && $this->product->variants->count() > 0;
 
         if ($hasVariants) {
-            $selectedVariant = $this->getSelectedVariant();
-            if ($selectedVariant && ! empty($selectedVariant->images)) {
-                return $selectedVariant->images_urls;
+            $allImages = [];
+            $selectedVariantImages = [];
+
+            // Collect all images from all variants
+            foreach ($this->product->variants as $variant) {
+                if (!empty($variant->images) && is_array($variant->images)) {
+                    $variantImageUrls = $variant->images_urls ?? [];
+                    
+                    // Check if this is the selected variant
+                    $isSelected = false;
+                    $variantType = $this->product->variant_type ?? 'both';
+                    
+                    if ($variantType === 'size') {
+                        $isSelected = $variant->size === $this->selectedSize;
+                    } elseif ($variantType === 'color') {
+                        $isSelected = $variant->color === $this->selectedColor;
+                    } else {
+                        $isSelected = $variant->size === $this->selectedSize && 
+                                      $variant->color === $this->selectedColor;
+                    }
+
+                    if ($isSelected) {
+                        // Prioritize selected variant images
+                        $selectedVariantImages = array_merge($selectedVariantImages, $variantImageUrls);
+                    } else {
+                        // Add other variant images
+                        $allImages = array_merge($allImages, $variantImageUrls);
+                    }
+                }
             }
-            $variantType = $this->product->variant_type ?? 'both';
-            $groupKey = ($variantType === 'size') ? 'size' : 'color';
-            return $this->product->variants->filter(fn ($v) => ! empty($v->images))
-                ->groupBy($groupKey)
-                ->map(function ($variants) {
-                    $first = $variants->first();
-                    return $first && $first->color_image_url ? [$first->color_image_url] : [];
-                })
-                ->filter()
-                ->values()
-                ->flatten()
-                ->unique()
-                ->values()
-                ->toArray();
+
+            // Combine: selected variant images first, then all other images
+            $combinedImages = array_merge($selectedVariantImages, $allImages);
+            
+            // Remove duplicates while preserving order
+            return array_values(array_unique($combinedImages));
         }
 
+        // For products without variants, return product images
         $images = [];
         if ($this->product->product_image_url) {
             $images[] = $this->product->product_image_url;
         }
         $additionalImages = $this->product->additional_images_urls ?? [];
         return array_values(array_filter(array_merge($images, $additionalImages)));
+    }
+
+    /**
+     * Get all variant images grouped by size
+     * Returns array keyed by size with arrays of image URLs
+     */
+    public function getVariantImagesBySize()
+    {
+        if (!$this->product->variants || $this->product->variants->count() === 0) {
+            return [];
+        }
+
+        $imagesBySize = [];
+        
+        foreach ($this->product->variants as $variant) {
+            if (!empty($variant->size) && !empty($variant->images) && is_array($variant->images)) {
+                $size = $variant->size;
+                $variantImageUrls = $variant->images_urls ?? [];
+                
+                if (!isset($imagesBySize[$size])) {
+                    $imagesBySize[$size] = [];
+                }
+                
+                $imagesBySize[$size] = array_merge($imagesBySize[$size], $variantImageUrls);
+            }
+        }
+
+        // Remove duplicates for each size
+        foreach ($imagesBySize as $size => $images) {
+            $imagesBySize[$size] = array_values(array_unique($images));
+        }
+
+        return $imagesBySize;
+    }
+
+    /**
+     * Get all variant images grouped by color
+     * Returns array keyed by color with arrays of image URLs
+     */
+    public function getVariantImagesByColor()
+    {
+        if (!$this->product->variants || $this->product->variants->count() === 0) {
+            return [];
+        }
+
+        $imagesByColor = [];
+        
+        foreach ($this->product->variants as $variant) {
+            if (!empty($variant->color) && !empty($variant->images) && is_array($variant->images)) {
+                $color = $variant->color;
+                $variantImageUrls = $variant->images_urls ?? [];
+                
+                if (!isset($imagesByColor[$color])) {
+                    $imagesByColor[$color] = [];
+                }
+                
+                $imagesByColor[$color] = array_merge($imagesByColor[$color], $variantImageUrls);
+            }
+        }
+
+        // Remove duplicates for each color
+        foreach ($imagesByColor as $color => $images) {
+            $imagesByColor[$color] = array_values(array_unique($images));
+        }
+
+        return $imagesByColor;
+    }
+
+    /**
+     * Get images for a specific size (across all colors if applicable)
+     */
+    public function getImagesForSize($sizeName)
+    {
+        if (!$this->product->variants || $this->product->variants->count() === 0) {
+            return [];
+        }
+
+        $images = [];
+        
+        foreach ($this->product->variants as $variant) {
+            if ($variant->size === $sizeName && !empty($variant->images) && is_array($variant->images)) {
+                $variantImageUrls = $variant->images_urls ?? [];
+                $images = array_merge($images, $variantImageUrls);
+            }
+        }
+
+        return array_values(array_unique($images));
+    }
+
+    /**
+     * Get images for a specific color (across all sizes if applicable)
+     */
+    public function getImagesForColor($colorName)
+    {
+        if (!$this->product->variants || $this->product->variants->count() === 0) {
+            return [];
+        }
+
+        $images = [];
+        
+        foreach ($this->product->variants as $variant) {
+            if ($variant->color === $colorName && !empty($variant->images) && is_array($variant->images)) {
+                $variantImageUrls = $variant->images_urls ?? [];
+                $images = array_merge($images, $variantImageUrls);
+            }
+        }
+
+        return array_values(array_unique($images));
     }
 
     /**
