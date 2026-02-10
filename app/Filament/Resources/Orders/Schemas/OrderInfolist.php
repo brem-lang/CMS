@@ -114,16 +114,10 @@ class OrderInfolist
                         RepeatableEntry::make('orderItems')
                             ->label('Items')
                             ->schema([
-                                TextEntry::make('product.name')
+                                TextEntry::make('product_or_digital_name')
                                     ->label('Product')
                                     ->weight('bold')
-                                    ->formatStateUsing(function ($state, $record) {
-                                        if ($record->digital_product_id && $record->digitalProduct) {
-                                            return $record->digitalProduct->title.' (Digital)';
-                                        }
-
-                                        return $state ?? 'Product not found';
-                                    }),
+                                    ->placeholder('Product not found'),
                                 TextEntry::make('selected_size')
                                     ->formatStateUsing(fn ($state) => $state ?? '-')
                                     ->weight('bold')

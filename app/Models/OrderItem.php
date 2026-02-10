@@ -28,4 +28,19 @@ class OrderItem extends Model
     {
         return $this->belongsTo(DigitalProduct::class);
     }
+
+    /**
+     * Display name for infolist/UI: product name or digital product title with (Digital).
+     */
+    public function getProductOrDigitalNameAttribute(): string
+    {
+        if ($this->digital_product_id && $this->digitalProduct) {
+            return $this->digitalProduct->title . ' (Digital)';
+        }
+        if ($this->product_id && $this->product) {
+            return $this->product->name;
+        }
+
+        return 'Product not found';
+    }
 }

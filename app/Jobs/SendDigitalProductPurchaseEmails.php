@@ -49,6 +49,7 @@ class SendDigitalProductPurchaseEmails implements ShouldQueue
         }
 
         $digitalItems = $order->orderItems->filter(fn ($item) => $item->digital_product_id !== null && $item->digitalProduct);
+        $hasPhysicalItems = $order->orderItems->contains(fn ($item) => $item->product_id !== null);
 
         foreach ($digitalItems as $orderItem) {
             try {
@@ -85,6 +86,14 @@ class SendDigitalProductPurchaseEmails implements ShouldQueue
                 ]);
                 throw $e;
             }
+        }
+
+        // Digital-only orders: set status to delivered (Complete) after sending emails
+        if (! $hasPhysicalItems && $digitalItems->isNotEmpty()) {
+            $order->update(['status' => 'delivered']);
+            Log::info('SendDigitalProductPurchaseEmails: Order marked delivered (digital only)', [
+                'order_id' => $order->id,
+            ]);
         }
     }
 }
