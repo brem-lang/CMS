@@ -104,12 +104,22 @@ class DigitalProductDownloadController extends Controller
             abort(404, 'File not found.');
         }
 
-        $filename = $product->title . '.' . ($product->file_type === 'pdf' ? 'pdf' : pathinfo($product->file_path, PATHINFO_EXTENSION));
-        $mime = $product->file_type === 'pdf' ? 'application/pdf' : 'audio/mpeg';
+        // When stream=1 (e.g. from iframe form), return file. Otherwise return HTML that triggers download then redirects to home.
+        if ($request->boolean('stream')) {
+            $filename = $product->title . '.' . ($product->file_type === 'pdf' ? 'pdf' : pathinfo($product->file_path, PATHINFO_EXTENSION));
+            $mime = $product->file_type === 'pdf' ? 'application/pdf' : 'audio/mpeg';
 
-        return response()->file($path, [
-            'Content-Type' => $mime,
-            'Content-Disposition' => 'attachment; filename="' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename) . '"',
+            return response()->file($path, [
+                'Content-Type' => $mime,
+                'Content-Disposition' => 'attachment; filename="' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename) . '"',
+            ]);
+        }
+
+        return response()->view('digital-download-start', [
+            'orderItem' => $orderItem,
+            'receiptId' => $receiptId,
+            'verifyUrl' => route('digital-product.download.verify', ['orderItem' => $orderItem->id]),
+            'homeUrl' => route('home'),
         ]);
     }
 }
