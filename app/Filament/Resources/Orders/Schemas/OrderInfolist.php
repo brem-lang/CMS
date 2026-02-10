@@ -119,11 +119,11 @@ class OrderInfolist
                                     ->weight('bold')
                                     ->formatStateUsing(function ($state, $record) {
                                         if ($record->digital_product_id && $record->digitalProduct) {
-                                            return $record->digitalProduct->title . ' (Digital)';
+                                            return $record->digitalProduct->title.' (Digital)';
                                         }
+
                                         return $state ?? 'Product not found';
-                                    })
-                                    ->placeholder('Product not found'),
+                                    }),
                                 TextEntry::make('selected_size')
                                     ->formatStateUsing(fn ($state) => $state ?? '-')
                                     ->weight('bold')
