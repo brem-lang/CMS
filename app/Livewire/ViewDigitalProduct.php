@@ -36,7 +36,8 @@ class ViewDigitalProduct extends Component
         try {
             app(CartService::class)->addDigitalProductToCart($this->product->id, 1);
             $this->dispatch('cartUpdated');
-            return $this->redirect(route('checkout'), navigate: true);
+
+            return redirect()->route('checkout');
         } catch (\InvalidArgumentException $e) {
             session()->flash('error', $e->getMessage());
         }

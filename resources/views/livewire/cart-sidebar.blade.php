@@ -75,11 +75,10 @@
                                         <button wire:click="updateQuantity({{ $item->product_id }}, {{ $item->quantity + 1 }}, '{{ $item->selected_size ?? '' }}', '{{ $item->selected_color ?? '' }}')"
                                             style="background: none; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px;">+</button>
                                     @else
-                                        <button wire:click="updateDigitalQuantity({{ $item->digital_product_id }}, {{ $item->quantity - 1 }})"
+                                        <button wire:click="updateDigitalQuantity({{ $item->digital_product_id }}, 0)"
+                                            title="Remove"
                                             style="background: none; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px;">-</button>
-                                        <span style="padding: 5px 15px; min-width: 40px; text-align: center;">{{ $item->quantity }}</span>
-                                        <button wire:click="updateDigitalQuantity({{ $item->digital_product_id }}, {{ $item->quantity + 1 }})"
-                                            style="background: none; border: none; padding: 5px 10px; cursor: pointer; font-size: 16px;">+</button>
+                                        <span style="padding: 5px 15px; min-width: 40px; text-align: center;">1</span>
                                     @endif
                                 </div>
                                 <button

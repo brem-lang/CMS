@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Jobs\SendDigitalProductPurchaseEmails;
 use App\Models\DigitalProduct;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -251,6 +252,7 @@ class Checkout extends Component
         // If order total is 0 (e.g. only free digital products), mark paid and redirect to success
         if ($verifiedSubtotal <= 0) {
             $order->update(['payment_status' => 'paid', 'status' => 'processing']);
+            SendDigitalProductPurchaseEmails::dispatch($order->id);
             if (! Auth::check()) {
                 session()->put('pending_order_id', $order->id);
             }

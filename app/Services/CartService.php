@@ -232,6 +232,7 @@ class CartService
 
     /**
      * Add digital product to cart (paid only; free products are downloaded directly).
+     * Digital products are limited to one quantity per product.
      */
     public function addDigitalProductToCart($digitalProductId, $quantity = 1)
     {
@@ -243,24 +244,27 @@ class CartService
             throw new \InvalidArgumentException('Free digital products are available for direct download and cannot be added to cart.');
         }
 
+        // Digital products: only one quantity per product
+        $quantity = 1;
+
         if (Auth::check()) {
             $existing = CartDigitalProduct::where('user_id', Auth::id())
                 ->where('digital_product_id', $digitalProductId)
                 ->where('status', 'pending')
                 ->first();
             if ($existing) {
-                $existing->increment('quantity', $quantity);
+                $existing->update(['quantity' => 1]);
                 return;
             }
             CartDigitalProduct::create([
                 'user_id' => Auth::id(),
                 'digital_product_id' => $digitalProductId,
-                'quantity' => $quantity,
+                'quantity' => 1,
                 'status' => 'pending',
             ]);
         } else {
             $cart = Session::get('guest_cart_digital', []);
-            $cart[$digitalProductId] = ($cart[$digitalProductId] ?? 0) + $quantity;
+            $cart[$digitalProductId] = 1;
             Session::put('guest_cart_digital', $cart);
         }
     }
@@ -283,7 +287,8 @@ class CartService
     }
 
     /**
-     * Update digital product quantity in cart
+     * Update digital product quantity in cart.
+     * Digital products are limited to one quantity; any value > 1 is capped at 1.
      */
     public function updateDigitalQuantity($digitalProductId, $quantity)
     {
@@ -291,14 +296,16 @@ class CartService
             $this->removeDigitalProductFromCart($digitalProductId);
             return;
         }
+        // Digital products: max quantity 1
+        $quantity = 1;
         if (Auth::check()) {
             CartDigitalProduct::where('user_id', Auth::id())
                 ->where('digital_product_id', $digitalProductId)
                 ->where('status', 'pending')
-                ->update(['quantity' => $quantity]);
+                ->update(['quantity' => 1]);
         } else {
             $cart = Session::get('guest_cart_digital', []);
-            $cart[$digitalProductId] = $quantity;
+            $cart[$digitalProductId] = 1;
             Session::put('guest_cart_digital', $cart);
         }
     }

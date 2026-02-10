@@ -82,10 +82,11 @@
                         <nav class="header__menu mobile-menu">
                             <ul>
                                 <li class="{{ request()->is('/') ? 'active' : '' }}"><a href="/">Home</a></li>
-                                <li class="{{ request()->is('shop') ? 'active' : '' }}"><a href="/shop">Our
-                                        Merchandise</a></li>
-                                <li class="{{ request()->is('about') ? 'active' : '' }}"><a href="/about">About</a>
-                                </li>
+                                <li class="{{ request()->is('shop') ? 'active' : '' }}"><a href="/shop">Shop</a></li>
+                                <li class="{{ request()->is('digital-products') ? 'active' : '' }}"><a
+                                        href="/digital-products">Digital Products</a></li>
+                                {{-- <li class="{{ request()->is('about') ? 'active' : '' }}"><a href="/about">About</a>
+                                </li> --}}
                                 <li class="{{ request()->is('blog') ? 'active' : '' }}"><a href="/blog">Blog</a></li>
                                 <li class="{{ request()->is('contact') ? 'active' : '' }}"><a
                                         href="/contact">Contact</a>

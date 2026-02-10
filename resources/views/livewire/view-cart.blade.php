@@ -131,13 +131,12 @@
                                                 <td class="quantity__item">
                                                     <div class="quantity">
                                                         <div style="display: flex; align-items: center; border: 1px solid #e5e5e5; border-radius: 3px; width: fit-content;">
-                                                            <button wire:click="updateDigitalQuantity({{ $item->digital_product_id }}, {{ $item->quantity - 1 }})"
+                                                            <button wire:click="updateDigitalQuantity({{ $item->digital_product_id }}, 0)"
+                                                                title="Remove"
                                                                 style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111;">−</button>
-                                                            <input type="text" value="{{ $item->quantity }}" readonly
-                                                                style="border: none; background: none; text-align: center; width: 50px; font-weight: 600; color: #111111;">
-                                                            <button wire:click="updateDigitalQuantity({{ $item->digital_product_id }}, {{ $item->quantity + 1 }})"
-                                                                style="background: #f5f5f5; border: none; padding: 8px 12px; cursor: pointer; font-size: 16px; font-weight: 600; color: #111111;">+</button>
+                                                            <span style="padding: 8px 12px; text-align: center; min-width: 50px; font-weight: 600; color: #111111;">1</span>
                                                         </div>
+                                                        <small class="text-muted d-block mt-1">Digital: 1 per order</small>
                                                     </div>
                                                 </td>
                                                 <td class="cart__price">

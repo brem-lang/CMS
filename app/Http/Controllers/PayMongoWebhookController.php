@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendDigitalProductPurchaseEmails;
 use App\Models\FailedPayment;
 use App\Models\FailedPaymentItem;
 use App\Models\Order;
@@ -383,6 +384,9 @@ class PayMongoWebhookController extends Controller
                 ]);
                 // Don't throw - payment was successful, stock issue should be logged but not fail the webhook
             }
+
+            // Send one email per digital product (receipt + signed download link)
+            SendDigitalProductPurchaseEmails::dispatch($order->id);
 
             // Clear cart
             $cartService = app(CartService::class);
