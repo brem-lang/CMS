@@ -31,7 +31,7 @@ class DigitalProductDownloadController extends Controller
         }
 
         $filename = $product->title . '.' . ($product->file_type === 'pdf' ? 'pdf' : pathinfo($product->file_path, PATHINFO_EXTENSION));
-        $mime = $product->file_type === 'pdf' ? 'application/pdf' : 'audio/mpeg';
+        $mime = $product->file_type === 'pdf' ? 'application/pdf' : self::audioMimeForPath($product->file_path);
 
         return response()->file($path, [
             'Content-Type' => $mime,
@@ -107,7 +107,7 @@ class DigitalProductDownloadController extends Controller
         // When stream=1 (e.g. from iframe form), return file. Otherwise return HTML that triggers download then redirects to home.
         if ($request->boolean('stream')) {
             $filename = $product->title . '.' . ($product->file_type === 'pdf' ? 'pdf' : pathinfo($product->file_path, PATHINFO_EXTENSION));
-            $mime = $product->file_type === 'pdf' ? 'application/pdf' : 'audio/mpeg';
+            $mime = $product->file_type === 'pdf' ? 'application/pdf' : self::audioMimeForPath($product->file_path);
 
             return response()->file($path, [
                 'Content-Type' => $mime,
@@ -121,5 +121,20 @@ class DigitalProductDownloadController extends Controller
             'verifyUrl' => route('digital-product.download.verify', ['orderItem' => $orderItem->id]),
             'homeUrl' => route('home'),
         ]);
+    }
+
+    /**
+     * Return the appropriate audio MIME type for a file path (e.g. .m4a -> audio/mp4).
+     */
+    private static function audioMimeForPath(string $filePath): string
+    {
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        return match ($ext) {
+            'm4a' => 'audio/mp4',
+            'mp3' => 'audio/mpeg',
+            'wav' => 'audio/wav',
+            'ogg' => 'audio/ogg',
+            default => 'audio/mpeg',
+        };
     }
 }

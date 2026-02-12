@@ -75,17 +75,45 @@ class DigitalProductForm
                             ->directory('digital-products/files')
                             ->maxSize(10240)
                             ->visibility('public')
-                            ->acceptedFileTypes(fn ($get) => 
-                                $get('file_type') === 'pdf' 
-                                    ? ['application/pdf'] 
-                                    : ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/m4a']
-                            )
-                            ->helperText(fn ($get) => 
-                                $get('file_type') === 'pdf' 
-                                    ? 'Upload a PDF file (max 10MB)' 
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg',
+                                'audio/m4a', 'audio/x-m4a', 'audio/mp4',
+                            ])
+                            ->helperText(fn ($get) =>
+                                $get('file_type') === 'pdf'
+                                    ? 'Upload a PDF file (max 10MB)'
                                     : 'Upload an audio file (max 10MB)'
                             )
                             ->required()
+                            ->rule(function ($get) {
+                                $fileType = $get('file_type');
+                                $allowedMimes = $fileType === 'pdf'
+                                    ? ['application/pdf']
+                                    : ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/m4a', 'audio/x-m4a', 'audio/mp4'];
+                                $allowedExtensions = $fileType === 'pdf' ? ['pdf'] : ['mp3', 'm4a', 'wav', 'ogg'];
+                                return function (string $attribute, $value, \Closure $fail) use ($allowedMimes, $allowedExtensions) {
+                                    if (! $value) {
+                                        return;
+                                    }
+                                    $path = is_array($value) ? ($value[0] ?? null) : $value;
+                                    if (! $path) {
+                                        return;
+                                    }
+                                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                                    if (! in_array($ext, $allowedExtensions, true)) {
+                                        $fail('The uploaded file type does not match the selected file type (PDF or Audio).');
+                                        return;
+                                    }
+                                    $fullPath = \Illuminate\Support\Facades\Storage::disk('public')->path($path);
+                                    if (file_exists($fullPath)) {
+                                        $mime = \Illuminate\Support\Facades\File::mimeType($fullPath);
+                                        if (! in_array($mime, $allowedMimes, true)) {
+                                            $fail('The uploaded file type does not match the selected file type (PDF or Audio).');
+                                        }
+                                    }
+                                };
+                            })
                             ->columnSpanFull(),
                         Toggle::make('is_active')
                             ->label('Active')
