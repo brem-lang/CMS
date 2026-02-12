@@ -22,6 +22,7 @@ Route::get('/shop', Shop::class)->name('shop');
 
 Route::get('/digital-products', DigitalProducts::class)->name('digital-products');
 Route::get('/digital-products/{id}/download', [\App\Http\Controllers\DigitalProductDownloadController::class, '__invoke'])->name('digital-product.download');
+Route::get('/digital-products/download/gift/{digitalProduct}', [\App\Http\Controllers\DigitalProductDownloadController::class, 'downloadGift'])->name('digital-product.download.gift')->middleware(['signed', 'throttle:30,1']);
 Route::get('/digital-products/download/order-item/{orderItem}', [\App\Http\Controllers\DigitalProductDownloadController::class, 'showDownloadGate'])->name('digital-product.download.paid')->middleware('signed');
 Route::post('/digital-products/download/order-item/{orderItem}/verify', [\App\Http\Controllers\DigitalProductDownloadController::class, 'verifyAndDownload'])->name('digital-product.download.verify')->middleware('throttle:5,1');
 Route::get('/digital-products/{id}', ViewDigitalProduct::class)->name('digital-product.view');

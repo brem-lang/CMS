@@ -40,6 +40,35 @@ class DigitalProductDownloadController extends Controller
     }
 
     /**
+     * Download a free digital product via signed gift link (e.g. from subscriber email). No receipt required; link expires in 7 days.
+     */
+    public function downloadGift(DigitalProduct $digitalProduct): Response
+    {
+        $product = $digitalProduct;
+
+        if (! $product->is_active || ! $product->is_free) {
+            abort(404, 'This download is not available.');
+        }
+
+        if (! $product->file_path) {
+            abort(404, 'File not available.');
+        }
+
+        $path = Storage::disk('public')->path($product->file_path);
+        if (! file_exists($path)) {
+            abort(404, 'File not found.');
+        }
+
+        $filename = $product->title . '.' . ($product->file_type === 'pdf' ? 'pdf' : pathinfo($product->file_path, PATHINFO_EXTENSION));
+        $mime = $product->file_type === 'pdf' ? 'application/pdf' : self::audioMimeForPath($product->file_path);
+
+        return response()->file($path, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'attachment; filename="' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename) . '"',
+        ]);
+    }
+
+    /**
      * Show the download gate page (signed URL). User must enter receipt ID to proceed.
      */
     public function showDownloadGate(OrderItem $orderItem)
