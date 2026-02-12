@@ -53,5 +53,9 @@ Route::get('/checkout/failed/{order}', \App\Livewire\CheckoutFailed::class)->nam
 Route::get('/checkout/bank-transfer/{order}', \App\Livewire\BankTransferInstructions::class)->name('checkout.bank-transfer');
 Route::post('/webhook', [\App\Http\Controllers\PayMongoWebhookController::class, 'handle'])->name('webhook');
 
+Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterSubscribeController::class, '__invoke'])
+    ->name('newsletter.subscribe')
+    ->middleware('throttle:10,1');
+
 // Authentication routes (using Breeze's secure authentication)
 require __DIR__.'/auth.php';

@@ -475,6 +475,8 @@
             </div>
         </footer>
     @endif
+
+    @livewire('email-popup')
 </body>
 
 </html>
