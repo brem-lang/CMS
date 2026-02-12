@@ -83,9 +83,8 @@
         <p>Thank you for your purchase. Your payment was successful.</p>
 
         <div class="product-name">{{ $orderItem->digitalProduct?->title ?? 'Digital Product' }}</div>
-        <div class="receipt" style="display: flex; align-items: baseline; gap: 10px;">
-            <h3 style="margin: 0;">Receipt ID:</h3>
-            <span>{{ $receiptId }}</span>
+        <div class="receipt">
+            <h3>Receipt ID : {{ $receiptId }}</h3>
         </div>
         @if ($orderItem->order)
             <p>Order number: <span class="order-number">{{ $orderItem->order->order_number }}</span></p>
