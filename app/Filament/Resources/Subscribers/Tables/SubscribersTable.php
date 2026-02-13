@@ -43,7 +43,7 @@ class SubscribersTable
                                 ->label('Message'),
                             Select::make('digital_product_id')
                                 ->label('Digital Product')
-                                ->options(fn () => DigitalProduct::where('is_free', true)->pluck('title', 'id'))
+                                ->options(fn () => DigitalProduct::where('is_free', true)->where('for_subscribers', true)->pluck('title', 'id'))
                                 ->searchable()
                                 ->preload()
                                 ->required()

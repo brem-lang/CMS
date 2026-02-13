@@ -13,6 +13,7 @@ class DigitalProduct extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'is_free' => 'boolean',
+        'for_subscribers' => 'boolean',
         'price' => 'decimal:2',
     ];
 

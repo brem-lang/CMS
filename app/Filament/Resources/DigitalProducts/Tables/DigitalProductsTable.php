@@ -46,6 +46,10 @@ class DigitalProductsTable
                     ->money('PHP')
                     ->formatStateUsing(fn ($state, $record) => $record->is_free ? 'Free' : '₱' . number_format($state, 2))
                     ->sortable(),
+                IconColumn::make('for_subscribers')
+                    ->label('For Subscribers')
+                    ->boolean()
+                    ->sortable(),
                 IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean()

@@ -47,8 +47,8 @@ class SendSubscriberDigitalGiftEmails implements ShouldQueue
             return;
         }
 
-        if (! $digitalProduct->is_active || ! $digitalProduct->is_free) {
-            Log::warning('SendSubscriberDigitalGiftEmails: Product is not active or not free', [
+        if (! $digitalProduct->is_active || ! $digitalProduct->is_free || ! $digitalProduct->for_subscribers) {
+            Log::warning('SendSubscriberDigitalGiftEmails: Product is not active, not free, or not for subscribers', [
                 'digital_product_id' => $digitalProduct->id,
             ]);
 

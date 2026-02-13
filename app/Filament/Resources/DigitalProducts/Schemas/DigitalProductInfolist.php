@@ -47,6 +47,9 @@ class DigitalProductInfolist
                         TextEntry::make('price')
                             ->label('Price')
                             ->formatStateUsing(fn ($state, $record) => $record->is_free ? 'Free' : '₱' . number_format($state, 2)),
+                        IconEntry::make('for_subscribers')
+                            ->label('For Subscribers')
+                            ->boolean(),
                         IconEntry::make('is_active')
                             ->label('Active Status')
                             ->boolean(),
