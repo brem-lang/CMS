@@ -134,7 +134,7 @@ class DigitalProductForm
                             ->columnSpanFull(),
                         Toggle::make('for_subscribers')
                             ->label('For Subscribers')
-                            ->helperText('When ON, this product can be sent as a gift to subscribers')
+                            ->helperText('When ON, this product can be sent as a gift to subscribers. Only one product can be selected at a time.')
                             ->onIcon(Heroicon::Check)
                             ->offIcon(Heroicon::XMark)
                             ->inline(false)

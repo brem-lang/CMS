@@ -11,11 +11,21 @@ class DigitalProduct extends Model
     protected $guarded = [];
 
     protected $casts = [
+
         'is_active' => 'boolean',
         'is_free' => 'boolean',
         'for_subscribers' => 'boolean',
         'price' => 'decimal:2',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(function (DigitalProduct $product) {
+            if ($product->for_subscribers) {
+                self::where('id', '!=', $product->id)->update(['for_subscribers' => false]);
+            }
+        });
+    }
 
     public function addedBy(): BelongsTo
     {
