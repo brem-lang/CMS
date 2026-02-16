@@ -39,6 +39,16 @@ class ProductForm
                             ->inline(false)
                             ->default(true)
                             ->required(),
+                        Select::make('badge')
+                            ->label('Badge')
+                            ->options([
+                                null => 'None',
+                                'best_seller' => 'Best Seller',
+                                'limited' => 'Limited',
+                            ])
+                            ->default(null)
+                            ->nullable()
+                            ->helperText('Optional badge to display on product (Best Seller or Limited)'),
                         TextInput::make('stock_quantity')
                             ->label('Stock Quantity')
                             ->required(fn ($get) => !$get('has_variants'))

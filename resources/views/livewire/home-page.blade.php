@@ -1,57 +1,58 @@
 <div>
     <!-- Hero Section Begin -->
     <section class="hero" wire:ignore>
-        <div class="hero__slider" style="position: relative;" wire:ignore>
-            <div class="hero__items" style="position: relative; overflow: hidden; height: 800px;">
-                <video autoplay muted loop playsinline width="100%"
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;">
-                    <source src="{{ asset('videos/Brader-Skate.mp4') }}" type="video/mp4">
-                </video>
-                <div class="container" style="position: relative; z-index: 1;">
-                    <div class="row">
-                        <div class="col-xl-5 col-lg-7 col-md-8">
-                            <div class="hero__text" style="position: relative; z-index: 2;">
-                                <h2
-                                    style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); opacity: 1 !important; top: 0 !important; position: relative !important;">
-                                    I make people laugh, think, and chase freedom — through content that entertains,
-                                    empowers, and sells.</h2>
-                                <a href="/shop"
-                                    class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
-                                    style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;"
-                                    onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                                    onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+        <div class="hero__container" style="position: relative; overflow: hidden; height: 800px;">
+            <video autoplay muted loop playsinline width="100%"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;">
+                <source src="{{ asset('videos/Brader-Skate.mp4') }}" type="video/mp4">
+            </video>
+            <div class="container" style="position: relative; z-index: 1; height: 100%;">
+                <div class="row h-100">
+                    <div class="col-xl-5 col-lg-7 col-md-8 d-flex align-items-center">
+                        <div class="hero__text" style="position: relative; z-index: 2;">
+                            <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); opacity: 1 !important; top: 0 !important; position: relative !important; font-weight: 800; line-height: 1.2;">
+                                CRIST BRIAND
+                                <br>
+                                <span style="font-size: 20px; font-weight: 400; display: inline-block; width: 100%;">
+                                    Comedic content + brand collabs that make people smile and buy.
+                                </span>
+                            </h2>
+                            <a href="/shop"
+                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
+                                style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;"
+                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
 
-                                    Shop now
-                                    <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                                </a>
-                                <div class="hero__social d-block d-md-none" style="margin-top: 120px;">
-                                    <div class="row align-items-center">
-                                        <div class="col-lg-6">
-                                            <div class="services__image">
-                                                <img src="{{ asset('img/buenas_logo_white.png') }}" alt="Services"
-                                                    class="img-fluid"
-                                                    style="margin-top:-57px;width:190px; height:100%;">
-                                            </div>
+                                Shop now
+                                <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                            </a>
+                            <div class="hero__social d-block d-md-none" style="margin-top: 180px;">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <div class="services__image">
+                                            <img src="{{ asset('img/buenas_logo_white.png') }}" alt="Services"
+                                                class="img-fluid"
+                                                style="margin-top:-57px;width:190px; height:100%;">
                                         </div>
-                                        <div class="col-lg-6" style="margin-top:-15px;">
-                                            <div class="services__content">
-                                                <h5 class="text-white text-justify">
-                                                    Please play <strong>responsibly</strong>.
-                                                    For <strong>adults 21+</strong> only. 🎰
-                                                    👉
-                                                </h5><br>
-                                                <a href="https://bit.ly/CristBriand-buenasph" target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
-                                                    style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;font-size:13px;margin-top:-15px;"
-                                                    onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                                                    onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                                    </div>
+                                    <div class="col-lg-6" style="margin-top:-15px;">
+                                        <div class="services__content">
+                                            <h5 class="text-white text-justify">
+                                                Please play <strong>responsibly</strong>.
+                                                For <strong>adults 21+</strong> only. 🎰
+                                                👉
+                                            </h5><br>
+                                            <a href="https://bit.ly/CristBriand-buenasph" target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
+                                                style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;font-size:13px;margin-top:-15px;"
+                                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
 
-                                                    Play Now
-                                                    <span class="arrow_right ms-2 transition-base"
-                                                        style="transition: 0.3s;"></span>
-                                                </a>
-                                            </div>
+                                                Play Now
+                                                <span class="arrow_right ms-2 transition-base"
+                                                    style="transition: 0.3s;"></span>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -74,30 +75,28 @@
                     </div>
                 </div>
             </div>
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <div class="services__image">
-                        <img src="{{ asset('img/buenas_logo.png') }}" alt="Services" class="img-fluid"
-                            style="margin-top:-57px;">
-                    </div>
+            <div class="row align-items-center p-4">
+                <div class="col-lg-8">
+                    <h2 class="text-dark mb-2"><strong>Play Smart. Win Big.</strong></h2>
+                    <p class="text-secondary mb-0">
+                        Official online gaming partner. Enjoy exclusive access through my link.
+                    </p>
                 </div>
-                <div class="col-lg-6">
-                    <div class="services__content">
-                        <h5 class="text-secondary" style="text-align: justify;">
-                            Please play <strong>responsibly</strong>.
-                            For <strong>adults 21+</strong> only. 🎰
-                            👉
-                        </h5>
 
-                    </div>
-                    <div class="text-center mt-3">
-                        <a href="https://bit.ly/CristBriand-buenasph" target="_blank" rel="noopener noreferrer"
-                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
-                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                            Play Now
-                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                        </a>
+                <div class="col-lg-4 text-lg-end text-center mt-3 mt-lg-0">
+                    <a href="https://bit.ly/CristBriand-buenasph" target="_blank"
+                        rel="noopener noreferrer"
+                        class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
+                        style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;font-size:13px;margin-top:-15px;"
+                        onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                        onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+
+                        Play Now
+                        <span class="arrow_right ms-2 transition-base"
+                            style="transition: 0.3s;"></span>
+                    </a>
+                    <div class="mt-2">
+                        <small class="text-muted" style="font-size: 0.75rem;">18+ only. Please play responsibly.</small>
                     </div>
                 </div>
             </div>
@@ -129,43 +128,55 @@
             </div>
             <div class="row product__filter">
                 @foreach ($products as $product)
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals"
-                        wire:key="product-{{ $product->id }}">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
-                                data-setbg="{{ $product->image_url }}"
-                                style="background-image: url('{{ $product->image_url }}'); position: relative; {{ ($product->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}"
-                                wire:click="selectProduct({{ $product->id }})"
-                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
-                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals"
+                    wire:key="product-{{ $product->id }}">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
+                            data-setbg="{{ $product->image_url }}"
+                            style="background-image: url('{{ $product->image_url }}'); position: relative; {{ ($product->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}"
+                            wire:click="selectProduct({{ $product->id }})"
+                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
+                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
 
-                                @if (($product->stock_quantity ?? 0) == 0)
-                                    <div
-                                        style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                        Out of Stock
-                                    </div>
-                                @endif
-
-                                <div class="opacity-0 hover-show d-none d-md-block">
-                                    <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
-                                        Quick View
-                                    </button>
-                                </div>
+                            @if ($product->badge === 'best_seller')
+                            <div
+                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 193, 7, 0.95); color: #000; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                Best Seller
                             </div>
-                            <div class="product__item__text">
-                                <h6>{{ $product->name }}</h6>
-                                <!-- <a href="#" class="add-cart" wire:click.prevent="addToCart({{ $product->id }})">+ Add To Cart</a> -->
-                                {{-- <div class="rating">
+                            @elseif ($product->badge === 'limited')
+                            <div
+                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                Limited
+                            </div>
+                            @endif
+
+                            @if (($product->stock_quantity ?? 0) == 0)
+                            <div
+                                style="position: absolute; top: 10px; @if($product->badge) left: 10px; @else right: 10px; @endif background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                Out of Stock
+                            </div>
+                            @endif
+
+                            <div class="opacity-0 hover-show d-none d-md-block">
+                                <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
+                                    Quick View
+                                </button>
+                            </div>
+                        </div>
+                        <div class="product__item__text">
+                            <h6>{{ $product->name }}</h6>
+                            <!-- <a href="#" class="add-cart" wire:click.prevent="addToCart({{ $product->id }})">+ Add To Cart</a> -->
+                            {{-- <div class="rating">
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                 </div> --}}
-                                <h5>₱{{ number_format($product->price, 2) }}</h5>
-                            </div>
+                            <h5>₱{{ number_format($product->price, 2) }}</h5>
                         </div>
                     </div>
+                </div>
                 @endforeach
             </div>
             <div class="row">
@@ -173,7 +184,7 @@
                     <a href="/shop" class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
                         onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
                         onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                        View All Products
+                        Explore Collection
                         <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
                     </a>
                 </div>
@@ -243,24 +254,24 @@
             </div>
             <div class="row">
                 @foreach ($blogs as $blog)
-                    <div class="col-lg-4 col-md-6 col-sm-6" wire:key="blog-{{ $blog->id }}">
-                        <div class="blog__item">
-                            <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}"
-                                style="background-image: url('{{ $blog->image_url }}');">
-                            </div>
-                            <div class="blog__item__text">
-                                <span style="color: #666666;"><img
-                                        src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
-                                    {{ $blog->created_at->format('d F Y') }}</span>
-                                <h5 style="color: #333333;">{{ $blog->title }}</h5>
-                                <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $blog->id }})"
-                                    class="text-primary fw-bold text-decoration-none shadow-hover"
-                                    style="color: #007bff;">
-                                    Read More
-                                </a>
-                            </div>
+                <div class="col-lg-4 col-md-6 col-sm-6" wire:key="blog-{{ $blog->id }}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}"
+                            style="background-image: url('{{ $blog->image_url }}');">
+                        </div>
+                        <div class="blog__item__text">
+                            <span style="color: #666666;"><img
+                                    src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
+                                {{ $blog->created_at->format('d F Y') }}</span>
+                            <h5 style="color: #333333;">{{ $blog->title }}</h5>
+                            <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $blog->id }})"
+                                class="text-primary fw-bold text-decoration-none shadow-hover"
+                                style="color: #007bff;">
+                                Read More
+                            </a>
                         </div>
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>
@@ -282,53 +293,45 @@
 </div>
 
 <script>
-    // Immediately prevent carousel initialization - must run before main.js
+    // Video initialization - no carousel needed
     (function() {
-        // Check if hero slider has video and prevent carousel
-        function preventCarouselInit() {
-            var heroSlider = document.querySelector('.hero__slider');
-            if (heroSlider && heroSlider.querySelector('video')) {
-                // Remove owl-carousel class if it exists
-                heroSlider.classList.remove('owl-carousel');
-
-                // Protect video from removal - add a data attribute
-                var video = heroSlider.querySelector('video#hero-video');
-                if (video) {
-                    video.setAttribute('data-protected', 'true');
-                }
+        function initHeroVideo() {
+            var heroContainer = document.querySelector('.hero__container');
+            var video = heroContainer ? heroContainer.querySelector('video') : null;
+            if (video) {
+                video.setAttribute('data-protected', 'true');
             }
         }
 
         // Run immediately
-        preventCarouselInit();
+        initHeroVideo();
 
         // Also run when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', preventCarouselInit);
+            document.addEventListener('DOMContentLoaded', initHeroVideo);
         } else {
-            preventCarouselInit();
+            initHeroVideo();
         }
 
-        // Also run on window load (for full page reloads like logout)
+        // Also run on window load
         window.addEventListener('load', function() {
-            setTimeout(preventCarouselInit, 50);
-            setTimeout(preventCarouselInit, 200);
+            setTimeout(initHeroVideo, 50);
         });
     })();
 </script>
 
 <script>
-    // Prevent global Owl Carousel initialization on hero slider with video
+    // Prevent carousel initialization on hero container
     (function() {
         if (typeof $ !== 'undefined' && typeof $.fn.owlCarousel !== 'undefined') {
             // Store original owlCarousel function
             var originalOwlCarousel = $.fn.owlCarousel;
 
-            // Override owlCarousel to skip hero slider if it has a video
+            // Override owlCarousel to skip hero container
             $.fn.owlCarousel = function(options) {
                 var $this = $(this);
-                // If this is the hero slider and it contains a video, skip initialization
-                if ($this.hasClass('hero__slider') && $this.find('video').length > 0) {
+                // Skip carousel initialization for hero container
+                if ($this.hasClass('hero__container') || $this.hasClass('hero__slider')) {
                     return $this;
                 }
                 return originalOwlCarousel.apply(this, arguments);
@@ -368,10 +371,10 @@
         }
     }
 
-    // Function to ensure video is visible and destroy any carousel instances
+    // Function to ensure video is visible
     function ensureVideoVisible() {
-        var video = document.getElementById('hero-video') || document.querySelector('.hero__slider video');
-        var $slider = typeof $ !== 'undefined' ? $('.hero__slider') : null;
+        var heroContainer = document.querySelector('.hero__container');
+        var video = heroContainer ? heroContainer.querySelector('video') : null;
 
         if (video) {
             // Ensure video has preload attribute
@@ -392,17 +395,17 @@
             video.style.zIndex = '0';
 
             // Ensure parent container has proper positioning
-            var heroItems = video.closest('.hero__items');
-            if (heroItems) {
-                heroItems.style.position = 'relative';
-                heroItems.style.overflow = 'hidden';
-                if (!heroItems.style.height) {
-                    heroItems.style.height = '800px';
+            if (heroContainer) {
+                heroContainer.style.position = 'relative';
+                heroContainer.style.overflow = 'hidden';
+                if (!heroContainer.style.height) {
+                    heroContainer.style.height = '800px';
                 }
             }
 
             // Ensure video source exists
-            var videoSrc = '{{ asset('videos/Brader-Skate.mp4') }}';
+            var videoSrc = '{{ asset('
+            videos / Brader - Skate.mp4 ') }}';
             var source = video.querySelector('source');
             if (!source || !source.src || source.src.indexOf('Brader-Skate.mp4') === -1) {
                 // Remove existing sources
@@ -432,20 +435,6 @@
                     });
                 }
             }
-
-            // Destroy any existing Owl Carousel instance
-            if ($slider && $slider.length && typeof $.fn.owlCarousel !== 'undefined') {
-                if ($slider.data('owl.carousel')) {
-                    try {
-                        $slider.trigger('destroy.owl.carousel');
-                        $slider.removeData('owl.carousel');
-                    } catch (e) {
-                        // Carousel already destroyed or not initialized
-                    }
-                }
-                // Remove owl-carousel class if it exists
-                $slider.removeClass('owl-carousel');
-            }
         }
     }
 
@@ -474,19 +463,18 @@
         }, 50);
     });
 
-    // Simplified video check function (main initialization handles everything)
+    // Simplified video check function
     function ensureVideoAlwaysPresent() {
-        var video = document.getElementById('hero-video');
-        if (!video) {
-            // Video will be created by main init script
-            return;
-        }
+        var heroContainer = document.querySelector('.hero__container');
+        var video = heroContainer ? heroContainer.querySelector('video') : null;
 
-        // Just ensure it's visible and playing if ready
-        ensureVideoVisible();
+        if (video) {
+            // Just ensure it's visible and playing if ready
+            ensureVideoVisible();
 
-        if (video.readyState >= 2 && video.paused) {
-            video.play().catch(function() {});
+            if (video.readyState >= 2 && video.paused) {
+                video.play().catch(function() {});
+            }
         }
     }
 
@@ -540,13 +528,12 @@
                 videoObserver.disconnect();
             }
 
-            var heroSlider = document.querySelector('.hero__slider');
-            if (heroSlider) {
+            var heroContainer = document.querySelector('.hero__container');
+            if (heroContainer) {
                 videoObserver = new MutationObserver(function(mutations) {
-                    var video = heroSlider.querySelector('video#hero-video');
+                    var video = heroContainer.querySelector('video');
                     if (!video) {
-                        // Video was removed, main init script will recreate it
-                        // Just trigger a check
+                        // Video was removed, trigger a check
                         ensureVideoAlwaysPresent();
                     } else {
                         // Video exists, ensure it's visible and playing
@@ -557,7 +544,7 @@
                     }
                 });
 
-                videoObserver.observe(heroSlider, {
+                videoObserver.observe(heroContainer, {
                     childList: true,
                     subtree: true,
                     attributes: true,
@@ -585,9 +572,9 @@
     }
 
     // Periodic check to ensure video is present and playing
-    // Main initialization script handles creation, this just ensures it stays active
     setInterval(function() {
-        var video = document.getElementById('hero-video');
+        var heroContainer = document.querySelector('.hero__container');
+        var video = heroContainer ? heroContainer.querySelector('video') : null;
         if (video) {
             // Ensure video is visible
             ensureVideoVisible();
