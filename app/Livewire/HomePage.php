@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Blog;
+use App\Models\DigitalProduct;
 use App\Models\Product;
 use App\Services\CartService;
 use App\View\Components\Layout\App;
@@ -14,24 +15,36 @@ class HomePage extends Component
 {
     public $products;
 
+    public $digitalProducts;
+
     public $blogs;
 
     public function mount()
     {
         $this->products = Product::where('status', true)
-            ->latest()
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
+        $this->digitalProducts = DigitalProduct::where('is_active', true)
+            ->inRandomOrder()
             ->limit(4)
             ->get();
 
         $this->blogs = Blog::where('status', true)
-            ->latest()
-            ->limit(3)
+            ->inRandomOrder()
+            ->limit(4)
             ->get();
     }
 
     public function selectProduct($id)
     {
         return redirect()->route('product.view', $id);
+    }
+
+    public function selectDigitalProduct($id)
+    {
+        return redirect()->route('digital-product.view', $id);
     }
 
     public function openBlog($id)
