@@ -26,37 +26,17 @@
                                 Shop Merch
                                 <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
                             </a>
-                            <div class="hero__social d-block d-md-none" style="margin-top: 180px;">
-                                <div class="row align-items-center">
-                                    <div class="col-lg-6">
-                                        <div class="services__image">
-                                            <img src="{{ asset('img/buenas_logo_white.png') }}" alt="Services"
-                                                class="img-fluid"
-                                                style="margin-top:-57px;width:190px; height:100%;">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6" style="margin-top:-15px;">
-                                        <div class="services__content">
-                                            <h5 class="text-white text-justify">
-                                                Please play <strong>responsibly</strong>.
-                                                For <strong>adults 21+</strong> only. 🎰
-                                                👉
-                                            </h5><br>
-                                            <a href="https://bit.ly/CristBriand-buenasph" target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
-                                                style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;font-size:13px;margin-top:-15px;"
-                                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                            <br>
+                            <br>
+                            <a href="/digital-products"
+                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
+                                style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;"
+                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
 
-                                                Play Now
-                                                <span class="arrow_right ms-2 transition-base"
-                                                    style="transition: 0.3s;"></span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                Digital Products
+                                <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -66,16 +46,10 @@
     <!-- Hero Section End -->
 
     <!-- BUenas Section Begin -->
-    <section class="services spad d-none d-md-block" style="margin-top:-90px;">
+    <section class="services spad" style="margin-top:-60px;">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title">
-                        <h2></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="row align-items-center p-4">
+            <!-- Desktop Layout -->
+            <div class="row align-items-center p-4 d-none d-md-flex">
                 <div class="col-lg-8">
                     <h2 class="text-dark mb-2"><strong>Play Smart. Win Big.</strong></h2>
                     <p class="text-secondary mb-0">
@@ -97,6 +71,36 @@
                     </a>
                     <div class="mt-2">
                         <small class="text-muted" style="font-size: 0.75rem;">18+ only. Please play responsibly.</small>
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile Layout -->
+            <div class="row d-block d-md-none">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 p-4" style="border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                        <div class="text-center mb-4">
+                            <img src="{{ asset('img/buenas_logo.png') }}" alt="Buenas" class="img-fluid" style="max-height: 80px;">
+                        </div>
+                        <div class="text-center mb-3">
+                            <h4 class="mb-3" style="font-weight: 700; color: #111111;">
+                                <strong>Play Smart. Win Big.</strong>
+                            </h4>
+                            <p class="text-secondary mb-3" style="font-size: 14px; line-height: 1.6;">
+                                Official online gaming partner.<br>
+                                Enjoy exclusive access through my link.
+                            </p>
+                        </div>
+                        <div class="text-center">
+                            <a href="https://bit.ly/CristBriand-buenasph" target="_blank"
+                                rel="noopener noreferrer"
+                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                                Play on Buenas
+                                <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                            </a>
+                            <p class="text-muted small mt-3 mb-0">18+ only. Please play responsibly.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -678,7 +682,7 @@
     <style>
         /* Responsive margin for product section */
         .product-section-margin {
-            margin-top: 60px;
+            margin-top: 10px;
         }
 
         @media (min-width: 768px) {
