@@ -47,7 +47,7 @@
     <!-- Hero Section End -->
 
     <!-- BUenas Section Begin -->
-    <section class="services spad" style="margin-top:-60px;">
+    <section class="services spad" style="margin-top:-80px;">
         <div class="container">
             <!-- Desktop Layout -->
             <div class="row align-items-center d-none d-md-flex">
@@ -91,33 +91,32 @@
             <!-- Mobile Layout -->
             <div class="row d-block d-md-none">
                 <div class="col-12">
-                    <div class="card shadow-lg border-0 p-3"
-                        style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 1px solid #e9ecef; transform: scale(0.8); transform-origin: center; margin: -10px 0;">
-                        <div class="text-center mb-4">
+                    <div class="card shadow-lg border-0 p-2"
+                        style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 1px solid #e9ecef;">
+                        <div class="text-center">
                             <img src="{{ asset('img/buenas_logo.png') }}" alt="Buenas" class="img-fluid"
-                                style="max-height: 100px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));">
+                                style="max-height: 60px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));">
                         </div>
-                        <div class="text-center mb-4">
-                            <h3 class="mb-3"
-                                style="font-weight: 800; color: #111111; font-size: 1.5rem; line-height: 1.2;">
+                        <div class="text-center" style="margin-top: -12px;margin-bottom: 11px;">
+                            <h3 style="font-weight: 800; color: #111111; font-size: 1.2rem;">
                                 <strong>Play Smart. Win Big.</strong>
                             </h3>
-                            <p class="text-secondary mb-0" style="font-size: 14px; line-height: 1.7; color: #6c757d;">
-                                Official online gaming partner.<br>
-                                Enjoy exclusive access through my link.
+                            <p class="text-secondary mb-0" style="font-size: 11px;line-height: 0.8;margin-top:6px;">
+                                Official online gaming partner. Enjoy exclusive access through my link.
                             </p>
                         </div>
                         <div class="text-center">
                             <a href="https://bit.ly/CristBriand-buenasph" target="_blank" rel="noopener noreferrer"
                                 class="primary-btn d-inline-block text-decoration-none shadow-lg transition-all"
-                                style="font-size: 13px; padding: 12px 28px; background: linear-gradient(135deg, #000000 0%, #333333 100%); border-radius: 8px; font-weight: 700; letter-spacing: 0.5px;"
+                                style="font-size: 12px; padding: 10px 24px; background: linear-gradient(135deg, #000000 0%, #333333 100%); border-radius: 8px; font-weight: 700; letter-spacing: 0.5px;"
                                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)'; this.querySelector('.arrow_right').classList.add('ms-3')"
                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.querySelector('.arrow_right').classList.remove('ms-3')">
                                 Play on Buenas
                                 <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
                             </a>
-                            <p class="text-muted small mt-3 mb-0" style="font-weight: 500;">18+ only. Please play
-                                responsibly.</p>
+                            <p class="text-muted small mt-2 mb-0"
+                                style="font-weight: 500; font-size: 11px;margin-top:-20px;">18+ only.
+                                Please play responsibly.</p>
                         </div>
                     </div>
                 </div>
@@ -128,7 +127,7 @@
 
     <!-- Product Section Begin -->
     {{-- style="margin-top: -60px --}}
-    <section class="product spad product-section-margin">
+    <section class="product spad" style="margin-top:-80px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -267,7 +266,7 @@
     <!-- Product Section End -->
 
     <!-- Digital Products Section Begin -->
-    <section class="product spad" style="margin-top: 60px;">
+    <section class="product spad" style="margin-top: -30px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -383,7 +382,7 @@
     <!-- Digital Products Section End -->
 
     <!-- Latest Blog Section Begin -->
-    <section class="latest spad" style="margin-top:-40px;">
+    <section class="latest spad" style="margin-top:-130px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -448,7 +447,7 @@
     <!-- Latest Blog Section End -->
 
     <!-- Work With Me Section Begin -->
-    <section class="services spad" style="margin-top: -90px;">
+    <section class="services spad" style="margin-top: -160px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -561,7 +560,7 @@
     <!-- Work With Me Section End -->
 
     <!-- About Me Section Begin -->
-    <section class="services spad" style="margin-top: -90px;">
+    <section class="services spad" style="margin-top: -160px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 mx-auto text-center">
@@ -593,7 +592,7 @@
     <!-- About Me Section End -->
 
     <!-- Contact Section Begin -->
-    <section class="services spad" style="margin-top: -80px; margin-bottom: 40px;">
+    <section class="services spad" style="margin-top: -130px; margin-bottom: 20px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -862,7 +861,7 @@
             // Ensure video source exists
             var videoSrc =
                 '{{ asset('
-                                                                videos / Brader - Skate.mp4 ') }}';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                videos / Brader - Skate.mp4 ') }}';
             var source = video.querySelector('source');
             if (!source || !source.src || source.src.indexOf('Brader-Skate.mp4') === -1) {
                 // Remove existing sources
