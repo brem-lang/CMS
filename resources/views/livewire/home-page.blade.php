@@ -1,7 +1,7 @@
 <div>
     <!-- Hero Section Begin -->
     <section class="hero" wire:ignore>
-        <div class="hero__container" style="position: relative; overflow: hidden; height: 800px;">
+        <div class="hero__container" style="position: relative; overflow: hidden; height: 500px;">
             <video autoplay muted loop playsinline width="100%"
                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; display: block; visibility: visible; opacity: 1;">
                 <source src="{{ asset('videos/Brader-Skate.mp4') }}" type="video/mp4">
@@ -49,43 +49,51 @@
     <section class="services spad" style="margin-top:-60px;">
         <div class="container">
             <!-- Desktop Layout -->
-            <div class="row align-items-center p-4 d-none d-md-flex">
-                <div class="col-lg-8">
-                    <h2 class="text-dark mb-2"><strong>Play Smart. Win Big.</strong></h2>
-                    <p class="text-secondary mb-0">
-                        Official online gaming partner. Enjoy exclusive access through my link.
-                    </p>
-                </div>
-
-                <div class="col-lg-4 text-lg-end text-center mt-3 mt-lg-0">
-                    <a href="https://bit.ly/CristBriand-buenasph" target="_blank"
-                        rel="noopener noreferrer"
-                        class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
-                        style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;font-size:13px;margin-top:-15px;"
-                        onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                        onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-
-                        Play Now
-                        <span class="arrow_right ms-2 transition-base"
-                            style="transition: 0.3s;"></span>
-                    </a>
-                    <div class="mt-2">
-                        <small class="text-muted" style="font-size: 0.75rem;">18+ only. Please play responsibly.</small>
+            <div class="row align-items-center d-none d-md-flex">
+                <div class="col-lg-12">
+                    <div class="card shadow-lg border-0 p-5" style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 1px solid #e9ecef;">
+                        <div class="row align-items-center">
+                            <div class="col-lg-3 text-center">
+                                <img src="{{ asset('img/buenas_logo.png') }}" alt="Buenas" class="img-fluid" style="max-height: 160px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));">
+                            </div>
+                            <div class="col-lg-5">
+                                <h2 class="text-dark mb-3" style="font-weight: 800; font-size: 2rem; line-height: 1.2;">
+                                    <strong style="background: linear-gradient(135deg, #111111 0%, #333333 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Play Smart. Win Big.</strong>
+                                </h2>
+                                <p class="text-secondary mb-0" style="font-size: 1.05rem; line-height: 1.7; color: #6c757d;">
+                                    Official online gaming partner. Enjoy exclusive access through my link.
+                                </p>
+                            </div>
+                            <div class="col-lg-4 text-lg-end text-center">
+                                <a href="https://bit.ly/CristBriand-buenasph" target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="primary-btn d-inline-block text-decoration-none shadow-lg transition-all"
+                                    style="font-size: 14px; padding: 14px 32px; background: linear-gradient(135deg, #000000 0%, #333333 100%); border-radius: 8px; font-weight: 700; letter-spacing: 1px;"
+                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)'; this.querySelector('.arrow_right').classList.add('ms-3')"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.querySelector('.arrow_right').classList.remove('ms-3')">
+                                    Play on Buenas
+                                    <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                                </a>
+                                <div class="mt-3">
+                                    <small class="text-muted" style="font-size: 0.75rem; font-weight: 500;">18+ only. Please play responsibly.</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <!-- Mobile Layout -->
             <div class="row d-block d-md-none">
                 <div class="col-12">
-                    <div class="card shadow-sm border-0 p-4" style="border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                    <div class="card shadow-lg border-0 p-4" style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 1px solid #e9ecef; transform: scale(0.9); transform-origin: center; margin: -10px 0;">
                         <div class="text-center mb-4">
-                            <img src="{{ asset('img/buenas_logo.png') }}" alt="Buenas" class="img-fluid" style="max-height: 80px;">
+                            <img src="{{ asset('img/buenas_logo.png') }}" alt="Buenas" class="img-fluid" style="max-height: 100px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));">
                         </div>
-                        <div class="text-center mb-3">
-                            <h4 class="mb-3" style="font-weight: 700; color: #111111;">
+                        <div class="text-center mb-4">
+                            <h3 class="mb-3" style="font-weight: 800; color: #111111; font-size: 1.5rem; line-height: 1.2;">
                                 <strong>Play Smart. Win Big.</strong>
-                            </h4>
-                            <p class="text-secondary mb-3" style="font-size: 14px; line-height: 1.6;">
+                            </h3>
+                            <p class="text-secondary mb-0" style="font-size: 14px; line-height: 1.7; color: #6c757d;">
                                 Official online gaming partner.<br>
                                 Enjoy exclusive access through my link.
                             </p>
@@ -93,13 +101,14 @@
                         <div class="text-center">
                             <a href="https://bit.ly/CristBriand-buenasph" target="_blank"
                                 rel="noopener noreferrer"
-                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
-                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                                class="primary-btn d-inline-block text-decoration-none shadow-lg transition-all"
+                                style="font-size: 13px; padding: 12px 28px; background: linear-gradient(135deg, #000000 0%, #333333 100%); border-radius: 8px; font-weight: 700; letter-spacing: 0.5px;"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)'; this.querySelector('.arrow_right').classList.add('ms-3')"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.querySelector('.arrow_right').classList.remove('ms-3')">
                                 Play on Buenas
                                 <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
                             </a>
-                            <p class="text-muted small mt-3 mb-0">18+ only. Please play responsibly.</p>
+                            <p class="text-muted small mt-3 mb-0" style="font-weight: 500;">18+ only. Please play responsibly.</p>
                         </div>
                     </div>
                 </div>
@@ -690,6 +699,23 @@
                 margin-top: -60px;
             }
         }
+
+        /* Responsive hero video height */
+        .hero__container {
+            height: 450px;
+        }
+
+        @media (min-width: 576px) and (max-width: 767px) {
+            .hero__container {
+                height: 550px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .hero__container {
+                height: 800px;
+            }
+        }
     </style>
 </div>
 
@@ -799,7 +825,9 @@
             if (heroContainer) {
                 heroContainer.style.position = 'relative';
                 heroContainer.style.overflow = 'hidden';
-                if (!heroContainer.style.height) {
+                // Only set height via JavaScript on desktop (>= 768px) to respect CSS media queries
+                // CSS handles mobile/tablet heights via media queries
+                if (!heroContainer.style.height && window.innerWidth >= 768) {
                     heroContainer.style.height = '800px';
                 }
             }
