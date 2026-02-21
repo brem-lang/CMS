@@ -32,7 +32,7 @@ class BlogForm
                             ->disk('public')
                             ->directory('blogs')
                             ->required()
-                            ->maxSize(5120),
+                            ->maxSize(10240),
                         RichEditor::make('content')
                             ->required()
                             ->columnSpanFull(),
