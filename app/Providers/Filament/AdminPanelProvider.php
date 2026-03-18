@@ -6,6 +6,7 @@ use App\Filament\Widgets\DashboardStatsWidget;
 use App\Filament\Widgets\FailedPaymentsChartWidget;
 use App\Filament\Widgets\OrdersRevenueChartWidget;
 use App\Filament\Widgets\ProductSalesChartWidget;
+use App\Filament\Widgets\VisitsChartWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -45,6 +46,7 @@ class AdminPanelProvider extends PanelProvider
                 OrdersRevenueChartWidget::class,
                 FailedPaymentsChartWidget::class,
                 ProductSalesChartWidget::class,
+                VisitsChartWidget::class,
             ])
             ->resourceCreatePageRedirect('index')
             ->middleware([

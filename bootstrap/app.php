@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'webhook',
         ]);
+        $middleware->alias(['record.visit' => \App\Http\Middleware\RecordVisit::class]);
+        $middleware->appendToGroup('web', \App\Http\Middleware\RecordVisit::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

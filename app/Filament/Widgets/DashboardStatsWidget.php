@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Visit;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,21 @@ class DashboardStatsWidget extends BaseWidget
             array_unshift($ordersLast7Days, 0);
         }
         
+        // Visit data
+        $visitorsToday = Visit::whereDate('visited_at', today())->count();
+        $visitorsThisWeek = Visit::whereBetween('visited_at', [now()->startOfWeek(), now()->endOfWeek()])->count();
+        $visitsLast7DaysData = Visit::where('visited_at', '>=', now()->subDays(7))
+            ->select(DB::raw('visited_at as date'), DB::raw('count(*) as count'))
+            ->groupBy('visited_at')
+            ->orderBy('visited_at')
+            ->get();
+        $visitsLast7Days = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $dayData = $visitsLast7DaysData->first(fn ($row) => (string) $row->date === $date);
+            $visitsLast7Days[] = $dayData ? (int) $dayData->count : 0;
+        }
+
         // Stocks data
         $totalStocks = Product::sum('stock_quantity');
         $totalProducts = Product::count();
@@ -37,6 +53,15 @@ class DashboardStatsWidget extends BaseWidget
         $outOfStockProducts = Product::where('stock_quantity', '<=', 0)->count();
         
         return [
+            Stat::make('Visitors Today', number_format($visitorsToday))
+                ->description('Unique visitors today')
+                ->descriptionIcon('heroicon-m-eye')
+                ->color('primary'),
+            Stat::make('Visitors This Week', number_format($visitorsThisWeek))
+                ->description('Unique visitors this week')
+                ->descriptionIcon('heroicon-m-user-group')
+                ->color('primary')
+                ->chart(count($visitsLast7Days) > 0 ? $visitsLast7Days : [0, 0, 0, 0, 0, 0, 0]),
             Stat::make('Total Orders', number_format($totalOrders))
                 ->description($pendingOrders . ' pending orders')
                 ->descriptionIcon('heroicon-m-shopping-cart')
