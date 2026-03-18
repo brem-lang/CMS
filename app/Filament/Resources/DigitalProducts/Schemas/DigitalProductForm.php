@@ -65,7 +65,7 @@ class DigitalProductForm
                             ->disk('public')
                             ->directory('digital-products/thumbnails')
                             ->image()
-                            ->maxSize(2048)
+                            ->maxSize(10240)
                             ->imageEditor()
                             ->visibility('public')
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg', 'image/webp'])
