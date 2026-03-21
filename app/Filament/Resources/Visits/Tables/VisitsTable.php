@@ -22,6 +22,16 @@ class VisitsTable
                     ->tooltip(fn ($record) => $record->url)
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('device_type')
+                    ->label('Device')
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'mobile' => 'info',
+                        'tablet' => 'warning',
+                        'desktop' => 'gray',
+                        default => 'gray',
+                    }),
                 TextColumn::make('visited_at')
                     ->label('Visited At')
                     ->date('F j, Y')
