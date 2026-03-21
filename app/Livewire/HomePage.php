@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Blog;
 use App\Models\DigitalProduct;
+use App\Models\MyContent;
 use App\Models\Product;
 use App\Services\CartService;
 use App\View\Components\Layout\App;
@@ -19,6 +20,12 @@ class HomePage extends Component
 
     public $blogs;
 
+    public $highlightContents;
+
+    public ?string $highlightModalVideoUrl = null;
+
+    public ?string $highlightModalTitle = null;
+
     public function mount()
     {
         $this->products = Product::where('status', true)
@@ -33,6 +40,13 @@ class HomePage extends Component
 
         $this->blogs = Blog::where('status', true)
             ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
+        $this->highlightContents = MyContent::query()
+            ->where('highlights', true)
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
             ->limit(4)
             ->get();
     }
@@ -57,6 +71,18 @@ class HomePage extends Component
         $product = Product::findOrFail($id);
         app(CartService::class)->addToCart($id, 1);
         $this->dispatch('cartUpdated', message: 'Product added to cart successfully!');
+    }
+
+    public function openHighlightModal(string $url, ?string $title = null): void
+    {
+        $this->highlightModalVideoUrl = $url;
+        $this->highlightModalTitle = $title;
+    }
+
+    public function closeHighlightModal(): void
+    {
+        $this->highlightModalVideoUrl = null;
+        $this->highlightModalTitle = null;
     }
 
     public function render()

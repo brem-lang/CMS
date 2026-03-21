@@ -15,7 +15,7 @@
                                 CRIST BRIAND
                                 <br>
                                 <span style="font-size: 24px; font-weight: 400; display: inline-block; width: 100%;">
-                                    Comedic content + brand collabs that make people smile and buy.
+                                    I just live my life… and turn it into content.
                                 </span>
                             </h2>
                             <a href="/shop"
@@ -150,95 +150,95 @@
             <!-- Desktop Layout -->
             <div class="row product__filter d-none d-md-flex">
                 @foreach ($products as $product)
-                    <div class="col-lg-3 col-md-6 mix new-arrivals" wire:key="product-desktop-{{ $product->id }}">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
-                                data-setbg="{{ $product->image_url }}"
-                                style="background-image: url('{{ $product->image_url }}'); position: relative; {{ ($product->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}"
-                                wire:click="selectProduct({{ $product->id }})"
-                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
-                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
+                <div class="col-lg-3 col-md-6 mix new-arrivals" wire:key="product-desktop-{{ $product->id }}">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
+                            data-setbg="{{ $product->image_url }}"
+                            style="background-image: url('{{ $product->image_url }}'); position: relative; {{ ($product->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}"
+                            wire:click="selectProduct({{ $product->id }})"
+                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
+                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
 
-                                @if ($product->badge === 'best_seller')
-                                    <div
-                                        style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 193, 7, 0.95); color: #000; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                        Best Seller
-                                    </div>
-                                @elseif ($product->badge === 'limited')
-                                    <div
-                                        style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                        Limited
-                                    </div>
-                                @endif
-
-                                @if (($product->stock_quantity ?? 0) == 0)
-                                    <div
-                                        style="position: absolute; top: 10px; @if ($product->badge) left: 10px; @else right: 10px; @endif background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                        Out of Stock
-                                    </div>
-                                @endif
-
-                                <div class="opacity-0 hover-show d-none d-md-block">
-                                    <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
-                                        Quick View
-                                    </button>
-                                </div>
+                            @if ($product->badge === 'best_seller')
+                            <div
+                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 193, 7, 0.95); color: #000; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                Best Seller
                             </div>
-                            <div class="product__item__text">
-                                <h6>{{ $product->name }}</h6>
-                                <!-- <a href="#" class="add-cart" wire:click.prevent="addToCart({{ $product->id }})">+ Add To Cart</a> -->
-                                {{-- <div class="rating">
+                            @elseif ($product->badge === 'limited')
+                            <div
+                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                Limited
+                            </div>
+                            @endif
+
+                            @if (($product->stock_quantity ?? 0) == 0)
+                            <div
+                                style="position: absolute; top: 10px; @if ($product->badge) left: 10px; @else right: 10px; @endif background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                Out of Stock
+                            </div>
+                            @endif
+
+                            <div class="opacity-0 hover-show d-none d-md-block">
+                                <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
+                                    Quick View
+                                </button>
+                            </div>
+                        </div>
+                        <div class="product__item__text">
+                            <h6>{{ $product->name }}</h6>
+                            <!-- <a href="#" class="add-cart" wire:click.prevent="addToCart({{ $product->id }})">+ Add To Cart</a> -->
+                            {{-- <div class="rating">
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                     <i class="fa fa-star-o"></i>
                                 </div> --}}
-                                <h5>₱{{ number_format($product->price, 2) }}</h5>
-                            </div>
+                            <h5>₱{{ number_format($product->price, 2) }}</h5>
                         </div>
                     </div>
+                </div>
                 @endforeach
             </div>
             <!-- Mobile Layout - One product only -->
             <div class="row d-block d-md-none">
                 @if ($products->isNotEmpty())
-                    @php $firstProduct = $products->first(); @endphp
-                    <div class="col-12 mb-4" wire:key="product-mobile-{{ $firstProduct->id }}">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
-                                data-setbg="{{ $firstProduct->image_url }}"
-                                style="background-image: url('{{ $firstProduct->image_url }}'); position: relative; min-height: 350px; {{ ($firstProduct->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}"
-                                wire:click="selectProduct({{ $firstProduct->id }})">
+                @php $firstProduct = $products->first(); @endphp
+                <div class="col-12 mb-4" wire:key="product-mobile-{{ $firstProduct->id }}">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
+                            data-setbg="{{ $firstProduct->image_url }}"
+                            style="background-image: url('{{ $firstProduct->image_url }}'); position: relative; min-height: 350px; {{ ($firstProduct->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}"
+                            wire:click="selectProduct({{ $firstProduct->id }})">
 
-                                @if ($firstProduct->badge === 'best_seller')
-                                    <div
-                                        style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 193, 7, 0.95); color: #000; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                        Best Seller
-                                    </div>
-                                @elseif ($firstProduct->badge === 'limited')
-                                    <div
-                                        style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                        Limited
-                                    </div>
-                                @endif
+                            @if ($firstProduct->badge === 'best_seller')
+                            <div
+                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 193, 7, 0.95); color: #000; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                Best Seller
+                            </div>
+                            @elseif ($firstProduct->badge === 'limited')
+                            <div
+                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                Limited
+                            </div>
+                            @endif
 
-                                @if (($firstProduct->stock_quantity ?? 0) == 0)
-                                    <div
-                                        style="position: absolute; top: 10px; @if ($firstProduct->badge) left: 10px; @else right: 10px; @endif background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                        Out of Stock
-                                    </div>
-                                @endif
+                            @if (($firstProduct->stock_quantity ?? 0) == 0)
+                            <div
+                                style="position: absolute; top: 10px; @if ($firstProduct->badge) left: 10px; @else right: 10px; @endif background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                                Out of Stock
                             </div>
-                            <div class="product__item__text text-center mt-3">
-                                <h6>{{ $firstProduct->name }}</h6>
-                                <p class="text-secondary small mb-2" style="font-size: 13px; line-height: 1.4;">
-                                    {{ Str::limit($firstProduct->description ?? '', 80) }}
-                                </p>
-                                <h5>₱{{ number_format($firstProduct->price, 2) }}</h5>
-                            </div>
+                            @endif
+                        </div>
+                        <div class="product__item__text text-center mt-3">
+                            <h6>{{ $firstProduct->name }}</h6>
+                            <p class="text-secondary small mb-2" style="font-size: 13px; line-height: 1.4;">
+                                {{ Str::limit($firstProduct->description ?? '', 80) }}
+                            </p>
+                            <h5>₱{{ number_format($firstProduct->price, 2) }}</h5>
                         </div>
                     </div>
+                </div>
                 @endif
             </div>
             <div class="row">
@@ -281,80 +281,80 @@
             <!-- Desktop Layout -->
             <div class="row product__filter d-none d-md-flex">
                 @foreach ($digitalProducts as $product)
-                    <div class="col-lg-3 col-md-6 mix new-arrivals"
-                        wire:key="digital-product-desktop-{{ $product->id }}">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center position-relative"
-                                @if ($product->thumbnail_url) data-setbg="{{ $product->thumbnail_url }}"
+                <div class="col-lg-3 col-md-6 mix new-arrivals"
+                    wire:key="digital-product-desktop-{{ $product->id }}">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center position-relative"
+                            @if ($product->thumbnail_url) data-setbg="{{ $product->thumbnail_url }}"
                             style="background-image: url('{{ $product->thumbnail_url }}'); min-height: 220px; background-size: cover; background-position: center; position: relative;"
                             @else
                             style="min-height: 220px; align-items: center; justify-content: center; position: relative;" @endif
-                                wire:click="selectDigitalProduct({{ $product->id }})"
-                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
-                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
+                            wire:click="selectDigitalProduct({{ $product->id }})"
+                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
+                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
 
-                                @if (!$product->thumbnail_url)
-                                    <span class="text-muted"><i class="fa fa-file-o fa-3x"></i></span>
-                                @endif
+                            @if (!$product->thumbnail_url)
+                            <span class="text-muted"><i class="fa fa-file-o fa-3x"></i></span>
+                            @endif
 
-                                <div class="opacity-0 hover-show d-none d-md-block">
-                                    <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
-                                        Quick View
-                                    </button>
-                                </div>
-
-                                @if ($product->file_type)
-                                    <div
-                                        style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; z-index: 10;">
-                                        {{ strtoupper($product->file_type) }}
-                                    </div>
-                                @endif
+                            <div class="opacity-0 hover-show d-none d-md-block">
+                                <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
+                                    Quick View
+                                </button>
                             </div>
-                            <div class="product__item__text">
-                                <h6>{{ Str::limit($product->title, 30) }}</h6>
-                                <p class="text-secondary small mb-2" style="font-size: 12px; line-height: 1.4;">
-                                    {{ Str::limit(strip_tags($product->description ?? ''), 60) }}
-                                </p>
-                                <h5>{{ $product->is_free ? 'Free' : '₱' . number_format($product->price, 2) }}</h5>
+
+                            @if ($product->file_type)
+                            <div
+                                style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; z-index: 10;">
+                                {{ strtoupper($product->file_type) }}
                             </div>
+                            @endif
+                        </div>
+                        <div class="product__item__text">
+                            <h6>{{ Str::limit($product->title, 30) }}</h6>
+                            <p class="text-secondary small mb-2" style="font-size: 12px; line-height: 1.4;">
+                                {{ Str::limit(strip_tags($product->description ?? ''), 60) }}
+                            </p>
+                            <h5>{{ $product->is_free ? 'Free' : '₱' . number_format($product->price, 2) }}</h5>
                         </div>
                     </div>
+                </div>
                 @endforeach
             </div>
             <!-- Mobile Layout - One product only -->
             <div class="row d-block d-md-none">
                 @if ($digitalProducts->isNotEmpty())
-                    @php $firstDigitalProduct = $digitalProducts->first(); @endphp
-                    <div class="col-12 mb-4" wire:key="digital-product-mobile-{{ $firstDigitalProduct->id }}">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center position-relative"
-                                @if ($firstDigitalProduct->thumbnail_url) data-setbg="{{ $firstDigitalProduct->thumbnail_url }}"
+                @php $firstDigitalProduct = $digitalProducts->first(); @endphp
+                <div class="col-12 mb-4" wire:key="digital-product-mobile-{{ $firstDigitalProduct->id }}">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center position-relative"
+                            @if ($firstDigitalProduct->thumbnail_url) data-setbg="{{ $firstDigitalProduct->thumbnail_url }}"
                             style="background-image: url('{{ $firstDigitalProduct->thumbnail_url }}'); min-height: 350px; background-size: cover; background-position: center; position: relative;"
                             @else
                             style="min-height: 350px; align-items: center; justify-content: center; position: relative;" @endif
-                                wire:click="selectDigitalProduct({{ $firstDigitalProduct->id }})">
+                            wire:click="selectDigitalProduct({{ $firstDigitalProduct->id }})">
 
-                                @if (!$firstDigitalProduct->thumbnail_url)
-                                    <span class="text-muted"><i class="fa fa-file-o fa-4x"></i></span>
-                                @endif
+                            @if (!$firstDigitalProduct->thumbnail_url)
+                            <span class="text-muted"><i class="fa fa-file-o fa-4x"></i></span>
+                            @endif
 
-                                @if ($firstDigitalProduct->file_type)
-                                    <div
-                                        style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; z-index: 10;">
-                                        {{ strtoupper($firstDigitalProduct->file_type) }}
-                                    </div>
-                                @endif
+                            @if ($firstDigitalProduct->file_type)
+                            <div
+                                style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; z-index: 10;">
+                                {{ strtoupper($firstDigitalProduct->file_type) }}
                             </div>
-                            <div class="product__item__text text-center mt-3">
-                                <h6>{{ $firstDigitalProduct->title }}</h6>
-                                <p class="text-secondary small mb-2" style="font-size: 13px; line-height: 1.4;">
-                                    {{ Str::limit(strip_tags($firstDigitalProduct->description ?? ''), 80) }}
-                                </p>
-                                <h5>{{ $firstDigitalProduct->is_free ? 'Free' : '₱' . number_format($firstDigitalProduct->price, 2) }}
-                                </h5>
-                            </div>
+                            @endif
+                        </div>
+                        <div class="product__item__text text-center mt-3">
+                            <h6>{{ $firstDigitalProduct->title }}</h6>
+                            <p class="text-secondary small mb-2" style="font-size: 13px; line-height: 1.4;">
+                                {{ Str::limit(strip_tags($firstDigitalProduct->description ?? ''), 80) }}
+                            </p>
+                            <h5>{{ $firstDigitalProduct->is_free ? 'Free' : '₱' . number_format($firstDigitalProduct->price, 2) }}
+                            </h5>
                         </div>
                     </div>
+                </div>
                 @endif
             </div>
             <div class="row">
@@ -381,7 +381,81 @@
     </section>
     <!-- Digital Products Section End -->
 
-    <!-- Latest Blog Section Begin -->
+    <!-- MyContent Highlights Section Begin -->
+    <section class="latest spad" style="margin-top:-130px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <h2>Highlights</h2>
+                        <h5 class="mt-4 text-secondary">
+                            Watch my latest highlighted video content.
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Desktop Layout: up to 4 highlighted videos -->
+            <div class="row d-none d-md-flex">
+                @forelse ($highlightContents as $content)
+                <div class="col-lg-3 col-md-6 mb-4" wire:key="mycontent-desktop-{{ $content->id }}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic" style="min-height: 260px; background: #111;">
+                            <video preload="metadata" muted playsinline
+                                style="width: 100%; height: 100%; min-height: 260px; object-fit: cover; display: block;">
+                                <source src="{{ $content->video_url }}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="blog__item__text">
+                            <span style="color: #666666;"><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
+                                {{ $content->created_at->format('d F Y') }}</span>
+                            <h5 style="color: #333333;">{{ $content->title ?: 'Highlighted Video' }}</h5>
+                            <a href="javascript:void(0)"
+                                wire:click.prevent="openHighlightModal(@js($content->video_url), @js($content->title))"
+                                class="text-primary fw-bold text-decoration-none shadow-hover"
+                                style="color: #007bff;">
+                                Play Video
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <div class="col-12">
+                    <p class="text-secondary text-center">No highlighted videos yet.</p>
+                </div>
+                @endforelse
+            </div>
+            <!-- Mobile Layout: 1 highlighted video only -->
+            <div class="row d-block d-md-none">
+                @if ($highlightContents->isNotEmpty())
+                @php $firstVideo = $highlightContents->first(); @endphp
+                <div class="col-12" wire:key="mycontent-mobile-{{ $firstVideo->id }}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic" style="min-height: 300px; background: #111;">
+                            <video preload="metadata" muted playsinline
+                                style="width: 100%; height: 100%; min-height: 300px; object-fit: cover; display: block;">
+                                <source src="{{ $firstVideo->video_url }}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="blog__item__text">
+                            <span style="color: #666666;"><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
+                                {{ $firstVideo->created_at->format('d F Y') }}</span>
+                            <h5 style="color: #333333;">{{ $firstVideo->title ?: 'Highlighted Video' }}</h5>
+                            <a href="javascript:void(0)"
+                                wire:click.prevent="openHighlightModal(@js($firstVideo->video_url), @js($firstVideo->title))"
+                                class="text-primary fw-bold text-decoration-none shadow-hover"
+                                style="color: #007bff;">
+                                Play Video
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </section>
+    <!-- MyContent Highlights Section End -->
+
+    <!-- My Contents Section Begin -->
     <section class="latest spad" style="margin-top:-130px;">
         <div class="container">
             <div class="row">
@@ -398,53 +472,53 @@
             <!-- Desktop Layout: 4 blogs in one row -->
             <div class="row d-none d-md-flex">
                 @foreach ($blogs as $blog)
-                    <div class="col-lg-3 col-md-3" wire:key="blog-desktop-{{ $blog->id }}">
-                        <div class="blog__item">
-                            <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}"
-                                style="background-image: url('{{ $blog->image_url }}');">
-                            </div>
-                            <div class="blog__item__text">
-                                <span style="color: #666666;"><img
-                                        src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
-                                    {{ $blog->created_at->format('d F Y') }}</span>
-                                <h5 style="color: #333333;">{{ $blog->title }}</h5>
-                                <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $blog->id }})"
-                                    class="text-primary fw-bold text-decoration-none shadow-hover"
-                                    style="color: #007bff;">
-                                    Read More
-                                </a>
-                            </div>
+                <div class="col-lg-3 col-md-3" wire:key="blog-desktop-{{ $blog->id }}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}"
+                            style="background-image: url('{{ $blog->image_url }}');">
+                        </div>
+                        <div class="blog__item__text">
+                            <span style="color: #666666;"><img
+                                    src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
+                                {{ $blog->created_at->format('d F Y') }}</span>
+                            <h5 style="color: #333333;">{{ $blog->title }}</h5>
+                            <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $blog->id }})"
+                                class="text-primary fw-bold text-decoration-none shadow-hover"
+                                style="color: #007bff;">
+                                Read More
+                            </a>
                         </div>
                     </div>
+                </div>
                 @endforeach
             </div>
             <!-- Mobile Layout: 1 blog only -->
             <div class="row d-block d-md-none">
                 @if ($blogs->isNotEmpty())
-                    @php $firstBlog = $blogs->first(); @endphp
-                    <div class="col-12" wire:key="blog-mobile-{{ $firstBlog->id }}">
-                        <div class="blog__item">
-                            <div class="blog__item__pic set-bg" data-setbg="{{ $firstBlog->image_url }}"
-                                style="background-image: url('{{ $firstBlog->image_url }}'); min-height: 300px;">
-                            </div>
-                            <div class="blog__item__text">
-                                <span style="color: #666666;"><img
-                                        src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
-                                    {{ $firstBlog->created_at->format('d F Y') }}</span>
-                                <h5 style="color: #333333;">{{ $firstBlog->title }}</h5>
-                                <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $firstBlog->id }})"
-                                    class="text-primary fw-bold text-decoration-none shadow-hover"
-                                    style="color: #007bff;">
-                                    Read More
-                                </a>
-                            </div>
+                @php $firstBlog = $blogs->first(); @endphp
+                <div class="col-12" wire:key="blog-mobile-{{ $firstBlog->id }}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="{{ $firstBlog->image_url }}"
+                            style="background-image: url('{{ $firstBlog->image_url }}'); min-height: 300px;">
+                        </div>
+                        <div class="blog__item__text">
+                            <span style="color: #666666;"><img
+                                    src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
+                                {{ $firstBlog->created_at->format('d F Y') }}</span>
+                            <h5 style="color: #333333;">{{ $firstBlog->title }}</h5>
+                            <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $firstBlog->id }})"
+                                class="text-primary fw-bold text-decoration-none shadow-hover"
+                                style="color: #007bff;">
+                                Read More
+                            </a>
                         </div>
                     </div>
+                </div>
                 @endif
             </div>
         </div>
     </section>
-    <!-- Latest Blog Section End -->
+    <!-- My Contents Section End -->
 
     <!-- Work With Me Section Begin -->
     <section class="services spad" style="margin-top: -160px;">
@@ -669,6 +743,29 @@
     </section>
     <!-- Contact Section End -->
 
+    @if ($highlightModalVideoUrl)
+    <div wire:key="highlight-video-modal" wire:click="closeHighlightModal"
+        style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+        <div wire:click.stop
+            style="background: #000; width: 100%; max-width: 900px; border-radius: 12px; overflow: hidden; box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #111; color: #fff;">
+                <h5 style="margin: 0; color: #fff;">{{ $highlightModalTitle ?: 'Highlighted Video' }}</h5>
+                <button type="button" wire:click="closeHighlightModal"
+                    style="background: transparent; border: none; color: #fff; font-size: 24px; line-height: 1; cursor: pointer;">
+                    &times;
+                </button>
+            </div>
+            <div style="padding: 0;">
+                <video wire:key="highlight-player-{{ md5($highlightModalVideoUrl) }}" controls autoplay playsinline
+                    preload="auto" src="{{ $highlightModalVideoUrl }}"
+                    style="width: 100%; max-height: 80vh; display: block;">
+                </video>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Services Section Begin -->
     <!-- <section class="services spad" style="margin-top:-80px;">
         <div class="container">
@@ -859,9 +956,7 @@
             }
 
             // Ensure video source exists
-            var videoSrc =
-                '{{ asset('
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                videos / Brader - Skate.mp4 ') }}';
+            var videoSrc = "{{ asset('videos/Brader-Skate.mp4') }}";
             var source = video.querySelector('source');
             if (!source || !source.src || source.src.indexOf('Brader-Skate.mp4') === -1) {
                 // Remove existing sources
