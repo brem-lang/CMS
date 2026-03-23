@@ -22,9 +22,13 @@ class HomePage extends Component
 
     public $highlightContents;
 
+    public $freeMeditations;
+
     public ?string $highlightModalVideoUrl = null;
 
     public ?string $highlightModalTitle = null;
+
+    public ?string $highlightModalVideoMime = null;
 
     public function mount()
     {
@@ -38,8 +42,16 @@ class HomePage extends Component
             ->limit(4)
             ->get();
 
+        $this->freeMeditations = DigitalProduct::query()
+            ->where('is_active', true)
+            ->where('is_free', true)
+            ->where('file_type', 'audio')
+            ->latest()
+            ->limit(3)
+            ->get();
+
         $this->blogs = Blog::where('status', true)
-            ->inRandomOrder()
+            ->latest()
             ->limit(4)
             ->get();
 
@@ -47,7 +59,7 @@ class HomePage extends Component
             ->where('highlights', true)
             ->orderBy('sort_order')
             ->orderByDesc('id')
-            ->limit(4)
+            ->limit(3)
             ->get();
     }
 
@@ -73,16 +85,49 @@ class HomePage extends Component
         $this->dispatch('cartUpdated', message: 'Product added to cart successfully!');
     }
 
-    public function openHighlightModal(string $url, ?string $title = null): void
+    public function openHighlightModal(int $contentId): void
     {
-        $this->highlightModalVideoUrl = $url;
-        $this->highlightModalTitle = $title;
+        $content = MyContent::query()->find($contentId);
+
+        if (! $content || empty($content->video_url)) {
+            return;
+        }
+
+        $this->highlightModalVideoUrl = $content->video_url;
+        $this->highlightModalTitle = $content->title;
+        $this->highlightModalVideoMime = $this->detectVideoMimeType($content->video_path, $content->video_url);
+        $this->dispatch('highlight-modal-opened');
     }
 
     public function closeHighlightModal(): void
     {
         $this->highlightModalVideoUrl = null;
         $this->highlightModalTitle = null;
+        $this->highlightModalVideoMime = null;
+    }
+
+    protected function detectVideoMimeType(?string $path, ?string $url): ?string
+    {
+        $candidate = strtolower((string) ($path ?: $url));
+        $candidate = strtok($candidate, '?') ?: $candidate;
+
+        if (str_ends_with($candidate, '.mp4')) {
+            return 'video/mp4';
+        }
+
+        if (str_ends_with($candidate, '.webm')) {
+            return 'video/webm';
+        }
+
+        if (str_ends_with($candidate, '.mov')) {
+            return 'video/quicktime';
+        }
+
+        if (str_ends_with($candidate, '.avi')) {
+            return 'video/x-msvideo';
+        }
+
+        return null;
     }
 
     public function render()

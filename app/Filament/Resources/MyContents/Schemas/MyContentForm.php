@@ -28,11 +28,10 @@ class MyContentForm
                             ->acceptedFileTypes([
                                 'video/mp4',
                                 'video/webm',
-                                'video/quicktime',
-                                'video/x-msvideo',
                             ])
                             ->maxSize(102400)
                             ->visibility('public')
+                            ->helperText('Use MP4 or WEBM for reliable browser playback in the homepage modal.')
                             ->required(),
                         Toggle::make('highlights')
                             ->label('Highlights')

@@ -18,24 +18,22 @@
                                     I just live my life… and turn it into content.
                                 </span>
                             </h2>
-                            <a href="/shop"
-                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
-                                style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;"
-                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-
-                                Shop Merch
+                            <a href="#start-here"
+                                class="primary-btn d-inline-block text-decoration-none shadow-lg transition-all text-white"
+                                style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important; font-size: 16px; padding: 16px 34px;"
+                                onmouseover="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                                onmouseout="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                                Start Here
                                 <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
                             </a>
                             <br>
                             <br>
-                            <a href="/digital-products"
+                            <a href="#offers-section"
                                 class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all text-white"
-                                style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important;"
+                                style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important; font-size: 16px; padding: 16px 34px;"
                                 onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
                                 onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-
-                                Digital Products
+                                Offers
                                 <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
                             </a>
                         </div>
@@ -46,358 +44,185 @@
     </section>
     <!-- Hero Section End -->
 
-    <!-- BUenas Section Begin -->
-    <section class="services spad" style="margin-top:-80px;">
+    <!-- Start Here Section Begin -->
+    <section id="start-here" class="latest spad" style="margin-top:-80px;">
         <div class="container">
-            <!-- Desktop Layout -->
-            <div class="row align-items-center d-none d-md-flex">
+            <div class="row">
                 <div class="col-lg-12">
-                    <div class="card shadow-lg border-0 p-5"
-                        style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 1px solid #e9ecef;">
-                        <div class="row align-items-center">
-                            <div class="col-lg-3 text-center">
-                                <img src="{{ asset('img/buenas_logo.png') }}" alt="Buenas" class="img-fluid"
-                                    style="max-height: 160px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));">
-                            </div>
-                            <div class="col-lg-5">
-                                <h2 class="text-dark mb-3" style="font-weight: 800; font-size: 2rem; line-height: 1.2;">
-                                    <strong
-                                        style="background: linear-gradient(135deg, #111111 0%, #333333 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Play
-                                        Smart. Win Big.</strong>
-                                </h2>
-                                <p class="text-secondary mb-0"
-                                    style="font-size: 1.05rem; line-height: 1.7; color: #6c757d;">
-                                    Official online gaming partner. Enjoy exclusive access through my link.
-                                </p>
-                            </div>
-                            <div class="col-lg-4 text-lg-end text-center">
-                                <a href="https://bit.ly/CristBriand-buenasph" target="_blank" rel="noopener noreferrer"
-                                    class="primary-btn d-inline-block text-decoration-none shadow-lg transition-all"
-                                    style="font-size: 14px; padding: 14px 32px; background: linear-gradient(135deg, #000000 0%, #333333 100%); border-radius: 8px; font-weight: 700; letter-spacing: 1px;"
-                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)'; this.querySelector('.arrow_right').classList.add('ms-3')"
-                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.querySelector('.arrow_right').classList.remove('ms-3')">
-                                    Play on Buenas
-                                    <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                                </a>
-                                <div class="mt-3">
-                                    <small class="text-muted" style="font-size: 0.75rem; font-weight: 500;">18+ only.
-                                        Please play responsibly.</small>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="section-title start-here-title-wrap">
+                        <span class="start-here-kicker">Featured Journey</span>
+                        <h2 class="start-here-title">Start Here</h2>
+                        <p class="start-here-subtitle">Read the latest story and listen to free meditations.</p>
                     </div>
                 </div>
             </div>
-            <!-- Mobile Layout -->
-            <div class="row d-block d-md-none">
-                <div class="col-12">
-                    <div class="card shadow-lg border-0 p-2"
-                        style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 1px solid #e9ecef;">
-                        <div class="text-center">
-                            <img src="{{ asset('img/buenas_logo.png') }}" alt="Buenas" class="img-fluid"
-                                style="max-height: 60px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));">
+            @if ($blogs->isNotEmpty())
+            @php $featuredBlog = $blogs->first(); @endphp
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                        <div style="background: #f3f3f3;">
+                            <img src="{{ $featuredBlog->image_url }}" alt="{{ $featuredBlog->title }}"
+                                style="width: 100%; height: auto; max-height: 600px; object-fit: contain; display: block;">
                         </div>
-                        <div class="text-center" style="margin-top: -12px;margin-bottom: 11px;">
-                            <h3 style="font-weight: 800; color: #111111; font-size: 1.2rem;">
-                                <strong>Play Smart. Win Big.</strong>
-                            </h3>
-                            <p class="text-secondary mb-0" style="font-size: 11px;line-height: 0.8;margin-top:6px;">
-                                Official online gaming partner. Enjoy exclusive access through my link.
-                            </p>
-                        </div>
-                        <div class="text-center">
-                            <a href="https://bit.ly/CristBriand-buenasph" target="_blank" rel="noopener noreferrer"
-                                class="primary-btn d-inline-block text-decoration-none shadow-lg transition-all"
-                                style="font-size: 12px; padding: 10px 24px; background: linear-gradient(135deg, #000000 0%, #333333 100%); border-radius: 8px; font-weight: 700; letter-spacing: 0.5px;"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)'; this.querySelector('.arrow_right').classList.add('ms-3')"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.querySelector('.arrow_right').classList.remove('ms-3')">
-                                Play on Buenas
+                        <div class="p-4">
+                            <span style="color: #666666;"><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
+                                {{ $featuredBlog->created_at->format('d F Y') }}</span>
+                            <h4 class="mt-2 mb-3" style="color: #333333;">{{ $featuredBlog->title }}</h4>
+                            <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $featuredBlog->id }})"
+                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                                Read Blog
                                 <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
                             </a>
-                            <p class="text-muted small mt-2 mb-0"
-                                style="font-weight: 500; font-size: 11px;margin-top:-20px;">18+ only.
-                                Please play responsibly.</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    <!-- BUenas Section End -->
 
-    <!-- Product Section Begin -->
-    {{-- style="margin-top: -60px --}}
-    <section class="product spad" style="margin-top:-80px;">
-        <div class="container">
-            <div class="row">
+            <div class="row mt-4 d-none d-md-flex">
                 <div class="col-lg-12">
-                    <div class="section-title">
-                        <h2>Merch</h2>
-                        <h5 class="mt-4 text-secondary">
-                            A blend of purpose and style — our Love and Respect merch line is designed to remind you of
-                            what truly matters.
-                            From the classic <strong class="font-bold">Bracelet</strong> that carries meaning, to the
-                            minimalist <strong class="font-bold">Shirt</strong> and
-                            everyday <strong class="font-bold">Tote Bag</strong>, each piece is crafted to inspire
-                            self-worth, peace, and connection.
-                        </h5>
-
-                        <h5 class="mt-4 text-secondary">✨ Wear the message. Carry the energy. Spread love and respect.
-                        </h5>
-                    </div>
+                    <h4 class="mb-3" style="font-weight: 700;">Free Meditation</h4>
                 </div>
-            </div>
-            <!-- Desktop Layout -->
-            <div class="row product__filter d-none d-md-flex">
-                @foreach ($products as $product)
-                <div class="col-lg-3 col-md-6 mix new-arrivals" wire:key="product-desktop-{{ $product->id }}">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
-                            data-setbg="{{ $product->image_url }}"
-                            style="background-image: url('{{ $product->image_url }}'); position: relative; {{ ($product->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}"
-                            wire:click="selectProduct({{ $product->id }})"
-                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
-                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
-
-                            @if ($product->badge === 'best_seller')
-                            <div
-                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 193, 7, 0.95); color: #000; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                Best Seller
-                            </div>
-                            @elseif ($product->badge === 'limited')
-                            <div
-                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                Limited
-                            </div>
-                            @endif
-
-                            @if (($product->stock_quantity ?? 0) == 0)
-                            <div
-                                style="position: absolute; top: 10px; @if ($product->badge) left: 10px; @else right: 10px; @endif background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                Out of Stock
-                            </div>
-                            @endif
-
-                            <div class="opacity-0 hover-show d-none d-md-block">
-                                <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
-                                    Quick View
-                                </button>
-                            </div>
-                        </div>
-                        <div class="product__item__text">
-                            <h6>{{ $product->name }}</h6>
-                            <!-- <a href="#" class="add-cart" wire:click.prevent="addToCart({{ $product->id }})">+ Add To Cart</a> -->
-                            {{-- <div class="rating">
-                                    <i class="fa fa-star-o"></i>
-                                    <i class="fa fa-star-o"></i>
-                                    <i class="fa fa-star-o"></i>
-                                    <i class="fa fa-star-o"></i>
-                                    <i class="fa fa-star-o"></i>
-                                </div> --}}
-                            <h5>₱{{ number_format($product->price, 2) }}</h5>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-            <!-- Mobile Layout - One product only -->
-            <div class="row d-block d-md-none">
-                @if ($products->isNotEmpty())
-                @php $firstProduct = $products->first(); @endphp
-                <div class="col-12 mb-4" wire:key="product-mobile-{{ $firstProduct->id }}">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center"
-                            data-setbg="{{ $firstProduct->image_url }}"
-                            style="background-image: url('{{ $firstProduct->image_url }}'); position: relative; min-height: 350px; {{ ($firstProduct->stock_quantity ?? 0) == 0 ? 'opacity: 0.5;' : '' }}"
-                            wire:click="selectProduct({{ $firstProduct->id }})">
-
-                            @if ($firstProduct->badge === 'best_seller')
-                            <div
-                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 193, 7, 0.95); color: #000; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                Best Seller
-                            </div>
-                            @elseif ($firstProduct->badge === 'limited')
-                            <div
-                                style="position: absolute; top: 10px; right: 10px; background-color: rgba(220, 53, 69, 0.95); color: white; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                Limited
-                            </div>
-                            @endif
-
-                            @if (($firstProduct->stock_quantity ?? 0) == 0)
-                            <div
-                                style="position: absolute; top: 10px; @if ($firstProduct->badge) left: 10px; @else right: 10px; @endif background-color: rgba(220, 53, 69, 0.95); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                                Out of Stock
-                            </div>
-                            @endif
-                        </div>
-                        <div class="product__item__text text-center mt-3">
-                            <h6>{{ $firstProduct->name }}</h6>
-                            <p class="text-secondary small mb-2" style="font-size: 13px; line-height: 1.4;">
-                                {{ Str::limit($firstProduct->description ?? '', 80) }}
+                @forelse ($freeMeditations as $meditation)
+                <div class="col-lg-4 col-md-6 mb-4" wire:key="free-meditation-{{ $meditation->id }}">
+                    <div class="card shadow-sm border-0 h-100" style="border-radius: 10px;">
+                        <div class="p-4 d-flex flex-column h-100">
+                            <h6 class="mb-2" style="font-weight: 700;">{{ $meditation->title }}</h6>
+                            <p class="text-secondary mb-4" style="font-size: 14px; line-height: 1.5;">
+                                {{ \Illuminate\Support\Str::limit(strip_tags($meditation->description ?? ''), 90) }}
                             </p>
-                            <h5>₱{{ number_format($firstProduct->price, 2) }}</h5>
+                            <div class="mt-auto">
+                                <a href="javascript:void(0)"
+                                    wire:click.prevent="selectDigitalProduct({{ $meditation->id }})"
+                                    class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                                    onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                                    onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                                    Listen Audio
+                                    <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                                </a>
+                            </div>
                         </div>
                     </div>
+                </div>
+                @empty
+                <div class="col-12">
+                    <p class="text-secondary">No free meditation available yet.</p>
+                </div>
+                @endforelse
+            </div>
+
+            <div class="row mt-4 d-block d-md-none">
+                <div class="col-12">
+                    <h4 class="mb-3" style="font-weight: 700;">Free Meditation</h4>
+                </div>
+                @if ($freeMeditations->isNotEmpty())
+                @php $firstMeditation = $freeMeditations->first(); @endphp
+                <div class="col-12" wire:key="free-meditation-mobile-{{ $firstMeditation->id }}">
+                    <div class="card shadow-sm border-0" style="border-radius: 10px;">
+                        <div class="p-4">
+                            <h6 class="mb-2" style="font-weight: 700;">{{ $firstMeditation->title }}</h6>
+                            <p class="text-secondary mb-4" style="font-size: 14px; line-height: 1.5;">
+                                {{ \Illuminate\Support\Str::limit(strip_tags($firstMeditation->description ?? ''), 90) }}
+                            </p>
+                            <a href="javascript:void(0)"
+                                wire:click.prevent="selectDigitalProduct({{ $firstMeditation->id }})"
+                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
+                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
+                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
+                                Listen Audio
+                                <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @else
+                <div class="col-12">
+                    <p class="text-secondary">No free meditation available yet.</p>
                 </div>
                 @endif
             </div>
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <!-- Desktop Button -->
-                    <a href="/shop"
-                        class="primary-btn d-none d-md-inline-block text-decoration-none shadow-sm transition-all"
-                        onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                        onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                        Explore Collection
-                        <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                    </a>
-                    <!-- Mobile Button -->
-                    <a href="/shop"
-                        class="primary-btn d-inline-block d-md-none text-decoration-none shadow-sm transition-all"
-                        onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                        onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                        Shop Merch
-                        <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                    </a>
-                </div>
-            </div>
+            @endif
         </div>
     </section>
-    <!-- Product Section End -->
+    <!-- Start Here Section End -->
 
-    <!-- Digital Products Section Begin -->
-    <section class="product spad" style="margin-top: -30px;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title">
-                        <h2>Digital Products</h2>
-                        <h5 class="mt-4 text-secondary">
-                            Instant access to the tools behind the smiles <strong>(and the sales)</strong>.
-                        </h5>
-                    </div>
-                </div>
-            </div>
-            <!-- Desktop Layout -->
-            <div class="row product__filter d-none d-md-flex">
-                @foreach ($digitalProducts as $product)
-                <div class="col-lg-3 col-md-6 mix new-arrivals"
-                    wire:key="digital-product-desktop-{{ $product->id }}">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center position-relative"
-                            @if ($product->thumbnail_url) data-setbg="{{ $product->thumbnail_url }}"
-                            style="background-image: url('{{ $product->thumbnail_url }}'); min-height: 220px; background-size: cover; background-position: center; position: relative;"
-                            @else
-                            style="min-height: 220px; align-items: center; justify-content: center; position: relative;" @endif
-                            wire:click="selectDigitalProduct({{ $product->id }})"
-                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.classList.add('border', 'border-primary')"
-                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.classList.remove('border', 'border-primary')">
-
-                            @if (!$product->thumbnail_url)
-                            <span class="text-muted"><i class="fa fa-file-o fa-3x"></i></span>
-                            @endif
-
-                            <div class="opacity-0 hover-show d-none d-md-block">
-                                <button class="btn btn-light btn-sm shadow-sm rounded-pill px-3">
-                                    Quick View
-                                </button>
-                            </div>
-
-                            @if ($product->file_type)
-                            <div
-                                style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; z-index: 10;">
-                                {{ strtoupper($product->file_type) }}
-                            </div>
-                            @endif
-                        </div>
-                        <div class="product__item__text">
-                            <h6>{{ Str::limit($product->title, 30) }}</h6>
-                            <p class="text-secondary small mb-2" style="font-size: 12px; line-height: 1.4;">
-                                {{ Str::limit(strip_tags($product->description ?? ''), 60) }}
-                            </p>
-                            <h5>{{ $product->is_free ? 'Free' : '₱' . number_format($product->price, 2) }}</h5>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-            <!-- Mobile Layout - One product only -->
-            <div class="row d-block d-md-none">
-                @if ($digitalProducts->isNotEmpty())
-                @php $firstDigitalProduct = $digitalProducts->first(); @endphp
-                <div class="col-12 mb-4" wire:key="digital-product-mobile-{{ $firstDigitalProduct->id }}">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg rounded shadow-sm border-0 d-flex align-items-center justify-content-center position-relative"
-                            @if ($firstDigitalProduct->thumbnail_url) data-setbg="{{ $firstDigitalProduct->thumbnail_url }}"
-                            style="background-image: url('{{ $firstDigitalProduct->thumbnail_url }}'); min-height: 350px; background-size: cover; background-position: center; position: relative;"
-                            @else
-                            style="min-height: 350px; align-items: center; justify-content: center; position: relative;" @endif
-                            wire:click="selectDigitalProduct({{ $firstDigitalProduct->id }})">
-
-                            @if (!$firstDigitalProduct->thumbnail_url)
-                            <span class="text-muted"><i class="fa fa-file-o fa-4x"></i></span>
-                            @endif
-
-                            @if ($firstDigitalProduct->file_type)
-                            <div
-                                style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.7); color: white; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; z-index: 10;">
-                                {{ strtoupper($firstDigitalProduct->file_type) }}
-                            </div>
-                            @endif
-                        </div>
-                        <div class="product__item__text text-center mt-3">
-                            <h6>{{ $firstDigitalProduct->title }}</h6>
-                            <p class="text-secondary small mb-2" style="font-size: 13px; line-height: 1.4;">
-                                {{ Str::limit(strip_tags($firstDigitalProduct->description ?? ''), 80) }}
-                            </p>
-                            <h5>{{ $firstDigitalProduct->is_free ? 'Free' : '₱' . number_format($firstDigitalProduct->price, 2) }}
-                            </h5>
-                        </div>
-                    </div>
-                </div>
-                @endif
-            </div>
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <!-- Desktop Button -->
-                    <a href="{{ route('digital-products') }}"
-                        class="primary-btn d-none d-md-inline-block text-decoration-none shadow-sm transition-all"
-                        onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                        onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                        See All Digital Products
-                        <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                    </a>
-                    <!-- Mobile Button -->
-                    <a href="{{ route('digital-products') }}"
-                        class="primary-btn d-inline-block d-md-none text-decoration-none shadow-sm transition-all"
-                        onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                        onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                        See All Digital Products
-                        <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Digital Products Section End -->
-
-    <!-- MyContent Highlights Section Begin -->
+    <!-- More Stories Section Begin -->
     <section class="latest spad" style="margin-top:-130px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="section-title">
-                        <h2>Highlights</h2>
-                        <h5 class="mt-4 text-secondary">
-                            Watch my latest highlighted video content.
-                        </h5>
+                    <div class="section-title start-here-title-wrap">
+                        <span class="start-here-kicker">Fresh Drops</span>
+                        <h2 class="start-here-title">More Stories</h2>
+                        <p class="start-here-subtitle">Catch the latest updates, moments, and behind-the-scenes posts.</p>
                     </div>
                 </div>
             </div>
-            <!-- Desktop Layout: up to 4 highlighted videos -->
             <div class="row d-none d-md-flex">
-                @forelse ($highlightContents as $content)
-                <div class="col-lg-3 col-md-6 mb-4" wire:key="mycontent-desktop-{{ $content->id }}">
+                @foreach ($blogs->skip(1)->take(3) as $blog)
+                <div class="col-lg-4 col-md-6 mb-4" wire:key="more-stories-{{ $blog->id }}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}"
+                            style="background-image: url('{{ $blog->image_url }}');">
+                        </div>
+                        <div class="blog__item__text">
+                            <span style="color: #666666;"><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
+                                {{ $blog->created_at->format('d F Y') }}</span>
+                            <h5 style="color: #333333;">{{ $blog->title }}</h5>
+                            <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $blog->id }})"
+                                class="text-primary fw-bold text-decoration-none shadow-hover"
+                                style="color: #007bff;">
+                                Read Blog
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            <div class="row d-block d-md-none">
+                @php $firstStory = $blogs->skip(1)->first(); @endphp
+                @if ($firstStory)
+                <div class="col-12" wire:key="more-stories-mobile-{{ $firstStory->id }}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="{{ $firstStory->image_url }}"
+                            style="background-image: url('{{ $firstStory->image_url }}'); min-height: 300px;">
+                        </div>
+                        <div class="blog__item__text">
+                            <span style="color: #666666;"><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
+                                {{ $firstStory->created_at->format('d F Y') }}</span>
+                            <h5 style="color: #333333;">{{ $firstStory->title }}</h5>
+                            <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $firstStory->id }})"
+                                class="text-primary fw-bold text-decoration-none shadow-hover"
+                                style="color: #007bff;">
+                                Read Blog
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </section>
+    <!-- More Stories Section End -->
+
+    <!-- My Content Section Begin -->
+    <section class="latest spad" style="margin-top:-130px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title start-here-title-wrap">
+                        <span class="start-here-kicker">Watch & Enjoy</span>
+                        <h2 class="start-here-title">My Content</h2>
+                        <p class="start-here-subtitle">Tap a video to open fullscreen and play instantly.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row d-none d-md-flex">
+                @forelse ($highlightContents->take(3) as $content)
+                <div class="col-lg-4 col-md-6 mb-4" wire:key="mycontent-thumb-{{ $content->id }}">
                     <div class="blog__item">
                         <div class="blog__item__pic" style="min-height: 260px; background: #111;">
                             <video preload="metadata" muted playsinline
@@ -406,11 +231,9 @@
                             </video>
                         </div>
                         <div class="blog__item__text">
-                            <span style="color: #666666;"><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
-                                {{ $content->created_at->format('d F Y') }}</span>
                             <h5 style="color: #333333;">{{ $content->title ?: 'Highlighted Video' }}</h5>
                             <a href="javascript:void(0)"
-                                wire:click.prevent="openHighlightModal(@js($content->video_url), @js($content->title))"
+                                wire:click.prevent="openHighlightModal({{ $content->id }})"
                                 class="text-primary fw-bold text-decoration-none shadow-hover"
                                 style="color: #007bff;">
                                 Play Video
@@ -424,24 +247,22 @@
                 </div>
                 @endforelse
             </div>
-            <!-- Mobile Layout: 1 highlighted video only -->
+
             <div class="row d-block d-md-none">
                 @if ($highlightContents->isNotEmpty())
-                @php $firstVideo = $highlightContents->first(); @endphp
-                <div class="col-12" wire:key="mycontent-mobile-{{ $firstVideo->id }}">
+                @php $firstContent = $highlightContents->first(); @endphp
+                <div class="col-12" wire:key="mycontent-mobile-{{ $firstContent->id }}">
                     <div class="blog__item">
                         <div class="blog__item__pic" style="min-height: 300px; background: #111;">
                             <video preload="metadata" muted playsinline
                                 style="width: 100%; height: 100%; min-height: 300px; object-fit: cover; display: block;">
-                                <source src="{{ $firstVideo->video_url }}" type="video/mp4">
+                                <source src="{{ $firstContent->video_url }}" type="video/mp4">
                             </video>
                         </div>
                         <div class="blog__item__text">
-                            <span style="color: #666666;"><img src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
-                                {{ $firstVideo->created_at->format('d F Y') }}</span>
-                            <h5 style="color: #333333;">{{ $firstVideo->title ?: 'Highlighted Video' }}</h5>
+                            <h5 style="color: #333333;">{{ $firstContent->title ?: 'Highlighted Video' }}</h5>
                             <a href="javascript:void(0)"
-                                wire:click.prevent="openHighlightModal(@js($firstVideo->video_url), @js($firstVideo->title))"
+                                wire:click.prevent="openHighlightModal({{ $firstContent->id }})"
                                 class="text-primary fw-bold text-decoration-none shadow-hover"
                                 style="color: #007bff;">
                                 Play Video
@@ -449,197 +270,90 @@
                         </div>
                     </div>
                 </div>
-                @endif
-            </div>
-        </div>
-    </section>
-    <!-- MyContent Highlights Section End -->
-
-    <!-- My Contents Section Begin -->
-    <section class="latest spad" style="margin-top:-130px;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title">
-                        <h2>Blogs</h2>
-                        <h5 class="mt-4 text-secondary">
-                            Crist Briand seems to embrace a philosophy of authenticity and spreading positivity,
-                            particularly through his creative and spiritual content.
-                        </h5>
-                    </div>
-                </div>
-            </div>
-            <!-- Desktop Layout: 4 blogs in one row -->
-            <div class="row d-none d-md-flex">
-                @foreach ($blogs as $blog)
-                <div class="col-lg-3 col-md-3" wire:key="blog-desktop-{{ $blog->id }}">
-                    <div class="blog__item">
-                        <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}"
-                            style="background-image: url('{{ $blog->image_url }}');">
-                        </div>
-                        <div class="blog__item__text">
-                            <span style="color: #666666;"><img
-                                    src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
-                                {{ $blog->created_at->format('d F Y') }}</span>
-                            <h5 style="color: #333333;">{{ $blog->title }}</h5>
-                            <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $blog->id }})"
-                                class="text-primary fw-bold text-decoration-none shadow-hover"
-                                style="color: #007bff;">
-                                Read More
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-            <!-- Mobile Layout: 1 blog only -->
-            <div class="row d-block d-md-none">
-                @if ($blogs->isNotEmpty())
-                @php $firstBlog = $blogs->first(); @endphp
-                <div class="col-12" wire:key="blog-mobile-{{ $firstBlog->id }}">
-                    <div class="blog__item">
-                        <div class="blog__item__pic set-bg" data-setbg="{{ $firstBlog->image_url }}"
-                            style="background-image: url('{{ $firstBlog->image_url }}'); min-height: 300px;">
-                        </div>
-                        <div class="blog__item__text">
-                            <span style="color: #666666;"><img
-                                    src="{{ asset('bootstrap/img/icon/calendar.png') }}" alt="">
-                                {{ $firstBlog->created_at->format('d F Y') }}</span>
-                            <h5 style="color: #333333;">{{ $firstBlog->title }}</h5>
-                            <a href="javascript:void(0)" wire:click.prevent="openBlog({{ $firstBlog->id }})"
-                                class="text-primary fw-bold text-decoration-none shadow-hover"
-                                style="color: #007bff;">
-                                Read More
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                @endif
-            </div>
-        </div>
-    </section>
-    <!-- My Contents Section End -->
-
-    <!-- Work With Me Section Begin -->
-    <section class="services spad" style="margin-top: -160px;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title">
-                        <h2>Work With Me</h2>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Desktop Layout: 2x2 Grid -->
-            <div class="row d-none d-md-flex">
-                <!-- Card 1: Brand Collabs -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm border h-100 p-4" style="border-radius: 8px;">
-                        <h4 class="mb-3" style="font-weight: 700;">Brand Collabs</h4>
-                        <p class="text-secondary mb-3">Creative partnerships that bring your brand story to life
-                            through engaging content.</p>
-                        <a href="{{ route('contact') }}"
-                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
-                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                            Get Started
-                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                        </a>
-                    </div>
-                </div>
-                <!-- Card 2: Promo Skits -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm border h-100 p-4" style="border-radius: 8px;">
-                        <h4 class="mb-3" style="font-weight: 700;">Promo Skits</h4>
-                        <p class="text-secondary mb-3">Fun, memorable promotional content that connects with your
-                            audience and drives sales.</p>
-                        <a href="{{ route('contact') }}"
-                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
-                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                            Get Started
-                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                        </a>
-                    </div>
-                </div>
-                <!-- Card 3: 1-on-1 Call -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm border h-100 p-4" style="border-radius: 8px;">
-                        <h4 class="mb-3" style="font-weight: 700;">1-on-1 Call</h4>
-                        <p class="text-secondary mb-3">Personalized consultation to discuss your project and goals.</p>
-                        <a href="{{ route('contact') }}"
-                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
-                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                            Get Started
-                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                        </a>
-                    </div>
-                </div>
-                <!-- Card 4: Appearances & Bookings -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm border h-100 p-4" style="border-radius: 8px;">
-                        <h4 class="mb-3" style="font-weight: 700;">Appearances & Bookings</h4>
-                        <p class="text-secondary mb-3">Book me for events, appearances, or special collaborations.</p>
-                        <a href="{{ route('contact') }}"
-                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
-                            onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                            onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                            Get Started
-                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mobile Layout: Simplified List -->
-            <div class="row d-block d-md-none">
+                @else
                 <div class="col-12">
-                    <div class="card shadow-sm border p-4" style="border-radius: 8px;">
-                        <ul class="list-unstyled mb-4">
-                            <li class="mb-3">
-                                <strong>Brand Collabs</strong>
-                                <p class="text-secondary small mb-0">Creative partnerships that bring your brand story
-                                    to life.</p>
-                            </li>
-                            <li class="mb-3">
-                                <strong>Promo Skits</strong>
-                                <p class="text-secondary small mb-0">Fun, memorable promotional content that connects.
-                                </p>
-                            </li>
-                            <li class="mb-3">
-                                <strong>1-on-1 Call</strong>
-                                <p class="text-secondary small mb-0">Personalized consultation for your project.</p>
-                            </li>
-                            <li class="mb-3">
-                                <strong>Appearances & Bookings</strong>
-                                <p class="text-secondary small mb-0">Book me for events and special collaborations.</p>
-                            </li>
-                        </ul>
-                        <div class="text-center">
-                            <a href="{{ route('contact') }}"
-                                class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all"
-                                onmouseover="this.classList.replace('shadow-sm', 'shadow-lg'); this.querySelector('.arrow_right').classList.add('ms-3')"
-                                onmouseout="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.remove('ms-3')">
-                                Work With Me →
-                                <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
-                            </a>
-                        </div>
+                    <p class="text-secondary text-center">No highlighted videos yet.</p>
+                </div>
+                @endif
+            </div>
+        </div>
+    </section>
+    <!-- My Content Section End -->
+
+    <!-- Offers Section Begin -->
+    <section id="offers-section" class="services spad" style="margin-top: -130px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title start-here-title-wrap">
+                        <span class="start-here-kicker">Collaborate</span>
+                        <h2 class="start-here-title">My Offers / Work With Me</h2>
+                        <p class="start-here-subtitle">Explore partnerships, digital products, and merch.</p>
                     </div>
+                </div>
+            </div>
+            <div class="row d-none d-md-flex">
+                <div class="col-lg-4 mb-4">
+                    <div class="card shadow-sm border h-100 p-4" style="border-radius: 8px;">
+                        <h4 class="mb-3" style="font-weight: 700;">Buenas</h4>
+                        <p class="text-secondary mb-3">Official online gaming partner. Enjoy exclusive access through my link.</p>
+                        <a href="https://bit.ly/CristBriand-buenasph" target="_blank" rel="noopener noreferrer"
+                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all">
+                            Open Buenas
+                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card shadow-sm border h-100 p-4" style="border-radius: 8px;">
+                        <h4 class="mb-3" style="font-weight: 700;">Digital Product</h4>
+                        <p class="text-secondary mb-3">Free and paid digital tools you can access instantly.</p>
+                        <a href="{{ route('digital-products') }}"
+                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all">
+                            Digital Products
+                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card shadow-sm border h-100 p-4" style="border-radius: 8px;">
+                        <h4 class="mb-3" style="font-weight: 700;">Merch</h4>
+                        <p class="text-secondary mb-3">Shop the latest merch collection and essentials.</p>
+                        <a href="{{ route('shop') }}"
+                            class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all">
+                            Shop Merch
+                            <span class="arrow_right ms-2 transition-base" style="transition: 0.3s;"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row d-block d-md-none">
+                <div class="col-12 mb-3">
+                    <a href="https://bit.ly/CristBriand-buenasph" target="_blank" rel="noopener noreferrer"
+                        class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all w-100 text-center">Buenas</a>
+                </div>
+                <div class="col-12 mb-3">
+                    <a href="{{ route('digital-products') }}"
+                        class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all w-100 text-center">Digital Product</a>
+                </div>
+                <div class="col-12">
+                    <a href="{{ route('shop') }}"
+                        class="primary-btn d-inline-block text-decoration-none shadow-sm transition-all w-100 text-center">Merch</a>
                 </div>
             </div>
         </div>
     </section>
-    <!-- Work With Me Section End -->
+    <!-- Offers Section End -->
 
     <!-- About Me Section Begin -->
     <section class="services spad" style="margin-top: -160px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 mx-auto text-center">
-                    <div class="section-title">
-                        <h2>About Me</h2>
+                    <div class="section-title start-here-title-wrap">
+                        <span class="start-here-kicker">My Story</span>
+                        <h2 class="start-here-title">About Me</h2>
+                        <p class="start-here-subtitle">A quick look at who I am and what I create.</p>
                     </div>
                     <p class="text-secondary mb-4" style="font-size: 1.1em; line-height: 1.8; text-align: justify;">
                         Hi, I'm <strong>Briand</strong> — a <strong>content creator, comedian, and
@@ -670,8 +384,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="section-title">
-                        <h2>Contact</h2>
+                    <div class="section-title start-here-title-wrap">
+                        <span class="start-here-kicker">Get In Touch</span>
+                        <h2 class="start-here-title">Contact</h2>
+                        <!-- <p class="start-here-subtitle">Reach out for inquiries, collabs, or business opportunities.</p> -->
                     </div>
                 </div>
             </div>
@@ -744,7 +460,7 @@
     <!-- Contact Section End -->
 
     @if ($highlightModalVideoUrl)
-    <div wire:key="highlight-video-modal" wire:click="closeHighlightModal"
+    <div wire:key="highlight-video-modal"
         style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;">
         <div wire:click.stop
             style="background: #000; width: 100%; max-width: 900px; border-radius: 12px; overflow: hidden; box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);">
@@ -757,10 +473,19 @@
                 </button>
             </div>
             <div style="padding: 0;">
-                <video wire:key="highlight-player-{{ md5($highlightModalVideoUrl) }}" controls autoplay playsinline
-                    preload="auto" src="{{ $highlightModalVideoUrl }}"
+                <video id="highlight-modal-video" wire:key="highlight-player-{{ md5($highlightModalVideoUrl) }}" controls autoplay muted playsinline
+                    src="{{ $highlightModalVideoUrl }}"
+                    preload="auto"
                     style="width: 100%; max-height: 80vh; display: block;">
+                    <source src="{{ $highlightModalVideoUrl }}" @if($highlightModalVideoMime) type="{{ $highlightModalVideoMime }}" @endif>
+                    Your browser cannot play this video format.
                 </video>
+                <div style="padding: 10px 16px; background: #111;">
+                    <a href="{{ $highlightModalVideoUrl }}" target="_blank" rel="noopener noreferrer"
+                        style="color: #f5f5f5; text-decoration: underline; font-size: 13px;">
+                        Video not playing? Open video in a new tab
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -839,36 +564,82 @@
                 height: 800px;
             }
         }
+
+        .start-here-title-wrap {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .start-here-kicker {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(229, 54, 55, 0.12);
+            color: #e53637;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .start-here-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            color: #111111;
+        }
+
+        .start-here-title::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 72px;
+            height: 4px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #e53637 0%, #ff8f5a 100%);
+        }
+
+        .start-here-subtitle {
+            margin: 6px 0 0;
+            color: #666666;
+            font-size: 15px;
+        }
     </style>
-</div>
 
-<script>
-    // Video initialization - no carousel needed
-    (function() {
-        function initHeroVideo() {
-            var heroContainer = document.querySelector('.hero__container');
-            var video = heroContainer ? heroContainer.querySelector('video') : null;
-            if (video) {
-                video.setAttribute('data-protected', 'true');
+    <script>
+        // Video initialization - no carousel needed
+        (function() {
+            function initHeroVideo() {
+                var heroContainer = document.querySelector('.hero__container');
+                var video = heroContainer ? heroContainer.querySelector('video') : null;
+                if (video) {
+                    video.setAttribute('data-protected', 'true');
+                }
             }
-        }
 
-        // Run immediately
-        initHeroVideo();
-
-        // Also run when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initHeroVideo);
-        } else {
+            // Run immediately
             initHeroVideo();
-        }
 
-        // Also run on window load
-        window.addEventListener('load', function() {
-            setTimeout(initHeroVideo, 50);
-        });
-    })();
-</script>
+            // Also run when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initHeroVideo);
+            } else {
+                initHeroVideo();
+            }
+
+            // Also run on window load
+            window.addEventListener('load', function() {
+                setTimeout(initHeroVideo, 50);
+            });
+        })();
+    </script>
+
+</div>
 
 <script>
     // Prevent carousel initialization on hero container
@@ -1136,4 +907,31 @@
             }
         }
     }, 2000); // Check every 2 seconds
+
+    function tryPlayHighlightModalVideo() {
+        var modalVideo = document.getElementById('highlight-modal-video');
+        if (!modalVideo) {
+            return;
+        }
+
+        try {
+            modalVideo.load();
+        } catch (e) {}
+
+        var playPromise = modalVideo.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(function() {});
+        }
+    }
+
+    // Re-attempt modal playback after Livewire opens it.
+    document.addEventListener('livewire:init', function() {
+        if (typeof Livewire !== 'undefined' && typeof Livewire.on === 'function') {
+            Livewire.on('highlight-modal-opened', function() {
+                setTimeout(tryPlayHighlightModalVideo, 30);
+                setTimeout(tryPlayHighlightModalVideo, 150);
+            });
+        }
+    });
 </script>
+</div>
