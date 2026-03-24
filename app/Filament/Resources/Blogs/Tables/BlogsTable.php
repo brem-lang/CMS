@@ -27,6 +27,14 @@ class BlogsTable
                         true => 'success',
                         default => 'danger',
                     }),
+                TextColumn::make('is_highlight')
+                    ->label('Highlight')
+                    ->badge()
+                    ->formatStateUsing(fn ($state): string => $state ? 'Yes' : 'No')
+                    ->color(fn ($state) => match ($state) {
+                        true => 'warning',
+                        default => 'gray',
+                    }),
             ])
             ->filters([
                 //

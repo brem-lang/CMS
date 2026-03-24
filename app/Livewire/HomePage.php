@@ -20,6 +20,8 @@ class HomePage extends Component
 
     public $blogs;
 
+    public $featuredBlog;
+
     public $highlightContents;
 
     public $freeMeditations;
@@ -50,9 +52,17 @@ class HomePage extends Component
             ->limit(3)
             ->get();
 
-        $this->blogs = Blog::where('status', true)
+        $this->featuredBlog = Blog::query()
+            ->where('status', true)
+            ->where('is_highlight', true)
             ->latest()
-            ->limit(4)
+            ->first();
+
+        $this->blogs = Blog::query()
+            ->where('status', true)
+            ->when($this->featuredBlog, fn ($query) => $query->whereKeyNot($this->featuredBlog->getKey()))
+            ->latest()
+            ->limit(3)
             ->get();
 
         $this->highlightContents = MyContent::query()

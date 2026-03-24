@@ -18,7 +18,7 @@
                                     I just live my life… and turn it into content.
                                 </span>
                             </h2>
-                            <a href="#start-here"
+                            <a href="#my-content"
                                 class="primary-btn d-inline-block text-decoration-none shadow-lg transition-all text-white"
                                 style="opacity: 1 !important; top: 0 !important; position: relative !important; color: white !important; font-size: 16px; padding: 16px 34px;"
                                 onmouseover="this.classList.replace('shadow-lg', 'shadow-sm'); this.querySelector('.arrow_right').classList.add('ms-3')"
@@ -44,6 +44,78 @@
     </section>
     <!-- Hero Section End -->
 
+    <!-- My Content Section Begin -->
+    <section id="my-content" class="latest spad" style="margin-top:-50px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title start-here-title-wrap">
+                        <span class="start-here-kicker">Watch & Enjoy</span>
+                        <h2 class="start-here-title">My Content</h2>
+                        <p class="start-here-subtitle">Tap a video to open fullscreen and play instantly.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row d-none d-md-flex">
+                @forelse ($highlightContents->take(3) as $content)
+                <div class="col-lg-4 col-md-6 mb-4" wire:key="mycontent-thumb-{{ $content->id }}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic" style="min-height: 260px; background: #111;">
+                            <video preload="metadata" muted playsinline
+                                style="width: 100%; height: 100%; min-height: 260px; object-fit: cover; display: block;">
+                                <source src="{{ $content->video_url }}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="blog__item__text">
+                            <h5 style="color: #333333;">{{ $content->title ?: 'Highlighted Video' }}</h5>
+                            <a href="javascript:void(0)"
+                                wire:click.prevent="openHighlightModal({{ $content->id }})"
+                                class="text-primary fw-bold text-decoration-none shadow-hover"
+                                style="color: #007bff;">
+                                Play Video
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <div class="col-12">
+                    <p class="text-secondary text-center">No highlighted videos yet.</p>
+                </div>
+                @endforelse
+            </div>
+
+            <div class="row d-block d-md-none">
+                @if ($highlightContents->isNotEmpty())
+                @php $firstContent = $highlightContents->first(); @endphp
+                <div class="col-12" wire:key="mycontent-mobile-{{ $firstContent->id }}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic" style="min-height: 300px; background: #111;">
+                            <video preload="metadata" muted playsinline
+                                style="width: 100%; height: 100%; min-height: 300px; object-fit: cover; display: block;">
+                                <source src="{{ $firstContent->video_url }}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="blog__item__text">
+                            <h5 style="color: #333333;">{{ $firstContent->title ?: 'Highlighted Video' }}</h5>
+                            <a href="javascript:void(0)"
+                                wire:click.prevent="openHighlightModal({{ $firstContent->id }})"
+                                class="text-primary fw-bold text-decoration-none shadow-hover"
+                                style="color: #007bff;">
+                                Play Video
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @else
+                <div class="col-12">
+                    <p class="text-secondary text-center">No highlighted videos yet.</p>
+                </div>
+                @endif
+            </div>
+        </div>
+    </section>
+    <!-- My Content Section End -->
+
     <!-- Start Here Section Begin -->
     <section id="start-here" class="latest spad" style="margin-top:-80px;">
         <div class="container">
@@ -56,8 +128,7 @@
                     </div>
                 </div>
             </div>
-            @if ($blogs->isNotEmpty())
-            @php $featuredBlog = $blogs->first(); @endphp
+            @if ($featuredBlog)
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
@@ -161,7 +232,7 @@
                 </div>
             </div>
             <div class="row d-none d-md-flex">
-                @foreach ($blogs->skip(1)->take(3) as $blog)
+                @foreach ($blogs as $blog)
                 <div class="col-lg-4 col-md-6 mb-4" wire:key="more-stories-{{ $blog->id }}">
                     <div class="blog__item">
                         <div class="blog__item__pic set-bg" data-setbg="{{ $blog->image_url }}"
@@ -183,7 +254,7 @@
             </div>
 
             <div class="row d-block d-md-none">
-                @php $firstStory = $blogs->skip(1)->first(); @endphp
+                @php $firstStory = $blogs->first(); @endphp
                 @if ($firstStory)
                 <div class="col-12" wire:key="more-stories-mobile-{{ $firstStory->id }}">
                     <div class="blog__item">
@@ -207,78 +278,6 @@
         </div>
     </section>
     <!-- More Stories Section End -->
-
-    <!-- My Content Section Begin -->
-    <section class="latest spad" style="margin-top:-130px;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title start-here-title-wrap">
-                        <span class="start-here-kicker">Watch & Enjoy</span>
-                        <h2 class="start-here-title">My Content</h2>
-                        <p class="start-here-subtitle">Tap a video to open fullscreen and play instantly.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row d-none d-md-flex">
-                @forelse ($highlightContents->take(3) as $content)
-                <div class="col-lg-4 col-md-6 mb-4" wire:key="mycontent-thumb-{{ $content->id }}">
-                    <div class="blog__item">
-                        <div class="blog__item__pic" style="min-height: 260px; background: #111;">
-                            <video preload="metadata" muted playsinline
-                                style="width: 100%; height: 100%; min-height: 260px; object-fit: cover; display: block;">
-                                <source src="{{ $content->video_url }}" type="video/mp4">
-                            </video>
-                        </div>
-                        <div class="blog__item__text">
-                            <h5 style="color: #333333;">{{ $content->title ?: 'Highlighted Video' }}</h5>
-                            <a href="javascript:void(0)"
-                                wire:click.prevent="openHighlightModal({{ $content->id }})"
-                                class="text-primary fw-bold text-decoration-none shadow-hover"
-                                style="color: #007bff;">
-                                Play Video
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="col-12">
-                    <p class="text-secondary text-center">No highlighted videos yet.</p>
-                </div>
-                @endforelse
-            </div>
-
-            <div class="row d-block d-md-none">
-                @if ($highlightContents->isNotEmpty())
-                @php $firstContent = $highlightContents->first(); @endphp
-                <div class="col-12" wire:key="mycontent-mobile-{{ $firstContent->id }}">
-                    <div class="blog__item">
-                        <div class="blog__item__pic" style="min-height: 300px; background: #111;">
-                            <video preload="metadata" muted playsinline
-                                style="width: 100%; height: 100%; min-height: 300px; object-fit: cover; display: block;">
-                                <source src="{{ $firstContent->video_url }}" type="video/mp4">
-                            </video>
-                        </div>
-                        <div class="blog__item__text">
-                            <h5 style="color: #333333;">{{ $firstContent->title ?: 'Highlighted Video' }}</h5>
-                            <a href="javascript:void(0)"
-                                wire:click.prevent="openHighlightModal({{ $firstContent->id }})"
-                                class="text-primary fw-bold text-decoration-none shadow-hover"
-                                style="color: #007bff;">
-                                Play Video
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                @else
-                <div class="col-12">
-                    <p class="text-secondary text-center">No highlighted videos yet.</p>
-                </div>
-                @endif
-            </div>
-        </div>
-    </section>
-    <!-- My Content Section End -->
 
     <!-- Offers Section Begin -->
     <section id="offers-section" class="services spad" style="margin-top: -130px;">
@@ -349,12 +348,16 @@
     <section class="services spad" style="margin-top: -160px;">
         <div class="container">
             <div class="row">
-                <div class="col-lg-10 mx-auto text-center">
+                <div class="col-lg-12">
                     <div class="section-title start-here-title-wrap">
                         <span class="start-here-kicker">My Story</span>
                         <h2 class="start-here-title">About Me</h2>
                         <p class="start-here-subtitle">A quick look at who I am and what I create.</p>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-10 mx-auto text-center">
                     <p class="text-secondary mb-4" style="font-size: 1.1em; line-height: 1.8; text-align: justify;">
                         Hi, I'm <strong>Briand</strong> — a <strong>content creator, comedian, and
                             freedom-chaser</strong>.

@@ -12,6 +12,7 @@ class Blog extends Model
 
     protected $casts = [
         'status' => 'boolean',
+        'is_highlight' => 'boolean',
     ];
 
     public function user(): BelongsTo
@@ -22,7 +23,7 @@ class Blog extends Model
     public function getImageUrlAttribute(): string
     {
         if ($this->image) {
-            return Storage::disk('public')->url($this->image);
+            return Storage::url($this->image);
         }
 
         return asset('bootstrap/img/blog/blog-1.jpg'); // fallback image

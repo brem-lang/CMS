@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Blogs\Schemas;
 
+use App\Models\Blog;
+use Closure;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
@@ -25,6 +27,26 @@ class BlogForm
                             ->onIcon(Heroicon::Check)
                             ->offIcon(Heroicon::XMark)
                             ->default(true)
+                            ->inline(false),
+                        Toggle::make('is_highlight')
+                            ->label('Highlight on Homepage')
+                            ->helperText('Only one blog can be highlighted at a time.')
+                            ->default(false)
+                            ->rule(fn ($record) => function (string $attribute, mixed $value, Closure $fail) use ($record): void {
+                                if (! $value) {
+                                    return;
+                                }
+
+                                $query = Blog::query()->where('is_highlight', true);
+
+                                if ($record?->exists) {
+                                    $query->whereKeyNot($record->getKey());
+                                }
+
+                                if ($query->exists()) {
+                                    $fail('Only one highlighted blog is allowed.');
+                                }
+                            })
                             ->inline(false),
                         FileUpload::make('image')
                             ->label('Image')
